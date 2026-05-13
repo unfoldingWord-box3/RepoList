@@ -268,38 +268,57 @@ def write_ods(repos, output_file):
         "last edit date",
     ]
 
-    rows = [headers]
+    def build_rows(filtered_repos):
+        rows = [headers]
 
-    for repo in repos:
-        rows.append([
-            repo.get("name", ""),
-            repo.get("owner", {}).get("login", ""),
-            repo.get("language") or "",
-            repo.get("npmjs_package_name", ""),
-            ", ".join(repo.get("npmjs_used_by", [])),
-            ", ".join(repo.get("npmjs_uses", [])),
-            repo.get("html_url", ""),
-            repo.get("updated_at", ""),
-        ])
+        for repo in filtered_repos:
+            rows.append([
+                repo.get("name", ""),
+                repo.get("owner", {}).get("login", ""),
+                repo.get("language") or "",
+                repo.get("npmjs_package_name", ""),
+                ", ".join(repo.get("npmjs_used_by", [])),
+                ", ".join(repo.get("npmjs_uses", [])),
+                repo.get("html_url", ""),
+                repo.get("updated_at", ""),
+            ])
 
-    table_rows = []
+        return rows
 
-    for row in rows:
-        cells = []
+    def build_table(table_name, rows):
+        table_rows = []
 
-        for value in row:
-            text = escape(str(value))
-            cells.append(
-                '<table:table-cell office:value-type="string">'
-                f"<text:p>{text}</text:p>"
-                "</table:table-cell>"
+        for row in rows:
+            cells = []
+
+            for value in row:
+                text = escape(str(value))
+                cells.append(
+                    '<table:table-cell office:value-type="string">'
+                    f"<text:p>{text}</text:p>"
+                    "</table:table-cell>"
+                )
+
+            table_rows.append(
+                "<table:table-row>"
+                f"{''.join(cells)}"
+                "</table:table-row>"
             )
 
-        table_rows.append(
-            "<table:table-row>"
-            f"{''.join(cells)}"
-            "</table:table-row>"
+        return (
+            f'<table:table table:name="{escape(table_name)}">'
+            f"{''.join(table_rows)}"
+            "</table:table>"
         )
+
+    js_ts_repos = [
+        repo
+        for repo in repos
+        if (repo.get("language") or "").lower() in ("javascript", "typescript")
+    ]
+
+    repositories_table = build_table("Repositories", build_rows(repos))
+    js_ts_table = build_table("JavaScript TypeScript", build_rows(js_ts_repos))
 
     content_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <office:document-content
@@ -309,9 +328,8 @@ def write_ods(repos, output_file):
     office:version="1.2">
     <office:body>
         <office:spreadsheet>
-            <table:table table:name="Repositories">
-                {''.join(table_rows)}
-            </table:table>
+            {repositories_table}
+            {js_ts_table}
         </office:spreadsheet>
     </office:body>
 </office:document-content>

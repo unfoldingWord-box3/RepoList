@@ -137,6 +137,56 @@ def fetch_package_json(repo):
     return None
 
 
+def fetch_npmjs_package_metadata(package_name):
+    package_url = (
+        "https://registry.npmjs.org/"
+        f"{urllib.parse.quote(package_name, safe='@')}"
+    )
+
+    print(f"Fetching npm package metadata: {package_name}")
+
+    request = urllib.request.Request(
+        package_url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "unfoldingword-repo-list-script",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return None
+
+        print(
+            f"npm registry error for {package_name}: {error.code} {error.reason}",
+            file=sys.stderr,
+        )
+        return None
+
+
+def fetch_npmjs_last_published(package_metadata):
+    if package_metadata is None:
+        return ""
+
+    time_metadata = package_metadata.get("time") or {}
+    latest_version = package_metadata.get("dist-tags", {}).get("latest")
+
+    if latest_version:
+        return time_metadata.get(latest_version, "")
+
+    published_dates = [
+        published_at
+        for version, published_at in time_metadata.items()
+        if version not in ("created", "modified")
+    ]
+
+    return max(published_dates, default="")
+
+
 def fetch_repositories_for_org(org_name):
     """
     Fetches all repositories for a given GitHub organization.
@@ -182,7 +232,10 @@ def fetch_repositories_for_org(org_name):
                 package_json = fetch_package_json(repo)
 
                 if package_json and package_json.get("private") is not True:
-                    repo["npmjs_package_name"] = package_json.get("name", "")
+                    npm_package_name = package_json.get("name", "")
+                    repo["npmjs_package_name"] = npm_package_name
+                    npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
+                    repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
 
                 repo["npmjs_used_by"] = []
                 repo["npmjs_uses"] = []
@@ -193,6 +246,7 @@ def fetch_repositories_for_org(org_name):
         url = get_next_page_url(link_header)
 
     return repos
+
 
 def fetch_repositories():
     repos = []

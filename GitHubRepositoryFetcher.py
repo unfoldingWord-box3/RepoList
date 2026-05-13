@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import base64
-import csv
 import json
 import os
 import sys
@@ -9,14 +8,15 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-
+import zipfile
+from xml.sax.saxutils import escape
 
 ORG_NAME = [
     "unfoldingWord",
     "unfoldingWord-dev",
     "unfoldingWord-box3",
 ]
-OUTPUT_FILE = "unfoldingword_repos.csv"
+OUTPUT_FILE = "unfoldingword_repos.ods"
 GITHUB_API_URL = f"https://api.github.com/orgs/{ORG_NAME}/repos"
 ENV_FILE = ".env"
 
@@ -256,32 +256,84 @@ def update_npmjs_dependencies(repos):
             if dependency_name not in npmjs_uses:
                 npmjs_uses.append(dependency_name)
 
-def write_csv(repos, output_file):
-    with open(output_file, mode="w", newline="", encoding="utf-8") as csv_file:
-        writer = csv.writer(csv_file)
+def write_ods(repos, output_file):
+    headers = [
+        "repo name",
+        "organization name",
+        "language",
+        "npmjs package name",
+        "npmjs used by",
+        "npmjs uses",
+        "repo url",
+        "last edit date",
+    ]
 
-        writer.writerow([
-            "repo name",
-            "organization name",
-            "language",
-            "npmjs package name",
-            "npmjs used by",
-            "npmjs uses",
-            "repo url",
-            "last edit date",
+    rows = [headers]
+
+    for repo in repos:
+        rows.append([
+            repo.get("name", ""),
+            repo.get("owner", {}).get("login", ""),
+            repo.get("language") or "",
+            repo.get("npmjs_package_name", ""),
+            ", ".join(repo.get("npmjs_used_by", [])),
+            ", ".join(repo.get("npmjs_uses", [])),
+            repo.get("html_url", ""),
+            repo.get("updated_at", ""),
         ])
 
-        for repo in repos:
-            writer.writerow([
-                repo.get("name", ""),
-                repo.get("owner", {}).get("login", ""),
-                repo.get("language") or "",
-                repo.get("npmjs_package_name", ""),
-                ", ".join(repo.get("npmjs_used_by", [])),
-                ", ".join(repo.get("npmjs_uses", [])),
-                repo.get("html_url", ""),
-                repo.get("updated_at", ""),
-            ])
+    table_rows = []
+
+    for row in rows:
+        cells = []
+
+        for value in row:
+            text = escape(str(value))
+            cells.append(
+                '<table:table-cell office:value-type="string">'
+                f"<text:p>{text}</text:p>"
+                "</table:table-cell>"
+            )
+
+        table_rows.append(
+            "<table:table-row>"
+            f"{''.join(cells)}"
+            "</table:table-row>"
+        )
+
+    content_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content
+    xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+    office:version="1.2">
+    <office:body>
+        <office:spreadsheet>
+            <table:table table:name="Repositories">
+                {''.join(table_rows)}
+            </table:table>
+        </office:spreadsheet>
+    </office:body>
+</office:document-content>
+'''
+
+    manifest_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest
+    xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+    manifest:version="1.2">
+    <manifest:file-entry manifest:full-path="/" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>
+    <manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>
+</manifest:manifest>
+'''
+
+    with zipfile.ZipFile(output_file, mode="w") as ods_file:
+        ods_file.writestr(
+            "mimetype",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            compress_type=zipfile.ZIP_STORED,
+        )
+        ods_file.writestr("content.xml", content_xml)
+        ods_file.writestr("META-INF/manifest.xml", manifest_xml)
 
 
 def main():
@@ -289,10 +341,10 @@ def main():
 
     repos = fetch_repositories()
     update_npmjs_dependencies(repos)
-    write_csv(repos, OUTPUT_FILE)
+    write_ods(repos, OUTPUT_FILE)
 
     print()
-    print(f"Created CSV: {OUTPUT_FILE}")
+    print(f"Created ODS: {OUTPUT_FILE}")
     print(f"Repositories written: {len(repos)}")
 
 

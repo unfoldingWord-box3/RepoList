@@ -484,15 +484,48 @@ def fetch_repositories():
     return repos
 
 
+def update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name):
+    package_json = repo.get("package_json") or []
+    current_package_name = repo.get("npmjs_package_name")
+
+    if not package_json:
+        return
+
+    if not current_package_name:
+        current_package_name = repo.get('name', '') # fall back to repo name
+
+    dependencies = {}
+
+    dependencies.update(package_json.get("dependencies") or {})
+    dependencies.update(package_json.get("devDependencies") or {})
+    dependencies.update(package_json.get("peerDependencies") or {})
+
+    for dependency_name in dependencies:
+        dependency_repo = repos_by_npmjs_package_name.get(dependency_name)
+
+        if dependency_repo is None:
+            continue
+
+        npmjs_used_by = dependency_repo.setdefault("npmjs_used_by", [])
+
+        if current_package_name not in npmjs_used_by:
+            npmjs_used_by.append(current_package_name)
+
+        npmjs_uses = repo.setdefault("npmjs_uses", [])
+
+        if dependency_name not in npmjs_uses:
+            npmjs_uses.append(dependency_name)
+
+
 def update_npmjs_dependencies(repos):
     """
     Updates npm package dependency relationships within the repositories.
-    
+
     For each repository with a package.json file, this function analyzes its dependencies
     and peerDependencies to build bidirectional relationships between packages. It populates
     the 'npmjs_used_by' field for packages that are dependencies, and the 'npmjs_uses' field
     for packages that have dependencies.
-    
+
     Args:
         repos (list): A list of repository dictionaries. Each repository should contain:
             - 'npmjs_package_name' (str, optional): The npm package name
@@ -500,7 +533,7 @@ def update_npmjs_dependencies(repos):
                'dependencies' and/or 'peerDependencies' fields
             - 'npmjs_used_by' (list): Will be populated with package names that depend on this package
             - 'npmjs_uses' (list): Will be populated with package names this package depends on
-    
+
     Returns:
         None. The function modifies the repository dictionaries in place.
     """
@@ -514,36 +547,31 @@ def update_npmjs_dependencies(repos):
         if repo.get("npmjs_package_name")
     }
 
+    sub_modules = []
+
+    # pick up monorepos
     for repo in repos:
-        package_json_list = repo.get("package_jsons") or []
-        current_package_name = repo.get("npmjs_package_name")
+        package_json_files = repo.get("package_json_files")
+        if package_json_files:
+            package_jsons = repo.setdefault("package_jsons", [])
 
-        if not package_json_list or not current_package_name:
-            continue
+            for package_json_file in package_json_files:
+                package_json_path = package_json_file.get("path")
+                if not package_json_path or (package_json_path == "package.json"):
+                    continue
 
-        dependencies = {}
+                package_json = fetch_repository_json_file(repo, package_json_path)
+                if package_json:
+                    sub_module = repo.copy()
+                    new_name = f"{repo.get('name', '')}/{package_json.get('name', '')}"
+                    sub_module["name"] = new_name
+                    sub_module["package_json"] = package_json
+                    sub_modules.append(package_json)
 
-        for package_json in package_json_list:
-            dependencies.update(package_json.get("dependencies") or {})
-            dependencies.update(package_json.get("devDependencies") or {})
-            dependencies.update(package_json.get("peerDependencies") or {})
-
-        for dependency_name in dependencies:
-            dependency_repo = repos_by_npmjs_package_name.get(dependency_name)
-
-            if dependency_repo is None:
-                continue
-
-            npmjs_used_by = dependency_repo.setdefault("npmjs_used_by", [])
-
-            if current_package_name not in npmjs_used_by:
-                npmjs_used_by.append(current_package_name)
-
-            npmjs_uses = repo.setdefault("npmjs_uses", [])
-
-            if dependency_name not in npmjs_uses:
-                npmjs_uses.append(dependency_name)
-
+    repos.extend(sub_modules)
+    
+    for repo in repos:
+        update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name)
 
 def write_ods(repos, output_file):
     headers = [

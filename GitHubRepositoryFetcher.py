@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -86,7 +87,7 @@ def get_next_page_url(link_header):
     return None
 
 
-def fetch_package_json(repo):
+def fetch_repository_file(repo, file_path):
     owner = repo.get("owner", {}).get("login")
     repo_name = repo.get("name")
 
@@ -94,30 +95,46 @@ def fetch_package_json(repo):
         return None
 
     for branch_name in ("main", "master"):
-        package_url = (
+        file_url = (
             f"https://api.github.com/repos/"
             f"{urllib.parse.quote(owner, safe='')}/"
             f"{urllib.parse.quote(repo_name, safe='')}/"
-            f"contents/package.json?"
+            f"contents/{urllib.parse.quote(file_path, safe='/')}?"
             f"{urllib.parse.urlencode({'ref': branch_name})}"
         )
 
-        print(f"Fetching package.json: {owner}/{repo_name}@{branch_name}")
+        print(f"Fetching {file_path}: {owner}/{repo_name}@{branch_name}")
 
-        data, _ = github_request(package_url, allow_not_found=True)
+        data, _ = github_request(file_url, allow_not_found=True)
         if data is None:
             continue
 
-        package_file = json.loads(data.decode("utf-8"))
-        encoded_content = package_file.get("content", "")
+        repository_file = json.loads(data.decode("utf-8"))
+        content = repository_file.get("content", "")
 
-        if not encoded_content:
-            return None
+        if content:
+            return content
 
+    return None
+
+
+def fetch_repository_json_file(repo, file_path):
+    encoded_content = fetch_repository_file(repo, file_path)
+
+    if encoded_content:
         decoded_content = base64.b64decode(encoded_content).decode("utf-8")
         return json.loads(decoded_content)
 
     return None
+
+
+def fetch_package_json(repo):
+    package_json = fetch_repository_json_file(repo, "package.json")
+    return package_json
+
+
+def fetch_nx_json(repo):
+    return fetch_repository_json_file(repo, "nx.json")
 
 
 def fetch_npmjs_package_metadata(package_name):
@@ -322,7 +339,8 @@ def fetch_repositories_for_org(org_name):
               - 'npmjs_package_name' (str): The npm package name from package.json
               - 'npmjs_used_by' (list): Initially empty, populated later by update_npmjs_dependencies
               - 'npmjs_uses' (list): Initially empty, populated later by update_npmjs_dependencies
-              - 'package_json' (dict): The parsed package.json content, or None if not available
+              - 'package_jsons' (list): A list containing parsed package.json content,
+                or an empty list if not available
     """
     repos = []
 
@@ -347,10 +365,13 @@ def fetch_repositories_for_org(org_name):
             language = (repo.get("language") or "").lower()
 
             if language in ("javascript", "typescript"):
-                package_json = fetch_package_json(repo)
+                package_json_ = fetch_package_json(repo)
+                package_jsons = [package_json_] if package_json_ else []
 
-                if package_json and package_json.get("private") is not True:
-                    npm_package_name = package_json.get("name", "")
+                primary_package_json = package_jsons[0] if package_jsons else None
+
+                if primary_package_json and primary_package_json.get("private") is not True:
+                    npm_package_name = primary_package_json.get("name", "")
                     repo["npmjs_package_name"] = npm_package_name
                     npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
                     repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
@@ -364,9 +385,16 @@ def fetch_repositories_for_org(org_name):
                     #     npm_package_metadata,
                     # )
 
+                    workspaces = primary_package_json.get("workspaces", None)
+                    if not workspaces:
+                        nx_json = fetch_nx_json(repo)
+                        if nx_json:
+                            workspaces = True
+                            
+
                 repo["npmjs_used_by"] = []
                 repo["npmjs_uses"] = []
-                repo["package_json"] = package_json
+                repo["package_jsons"] = package_jsons
 
         repos.extend(page_repos)
 
@@ -396,8 +424,8 @@ def update_npmjs_dependencies(repos):
     Args:
         repos (list): A list of repository dictionaries. Each repository should contain:
             - 'npmjs_package_name' (str, optional): The npm package name
-            - 'package_json' (dict, optional): Parsed package.json content with 'dependencies'
-              and/or 'peerDependencies' fields
+           - 'package_jsons' (list, optional): Parsed package.json contents with
+               'dependencies' and/or 'peerDependencies' fields
             - 'npmjs_used_by' (list): Will be populated with package names that depend on this package
             - 'npmjs_uses' (list): Will be populated with package names this package depends on
     
@@ -415,15 +443,18 @@ def update_npmjs_dependencies(repos):
     }
 
     for repo in repos:
-        package_json = repo.get("package_json")
+        package_json_list = repo.get("package_jsons") or []
         current_package_name = repo.get("npmjs_package_name")
 
-        if not package_json or not current_package_name:
+        if not package_json_list or not current_package_name:
             continue
 
         dependencies = {}
-        dependencies.update(package_json.get("dependencies") or {})
-        dependencies.update(package_json.get("peerDependencies") or {})
+
+        for package_json in package_json_list:
+            dependencies.update(package_json.get("dependencies") or {})
+            dependencies.update(package_json.get("devDependencies") or {})
+            dependencies.update(package_json.get("peerDependencies") or {})
 
         for dependency_name in dependencies:
             dependency_repo = repos_by_npmjs_package_name.get(dependency_name)

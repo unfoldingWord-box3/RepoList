@@ -1,0 +1,189 @@
+repo name,organization name,language,npmjs package name,npmjs downloads last year,npmjs last published,npmjs used by,npmjs uses,repo url,last edit date
+dokuwiki-plugin-obs-audio-upload,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/dokuwiki-plugin-obs-audio-upload,2015-03-19T19:30:11Z
+s3_list-zip,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/s3_list-zip,2016-02-19T21:11:59Z
+node-door43-rc,unfoldingWord-dev,JavaScript,door43-rc,467.0,2016-09-01T18:35:44.393Z,,,https://github.com/unfoldingWord-dev/node-door43-rc,2016-08-25T18:39:16Z
+tx-html2pdf,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/tx-html2pdf,2016-12-19T14:55:26Z
+node-resource-container,unfoldingWord-dev,JavaScript,resource-container,2701.0,2017-02-28T01:01:07.451Z,door43-client,,https://github.com/unfoldingWord-dev/node-resource-container,2017-03-07T23:45:06Z
+translation-process,unfoldingWord-box3,JavaScript,translation-process,,,,,https://github.com/unfoldingWord-box3/translation-process,2019-03-22T14:32:18Z
+tsv-editor,unfoldingWord-box3,JavaScript,tsv-editor,,,,markdown-translatable,https://github.com/unfoldingWord-box3/tsv-editor,2019-04-10T00:14:01Z
+t_pane,unfoldingWord-dev,JavaScript,TPane,,,,,https://github.com/unfoldingWord-dev/t_pane,2019-10-22T19:34:26Z
+ScripturePane,unfoldingWord-dev,JavaScript,ScripturePane,,,,"string-punctuation-tokenizer, tc-tool, usfm-js",https://github.com/unfoldingWord-dev/ScripturePane,2019-10-22T19:35:10Z
+comment_box,unfoldingWord-dev,JavaScript,CommentBox,,,,,https://github.com/unfoldingWord-dev/comment_box,2019-10-22T19:37:22Z
+toolTemplate,unfoldingWord-dev,JavaScript,toolTemplate,,,,tc-tool,https://github.com/unfoldingWord-dev/toolTemplate,2019-10-22T19:38:20Z
+checkingRubric_tool,unfoldingWord-dev,JavaScript,checkingRubricTool,,,,,https://github.com/unfoldingWord-dev/checkingRubric_tool,2019-10-22T19:40:10Z
+selections,unfoldingWord,JavaScript,selections,7978.0,2018-05-03T21:23:02.005Z,"translationCore, wordAlignment, checking-tool-wrapper, VerseCheck",tc-strings,https://github.com/unfoldingWord/selections,2019-10-22T19:45:39Z
+tc-strings,unfoldingWord,JavaScript,tc-strings,9660.0,2018-05-03T21:24:53.169Z,"translationCore, word-aligner-lib, checking-tool-rcl, selections, VerseCheck",,https://github.com/unfoldingWord/tc-strings,2019-10-22T19:46:14Z
+t-core-submodule-updater,unfoldingWord,JavaScript,tc-submodule-manager,,,,,https://github.com/unfoldingWord/t-core-submodule-updater,2019-10-22T20:22:23Z
+Autographa,unfoldingWord-dev,JavaScript,Autographa,,,,,https://github.com/unfoldingWord-dev/Autographa,2019-10-22T20:35:02Z
+node-door43-client,unfoldingWord-dev,JavaScript,door43-client,1303.0,2019-11-06T17:33:42.928Z,,resource-container,https://github.com/unfoldingWord-dev/node-door43-client,2019-11-06T17:32:34Z
+HebrewLexicon,unfoldingWord-dev,JavaScript,strongs-parse,,,,,https://github.com/unfoldingWord-dev/HebrewLexicon,2020-01-03T16:25:13Z
+translation-manager-poc,unfoldingWord-box3,JavaScript,translation-manager-react-component-library,,,,,https://github.com/unfoldingWord-box3/translation-manager-poc,2020-01-28T22:33:45Z
+tc-tool,unfoldingWord,JavaScript,tc-tool,20914.0,2020-04-16T04:30:54.949Z,"translationCore, wordAlignment, translationWords, translationNotes, VerseCheck, toolTemplate, ScripturePane",,https://github.com/unfoldingWord/tc-tool,2020-04-16T01:20:15Z
+wordMAP-lexer,unfoldingWord,TypeScript,wordmap-lexer,15912.0,2020-04-09T15:48:09.080Z,"word-aligner-rcl, uw-wordmapbooster, translationCore, word-aligner-lib, checking-tool-rcl, wordmap, wordAlignment, wordmap-usfm, wordmap-mt, wordmap-react-toolkit",string-punctuation-tokenizer,https://github.com/unfoldingWord/wordMAP-lexer,2020-04-22T13:12:03Z
+react-to-electron-action,unfoldingWord-box3,JavaScript,react-to-electron-action,,,,,https://github.com/unfoldingWord-box3/react-to-electron-action,2020-05-06T12:37:30Z
+uw-metadata-react-component-library,unfoldingWord-box3,JavaScript,scripture-burrito-react-jsonschema-form,,,,gitea-react-toolkit,https://github.com/unfoldingWord-box3/uw-metadata-react-component-library,2020-05-07T19:30:12Z
+usfm-js-wrapper,unfoldingWord,JavaScript,usfm-js-wrapper,,,,usfm-js,https://github.com/unfoldingWord/usfm-js-wrapper,2020-05-26T20:17:20Z
+lang-as-graph,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/lang-as-graph,2020-07-21T13:00:12Z
+scripture-as-graph,unfoldingWord-box3,JavaScript,scripture-as-graph,,,,usfm-js,https://github.com/unfoldingWord-box3/scripture-as-graph,2020-07-22T12:31:12Z
+sample-react-component-library,unfoldingWord-box3,JavaScript,sample-react-component-library,57.0,2020-07-28T16:44:56.434Z,,,https://github.com/unfoldingWord-box3/sample-react-component-library,2020-07-28T16:44:37Z
+uw-word-count,unfoldingWord,JavaScript,uw-word-count,316.0,2020-07-15T14:01:25.409Z,book-package-rcl,usfm-js,https://github.com/unfoldingWord/uw-word-count,2020-08-11T13:41:55Z
+gitea-offline-poc,unfoldingWord-box3,JavaScript,gitea-offline-poc,,,,gitea-react-toolkit,https://github.com/unfoldingWord-box3/gitea-offline-poc,2020-08-12T19:36:13Z
+uw-web,unfoldingWord-dev,JavaScript,BrowserBible,,,,,https://github.com/unfoldingWord-dev/uw-web,2020-09-11T14:39:54Z
+pdf-generator,unfoldingWord-box3,JavaScript,pdf-generator,420.0,2017-01-16T09:17:24.295Z,,"scripture-resources-rcl, string-punctuation-tokenizer, tc-source-content-updater, tsv-groupdata-parser, usfm-js",https://github.com/unfoldingWord-box3/pdf-generator,2020-10-09T16:44:02Z
+book-package-viewer-poc,unfoldingWord-box3,JavaScript,book-package-viewer-poc,,,,"gitea-react-toolkit, markdown-translatable, scripture-resources-rcl",https://github.com/unfoldingWord-box3/book-package-viewer-poc,2020-10-21T20:48:29Z
+eslint-config,unfoldingWord,JavaScript,@unfoldingword/eslint-config,1220.0,2020-12-10T06:26:46.446Z,,,https://github.com/unfoldingWord/eslint-config,2020-12-15T23:29:10Z
+greek-apparatus-app,unfoldingWord-box3,JavaScript,greek-apparatus-app,53.0,2020-12-11T16:05:46.321Z,,"bible-reference-rcl, datatable-translatable, gitea-react-toolkit, scripture-resources-rcl, string-punctuation-tokenizer, usfm-js",https://github.com/unfoldingWord-box3/greek-apparatus-app,2021-02-11T13:51:27Z
+admin-app-old,unfoldingWord-box3,JavaScript,create-app,5358.0,2020-06-12T08:01:25.849Z,,"bible-reference-rcl, gitea-react-toolkit, markdown-translatable, resource-workspace-rcl, scripture-resources-rcl, single-scripture-rcl, translation-helps-rcl",https://github.com/unfoldingWord-box3/admin-app-old,2021-03-10T14:25:09Z
+admin-app,unfoldingWord-box3,JavaScript,admin-app,1220.0,2022-10-04T02:18:35.288Z,,"gitea-react-toolkit, translation-helps-rcl, resource-workspace-rcl",https://github.com/unfoldingWord-box3/admin-app,2021-03-12T02:03:10Z
+content-validation-app,unfoldingWord-box3,JavaScript,content-validation-app,165.0,2020-09-16T21:52:51.640Z,,uw-content-validation,https://github.com/unfoldingWord-box3/content-validation-app,2021-03-29T11:54:10Z
+dcs-docker,unfoldingWord-dev,JavaScript,dcs-docker,,,,,https://github.com/unfoldingWord-dev/dcs-docker,2021-05-13T21:16:14Z
+graphql-catalog-next,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/graphql-catalog-next,2021-06-08T15:35:23Z
+obsidian-uw-rc-link-opener,unfoldingWord-dev,TypeScript,uw-rc-link-opener,,,,,https://github.com/unfoldingWord-dev/obsidian-uw-rc-link-opener,2021-06-08T17:40:39Z
+catalog-next-toolkit,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/catalog-next-toolkit,2021-06-15T13:39:33Z
+anchor-alignment-poc,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/anchor-alignment-poc,2021-08-09T17:50:41Z
+obs-pdf-poc,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/obs-pdf-poc,2021-11-03T19:29:18Z
+gateway-edit-POC,unfoldingWord-box3,JavaScript,gateway-edit,57.0,2024-04-25T19:00:31.705Z,,"bible-reference-rcl, gitea-react-toolkit, markdown-translatable, resource-workspace-rcl, scripture-resources-rcl, single-scripture-rcl, tc-ui-toolkit, translation-helps-rcl, word-aligner",https://github.com/unfoldingWord-box3/gateway-edit-POC,2021-11-22T13:29:05Z
+simple-text-editor-app,unfoldingWord-box3,JavaScript,simple-text-editor-app,,,,simple-text-editor-rcl,https://github.com/unfoldingWord-box3/simple-text-editor-app,2021-11-29T20:26:55Z
+tc-create-poc,unfoldingWord-box3,JavaScript,tc-create-app,47.0,2022-02-22T21:12:10.659Z,,"datatable-translatable, gitea-react-toolkit, markdown-translatable, scripture-resources-rcl, usfm-js, uw-content-validation",https://github.com/unfoldingWord-box3/tc-create-poc,2021-12-03T15:55:03Z
+book-package-app,unfoldingWord,TypeScript,book-package-app,88.0,2020-07-15T14:29:05.613Z,,book-package-rcl,https://github.com/unfoldingWord/book-package-app,2021-12-17T13:15:30Z
+md-converter-app,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/md-converter-app,2021-12-20T19:28:57Z
+gutenberg-project,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/gutenberg-project,2022-03-01T21:05:23Z
+uw-languages-rcl,unfoldingWord,JavaScript,uw-languages-rcl,736.0,2023-06-12T16:01:14.311Z,"tc-create-app, dcs-react-hooks",,https://github.com/unfoldingWord/uw-languages-rcl,2022-06-01T12:49:38Z
+resource-workspace-rcl,unfoldingWord,JavaScript,resource-workspace-rcl,2495.0,2023-06-13T13:51:03.803Z,"gateway-edit, gateway-admin, gateway-translate, next-js-template, admin-app, create-app",,https://github.com/unfoldingWord/resource-workspace-rcl,2022-06-01T15:53:36Z
+book-package-rcl,unfoldingWord,JavaScript,book-package-rcl,2085.0,2023-01-02T13:16:20.145Z,book-package-app,"usfm-js, uw-word-count",https://github.com/unfoldingWord/book-package-rcl,2022-06-14T14:25:45Z
+hello-dcs-react-component-library,unfoldingWord-box3,JavaScript,hello-dcs-react-component-library,,,,gitea-react-toolkit,https://github.com/unfoldingWord-box3/hello-dcs-react-component-library,2022-06-14T15:15:13Z
+alignment-editor-rcl,unfoldingWord-box3,TypeScript,alignment-editor-rcl,1923.0,2022-01-07T17:04:25.514Z,,,https://github.com/unfoldingWord-box3/alignment-editor-rcl,2022-06-14T15:15:26Z
+proskomma-scripture-resources-rcl,unfoldingWord-box3,JavaScript,proskomma-scripture-resources-rcl,,,,uw-proskomma,https://github.com/unfoldingWord-box3/proskomma-scripture-resources-rcl,2022-06-14T15:15:43Z
+door43-preview-rcl,unfoldingWord-box3,JavaScript,pdf-generator-rcl,,,,"gitea-react-toolkit, markdown-translatable, scripture-resources-rcl",https://github.com/unfoldingWord-box3/door43-preview-rcl,2022-06-14T15:16:13Z
+resource-container-rcl,unfoldingWord-box3,JavaScript,resource-container-rcl,,,,,https://github.com/unfoldingWord-box3/resource-container-rcl,2022-06-14T15:16:49Z
+hello-world-react-component-library,unfoldingWord-box3,JavaScript,hello-world-react-component-library,158.0,2019-09-25T16:00:59.747Z,,,https://github.com/unfoldingWord-box3/hello-world-react-component-library,2022-06-14T15:18:39Z
+translation-helps-print-preview,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/translation-helps-print-preview,2022-06-17T15:46:05Z
+next-js-template,unfoldingWord-box3,JavaScript,next-js-template,,,,"gitea-react-toolkit, markdown-translatable, resource-workspace-rcl, scripture-resources-rcl, single-scripture-rcl, tc-ui-toolkit, translation-helps-rcl, word-aligner",https://github.com/unfoldingWord-box3/next-js-template,2022-06-17T15:46:29Z
+wordmap-react-toolkit,unfoldingWord-box3,TypeScript,wordmap-react-toolkit,204.0,2019-11-07T08:13:01.981Z,,"wordmap, wordmap-lexer",https://github.com/unfoldingWord-box3/wordmap-react-toolkit,2022-06-17T15:47:04Z
+dcs-react-hooks,unfoldingWord,JavaScript,dcs-react-hooks,144.0,2022-08-19T12:33:49.976Z,,"dcs-js, uw-languages-rcl",https://github.com/unfoldingWord/dcs-react-hooks,2022-06-17T15:48:50Z
+dcs-file-version-diff-tool,unfoldingWord-box3,JavaScript,dcs-file-version-diff-tool,,,,,https://github.com/unfoldingWord-box3/dcs-file-version-diff-tool,2022-08-20T00:16:31Z
+dcs-packages,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/dcs-packages,2022-08-25T21:38:49Z
+uw-editor,unfoldingWord,JavaScript,uw-editor,1028.0,2023-03-21T14:43:38.471Z,,"epitelete-html, translation-helps-rcl",https://github.com/unfoldingWord/uw-editor,2022-10-19T03:29:50Z
+dcs-js,unfoldingWord,TypeScript,dcs-js,492.0,2022-11-02T13:18:25.384Z,"dcs-branch-merger, gateway-translate, dcs-react-hooks, bible-preview-app, dcs-login",,https://github.com/unfoldingWord/dcs-js,2022-10-29T01:30:37Z
+uw-pdf-preview,unfoldingWord,JavaScript,uw-pdf-preview,,,,,https://github.com/unfoldingWord/uw-pdf-preview,2022-11-08T15:51:52Z
+wordMAP-usfm,unfoldingWord,TypeScript,wordmap-usfm,222.0,2018-11-30T10:27:55.416Z,,"usfm-js, wordmap-lexer",https://github.com/unfoldingWord/wordMAP-usfm,2022-11-13T22:45:42Z
+tc-tsv-converter,unfoldingWord,JavaScript,tsv-converter,,,,,https://github.com/unfoldingWord/tc-tsv-converter,2022-11-15T23:06:04Z
+gateway-translate,unfoldingWord,JavaScript,gateway-translate,,,,"bible-reference-rcl, dcs-js, resource-workspace-rcl, scripture-resources-rcl, translation-helps-rcl",https://github.com/unfoldingWord/gateway-translate,2023-01-21T16:44:36Z
+node-dcs-api-client,unfoldingWord-dev,TypeScript,dcs_api_client,,,,,https://github.com/unfoldingWord-dev/node-dcs-api-client,2023-01-27T20:32:30Z
+ResourceChecker,unfoldingWord-dev,JavaScript,resource-checker,118.0,2020-03-31T01:31:18.653Z,,"usfm-js, gitea-react-toolkit, scripture-resources-rcl",https://github.com/unfoldingWord-dev/ResourceChecker,2023-01-28T14:29:30Z
+OBS-Mobile,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/OBS-Mobile,2023-01-28T16:19:06Z
+Bootstrap43,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/Bootstrap43,2023-01-28T16:19:06Z
+etherpad-lite,unfoldingWord-dev,JavaScript,etherpad-lite,,,,,https://github.com/unfoldingWord-dev/etherpad-lite,2023-01-28T16:19:06Z
+uwadmin,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/uwadmin,2023-01-28T16:19:07Z
+translationKeyboardWeb,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/translationKeyboardWeb,2023-01-28T16:19:07Z
+translationCore-PoC,unfoldingWord-dev,JavaScript,,,,,,https://github.com/unfoldingWord-dev/translationCore-PoC,2023-01-28T16:19:08Z
+translation_academy,unfoldingWord-dev,JavaScript,TranslationAcademy,,,,,https://github.com/unfoldingWord-dev/translation_academy,2023-01-28T16:19:09Z
+proposed_changes_module,unfoldingWord-dev,JavaScript,ProposedChanges,,,,,https://github.com/unfoldingWord-dev/proposed_changes_module,2023-01-28T16:19:09Z
+tC_Resources,unfoldingWord-dev,JavaScript,tc_resources,,,,usfm-js,https://github.com/unfoldingWord-dev/tC_Resources,2023-01-28T16:35:42Z
+VerseCheck,unfoldingWord-dev,JavaScript,VerseCheck,,,,"selections, tc-strings, tc-tool, usfm-js",https://github.com/unfoldingWord-dev/VerseCheck,2023-01-28T16:35:42Z
+translationHelps,unfoldingWord-dev,JavaScript,TranslationHelps,,,,,https://github.com/unfoldingWord-dev/translationHelps,2023-01-28T16:52:06Z
+example_tool,unfoldingWord-dev,JavaScript,ExampleTool,,,,,https://github.com/unfoldingWord-dev/example_tool,2023-01-28T16:52:06Z
+alignment-playground,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/alignment-playground,2023-01-30T13:00:02Z
+epitelete-html,unfoldingWord,JavaScript,epitelete-html,7318.0,2023-07-16T00:28:17.570Z,uw-editor,,https://github.com/unfoldingWord/epitelete-html,2023-02-02T13:14:15Z
+react-library-starter,unfoldingWord-box3,JavaScript,my-lib,5835.0,2023-05-12T22:36:18.398Z,,,https://github.com/unfoldingWord-box3/react-library-starter,2023-02-16T14:47:55Z
+uw-scripture-parser,unfoldingWord,JavaScript,uw-bible-parser,143.0,2023-03-15T03:02:46.889Z,,"bible-reference-range, usfm-js",https://github.com/unfoldingWord/uw-scripture-parser,2023-03-15T02:11:57Z
+dcs-login,unfoldingWord-box3,JavaScript,dcs-login,,,,dcs-js,https://github.com/unfoldingWord-box3/dcs-login,2023-04-04T15:43:56Z
+translate-markdown-poc,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/translate-markdown-poc,2023-05-20T15:31:34Z
+uw-tsv-parser,unfoldingWord,TypeScript,uw-tsv-parser,3813.0,2022-02-02T14:06:17.344Z,"tc-create-app, word-aligner-rcl, tsv-groupdata-parser, checking-tool-rcl, gateway-admin",,https://github.com/unfoldingWord/uw-tsv-parser,2023-05-31T22:28:33Z
+bible-reference-range,unfoldingWord,JavaScript,bible-reference-range,12922.0,2023-12-07T19:15:35.590Z,"tc-create-app, single-scripture-rcl, translation-helps-rcl, enhanced-word-aligner-rcl, scripture-resources-rcl, word-aligner-rcl, uw-quote-helpers, translationCore, tsv-groupdata-parser, checking-tool-rcl, bible-reference-rcl, scripture-tsv, uw-bible-parser",,https://github.com/unfoldingWord/bible-reference-range,2023-07-19T04:20:40Z
+bible-preview-app,unfoldingWord-box3,JavaScript,bible-preview-app,,,,"bible-reference-rcl, dcs-js",https://github.com/unfoldingWord-box3/bible-preview-app,2023-08-01T17:31:54Z
+findr,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/findr,2023-08-07T13:28:31Z
+string-punctuation-tokenizer,unfoldingWord,JavaScript,string-punctuation-tokenizer,89430.0,2021-08-25T21:55:46.406Z,"tsv-quote-converters, scripture-resources-rcl, word-aligner-rcl, uw-quote-helpers, translationCore, word-aligner-lib, tsv-groupdata-parser, tc-source-content-updater, checking-tool-rcl, word-aligner, tc-ui-toolkit, checking-tool-wrapper, wordmap-lexer, ScripturePane, greek-apparatus-app, pdf-generator",,https://github.com/unfoldingWord/string-punctuation-tokenizer,2023-08-09T13:57:50Z
+electronite-cli,unfoldingWord-dev,JavaScript,electronite,2439.0,2026-01-22T21:05:02.866Z,,,https://github.com/unfoldingWord-dev/electronite-cli,2023-09-04T12:03:41Z
+oce-oak-render,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/oce-oak-render,2023-09-13T16:01:45Z
+oce-oak-edit,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/oce-oak-edit,2023-09-18T05:39:45Z
+electronite-packager,unfoldingWord-dev,JavaScript,electron-packager,10852097.0,2023-08-18T23:16:36.334Z,,,https://github.com/unfoldingWord-dev/electronite-packager,2023-09-18T17:18:06Z
+word-aligner-extension,unfoldingWord-box3,JavaScript,word-aligner-react-vite,,,,,https://github.com/unfoldingWord-box3/word-aligner-extension,2024-01-08T23:29:10Z
+VscOceUsfmEdit,unfoldingWord-box3,TypeScript,oce-usfm-editor,,,,,https://github.com/unfoldingWord-box3/VscOceUsfmEdit,2024-02-02T13:45:00Z
+VscUsfmEditAlign,unfoldingWord-box3,TypeScript,usfmeditor,,,,,https://github.com/unfoldingWord-box3/VscUsfmEditAlign,2024-02-15T14:03:06Z
+audio-quiz,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/audio-quiz,2024-02-28T16:05:13Z
+RecordVoice,unfoldingWord-box3,TypeScript,record-voice,,,,,https://github.com/unfoldingWord-box3/RecordVoice,2024-03-05T16:10:13Z
+audio-obs-navigator,unfoldingWord-box3,TypeScript,audio-obs-navigator,,,,,https://github.com/unfoldingWord-box3/audio-obs-navigator,2024-03-05T18:54:24Z
+scripture-tsv,unfoldingWord,TypeScript,scripture-tsv,,2024-05-02T21:03:03.412Z,gateway-edit,"bible-reference-range, bible-reference-rcl",https://github.com/unfoldingWord/scripture-tsv,2024-05-07T12:40:37Z
+open-components-hackathon-website,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/open-components-hackathon-website,2024-05-22T10:11:28Z
+bible-reference-rcl,unfoldingWord,JavaScript,bible-reference-rcl,,2024-06-04T12:40:10.075Z,"gateway-edit, scripture-tsv, gateway-translate, bible-preview-app, create-app, greek-apparatus-app",bible-reference-range,https://github.com/unfoldingWord/bible-reference-rcl,2024-06-04T12:38:45Z
+obs-study,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/obs-study,2024-06-20T09:34:41Z
+node-gogs-client,unfoldingWord-dev,JavaScript,gogs-client,6485.0,2016-07-13T00:07:45.833Z,"translationCore, wordAlignment, checking-tool-wrapper",,https://github.com/unfoldingWord-dev/node-gogs-client,2024-06-21T17:58:57Z
+gl-database-visualizations,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/gl-database-visualizations,2024-06-27T04:38:16Z
+obs-audio-navigation,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/obs-audio-navigation,2024-07-05T11:13:09Z
+oce-editor-tools,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/oce-editor-tools,2024-07-15T12:12:44Z
+beta-bibel-demo,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/beta-bibel-demo,2024-08-08T16:43:06Z
+Simplify,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/Simplify,2024-08-15T20:16:40Z
+mini-sb-handler,unfoldingWord-box3,JavaScript,,,,,,https://github.com/unfoldingWord-box3/mini-sb-handler,2024-09-12T09:53:19Z
+uw-proskomma,unfoldingWord-box3,JavaScript,uw-proskomma,2175.0,2022-07-13T12:06:56.761Z,proskomma-scripture-resources-rcl,,https://github.com/unfoldingWord-box3/uw-proskomma,2024-10-10T15:27:53Z
+world-language-map-rcl,unfoldingWord,JavaScript,world-language-map-rcl,,2024-10-13T01:08:01.943Z,,,https://github.com/unfoldingWord/world-language-map-rcl,2024-10-13T01:07:56Z
+dcs-catalog-accordion-rcl,unfoldingWord,JavaScript,dcs-catalog-accordion-rcl,,2024-10-16T18:38:24.610Z,,,https://github.com/unfoldingWord/dcs-catalog-accordion-rcl,2024-10-16T18:37:47Z
+codex-sb-handler,unfoldingWord-box3,TypeScript,sb-handler-sample,,,,,https://github.com/unfoldingWord-box3/codex-sb-handler,2024-12-03T13:57:40Z
+checking-tool-wrapper,unfoldingWord,JavaScript,checking-tool-wrapper,8636.0,2024-03-19T18:58:55.915Z,translationCore,"gogs-client, selections, string-punctuation-tokenizer, tc-ui-toolkit, usfm-js, word-aligner",https://github.com/unfoldingWord/checking-tool-wrapper,2024-12-06T22:02:15Z
+translationNotes,unfoldingWord,JavaScript,translationNotes,,,,tc-tool,https://github.com/unfoldingWord/translationNotes,2024-12-10T20:28:05Z
+translationWords,unfoldingWord,JavaScript,translationWords,,,,tc-tool,https://github.com/unfoldingWord/translationWords,2024-12-10T20:41:31Z
+tc-ui-toolkit,unfoldingWord,JavaScript,tc-ui-toolkit,29007.0,2024-12-31T18:53:34.752Z,"tc-create-app, gateway-edit, single-scripture-rcl, scripture-resources-rcl, translationCore, gateway-admin, wordAlignment, checking-tool-wrapper, next-js-template","string-punctuation-tokenizer, word-aligner, usfm-js",https://github.com/unfoldingWord/tc-ui-toolkit,2024-12-31T18:52:44Z
+theia-examples,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/theia-examples,2025-01-22T21:00:21Z
+open-languages,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/open-languages,2025-02-06T18:22:44Z
+checking-app-theia,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/checking-app-theia,2025-03-20T20:08:52Z
+wordAlignment,unfoldingWord,JavaScript,wordAlignment,,,,"gogs-client, selections, tc-tool, tc-ui-toolkit, usfm-js, word-aligner, wordmap, wordmap-lexer",https://github.com/unfoldingWord/wordAlignment,2025-03-24T11:04:25Z
+markdown-translatable,unfoldingWord,JavaScript,markdown-translatable,16198.0,2023-03-07T15:00:29.476Z,"tc-create-app, gitea-react-toolkit, gateway-edit, translation-helps-rcl, scripture-resources-rcl, datatable-translatable, gateway-admin, next-js-template, pdf-generator-rcl, create-app, book-package-viewer-poc, tsv-editor",,https://github.com/unfoldingWord/markdown-translatable,2025-04-03T14:40:01Z
+discourse-mermaid,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/discourse-mermaid,2025-05-13T01:56:41Z
+desktop-app-liminal,unfoldingWord-box3,JavaScript,pankosmia-app-builder,,,,,https://github.com/unfoldingWord-box3/desktop-app-liminal,2025-05-14T14:59:15Z
+simple-text-editor-rcl,unfoldingWord-box3,JavaScript,simple-text-editor-rcl,3726.0,2022-06-09T23:15:38.322Z,simple-text-editor-app,,https://github.com/unfoldingWord-box3/simple-text-editor-rcl,2025-06-06T21:09:14Z
+passage-recorder-app,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/passage-recorder-app,2025-06-11T16:03:07Z
+tq-app,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/tq-app,2025-07-30T15:49:01Z
+gateway-admin,unfoldingWord,JavaScript,gateway-admin,,,,"dcs-branch-merger, gitea-react-toolkit, markdown-translatable, resource-workspace-rcl, scripture-resources-rcl, single-scripture-rcl, tc-ui-toolkit, translation-helps-rcl, uw-content-validation, uw-tsv-parser, word-aligner",https://github.com/unfoldingWord/gateway-admin,2025-08-19T18:09:19Z
+wordMAP,unfoldingWord,TypeScript,wordmap,15788.0,2026-02-18T15:28:10.229Z,"word-aligner-rcl, uw-wordmapbooster, translationCore, wordAlignment, wordmap-mt, wordmap-react-toolkit",wordmap-lexer,https://github.com/unfoldingWord/wordMAP,2025-08-25T16:40:45Z
+door43-preview-server,unfoldingWord,JavaScript,door43-preview-server,,,,,https://github.com/unfoldingWord/door43-preview-server,2025-09-09T09:17:22Z
+word-aligner,unfoldingWord,JavaScript,word-aligner,41118.0,2024-08-12T21:12:18.988Z,"tc-create-app, gateway-edit, single-scripture-rcl, scripture-resources-rcl, word-aligner-rcl, translationCore, word-aligner-lib, checking-tool-rcl, gateway-admin, wordAlignment, tc-ui-toolkit, checking-tool-wrapper, next-js-template","string-punctuation-tokenizer, usfm-js",https://github.com/unfoldingWord/word-aligner,2025-09-26T11:17:46Z
+unfoldingWord.github.io-old,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/unfoldingWord.github.io-old,2025-10-02T14:12:10Z
+translation-helps,unfoldingWord-box3,JavaScript,translation-helps,,,,usfm-js,https://github.com/unfoldingWord-box3/translation-helps,2025-10-02T14:12:21Z
+checking-extension,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/checking-extension,2025-10-16T15:12:53Z
+checking-tool-rcl,unfoldingWord,JavaScript,checking-tool-rcl,5253.0,2025-10-20T15:58:23.259Z,,"bible-reference-range, string-punctuation-tokenizer, tc-strings, usfm-js, uw-tsv-parser, word-aligner, word-aligner-lib, wordmap-lexer",https://github.com/unfoldingWord/checking-tool-rcl,2025-10-20T15:57:32Z
+tc-source-content-updater,unfoldingWord,JavaScript,tc-source-content-updater,7402.0,2025-10-28T18:16:22.466Z,"translationCore, pdf-generator","string-punctuation-tokenizer, tsv-groupdata-parser, usfm-js",https://github.com/unfoldingWord/tc-source-content-updater,2025-10-28T18:14:43Z
+tact,unfoldingWord-box3,JavaScript,tact,14044.0,2015-07-01T05:40:25.427Z,,,https://github.com/unfoldingWord-box3/tact,2025-11-03T19:01:10Z
+wordMAP-mt,unfoldingWord-box3,TypeScript,wordmap-mt,,,,"wordmap, wordmap-lexer",https://github.com/unfoldingWord-box3/wordMAP-mt,2025-11-03T19:05:31Z
+node-cli-add-gl-quotes-to-tsv-files,unfoldingWord,JavaScript,add-gl-quotes-to-tsv-files,5663.0,2025-11-03T22:53:20.315Z,,tsv-quote-converters,https://github.com/unfoldingWord/node-cli-add-gl-quotes-to-tsv-files,2025-11-03T22:53:18Z
+tsv-groupdata-parser,unfoldingWord,JavaScript,tsv-groupdata-parser,5787.0,2024-10-16T17:43:33.516Z,"uw-quote-helpers, translationCore, tc-source-content-updater, pdf-generator","bible-reference-range, uw-tsv-parser, string-punctuation-tokenizer",https://github.com/unfoldingWord/tsv-groupdata-parser,2025-12-01T15:19:13Z
+MultiplatformFrameworks,unfoldingWord-box3,TypeScript,,,,,,https://github.com/unfoldingWord-box3/MultiplatformFrameworks,2025-12-03T19:52:51Z
+tsv7-tn-cleanup-app,unfoldingWord,JavaScript,tsv7-tn-cleanup-app,,,,tsv-quote-converters,https://github.com/unfoldingWord/tsv7-tn-cleanup-app,2025-12-11T23:11:20Z
+word-aligner-lib,unfoldingWord,JavaScript,word-aligner-lib,2613.0,2025-12-16T18:07:08.306Z,"word-aligner-rcl, checking-tool-rcl","string-punctuation-tokenizer, tc-strings, usfm-js, word-aligner, wordmap-lexer",https://github.com/unfoldingWord/word-aligner-lib,2025-12-16T18:01:28Z
+usfm-js,unfoldingWord,JavaScript,usfm-js,112135.0,2024-08-20T23:29:57.240Z,"tc-create-app, zulip-bot, cskillbp-prompt-over-code, uw-content-validation, scripture-resources-rcl, word-aligner-rcl, uw-quote-helpers, uw-wordmapbooster, door43-preview-renderers, usfm-alignment-remover, translationCore, word-aligner-lib, tc-source-content-updater, checking-tool-rcl, word-aligner, wordAlignment, tc-ui-toolkit, checking-tool-wrapper, uw-bible-parser, wordmap-usfm, book-package-rcl, uw-word-count, usfm-js-wrapper, tc_resources, VerseCheck, resource-checker, ScripturePane, translation-helps, greek-apparatus-app, pdf-generator, scripture-as-graph",,https://github.com/unfoldingWord/usfm-js,2026-01-06T16:10:55Z
+translationCore,unfoldingWord,JavaScript,translationCore,,,,"bible-reference-range, checking-tool-wrapper, gogs-client, selections, string-punctuation-tokenizer, tc-source-content-updater, tc-strings, tc-tool, tc-ui-toolkit, tsv-groupdata-parser, usfm-js, word-aligner, wordmap, wordmap-lexer",https://github.com/unfoldingWord/translationCore,2026-01-06T21:26:25Z
+door43-preview-app,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/door43-preview-app,2026-01-16T16:17:34Z
+usfm-alignment-remover-app,unfoldingWord,JavaScript,usfm-alignment-remover,645.0,2026-01-21T23:37:01.096Z,"twl-generator, door43-preview-renderers",usfm-js,https://github.com/unfoldingWord/usfm-alignment-remover-app,2026-01-21T23:17:11Z
+door43-preview-renderers,unfoldingWord,JavaScript,door43-preview-renderers,,,,"usfm-alignment-remover, usfm-js",https://github.com/unfoldingWord/door43-preview-renderers,2026-02-11T16:15:30Z
+datatable-translatable,unfoldingWord,JavaScript,datatable-translatable,3052.0,2026-02-02T16:12:05.648Z,"tc-create-app, greek-apparatus-app",markdown-translatable,https://github.com/unfoldingWord/datatable-translatable,2026-03-04T13:45:00Z
+wordmapbooster,unfoldingWord,TypeScript,uw-wordmapbooster,2652.0,2026-03-09T13:40:07.494Z,enhanced-word-aligner-rcl,"usfm-js, wordmap, wordmap-lexer",https://github.com/unfoldingWord/wordmapbooster,2026-03-09T13:39:14Z
+uw-quote-helpers,unfoldingWord,JavaScript,uw-quote-helpers,2724.0,2025-01-17T14:55:12.819Z,scripture-resources-rcl,"bible-reference-range, string-punctuation-tokenizer, tsv-groupdata-parser, usfm-js",https://github.com/unfoldingWord/uw-quote-helpers,2026-03-10T00:05:55Z
+fia-mcp,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/fia-mcp,2026-03-11T19:28:18Z
+door43.org,unfoldingWord,JavaScript,door43.org,,,,,https://github.com/unfoldingWord/door43.org,2026-03-15T03:14:46Z
+obt,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/obt,2026-03-18T14:39:46Z
+word-aligner-rcl,unfoldingWord,JavaScript,word-aligner-rcl,14906.0,2026-03-19T13:16:17.575Z,"gateway-edit, single-scripture-rcl, enhanced-word-aligner-rcl","bible-reference-range, string-punctuation-tokenizer, usfm-js, word-aligner, word-aligner-lib, wordmap, wordmap-lexer, uw-tsv-parser",https://github.com/unfoldingWord/word-aligner-rcl,2026-03-19T13:15:19Z
+scripture-resources-rcl,unfoldingWord,JavaScript,scripture-resources-rcl,14060.0,2026-03-19T13:24:25.124Z,"tc-create-app, gateway-edit, single-scripture-rcl, translation-helps-rcl, gateway-admin, gateway-translate, resource-checker, next-js-template, pdf-generator-rcl, create-app, greek-apparatus-app, book-package-viewer-poc, pdf-generator","bible-reference-range, gitea-react-toolkit, markdown-translatable, string-punctuation-tokenizer, tc-ui-toolkit, usfm-js, uw-quote-helpers, word-aligner",https://github.com/unfoldingWord/scripture-resources-rcl,2026-03-19T13:23:28Z
+enhanced-word-aligner-rcl,unfoldingWord,TypeScript,enhanced-word-aligner-rcl,23208.0,2026-03-24T14:38:54.315Z,gateway-edit,"bible-reference-range, uw-wordmapbooster, word-aligner-rcl",https://github.com/unfoldingWord/enhanced-word-aligner-rcl,2026-03-24T14:39:30Z
+dcs-branch-merger,unfoldingWord,JavaScript,dcs-branch-merger,3241.0,2026-03-27T21:57:39.012Z,"tc-create-app, translation-helps-rcl, gateway-admin",dcs-js,https://github.com/unfoldingWord/dcs-branch-merger,2026-03-27T21:56:46Z
+translation-helps-rcl,unfoldingWord,JavaScript,translation-helps-rcl,13152.0,2026-03-27T22:01:47.002Z,"gateway-edit, single-scripture-rcl, gateway-admin, gateway-translate, uw-editor, next-js-template, admin-app, create-app","bible-reference-range, dcs-branch-merger, gitea-react-toolkit, markdown-translatable, scripture-resources-rcl",https://github.com/unfoldingWord/translation-helps-rcl,2026-03-27T22:00:59Z
+node-twl-generator,unfoldingWord,JavaScript,twl-generator,5081.0,2026-04-09T20:31:44.832Z,,"tsv-quote-converters, usfm-alignment-remover",https://github.com/unfoldingWord/node-twl-generator,2026-04-09T20:31:43Z
+tsv-quote-converters,unfoldingWord,JavaScript,tsv-quote-converters,5822.0,2026-04-12T12:10:03.308Z,"twl-generator, tsv7-tn-cleanup-app, add-gl-quotes-to-tsv-files",string-punctuation-tokenizer,https://github.com/unfoldingWord/tsv-quote-converters,2026-04-12T12:12:37Z
+tsv-twl-creation-app,unfoldingWord,JavaScript,,,,,,https://github.com/unfoldingWord/tsv-twl-creation-app,2026-04-12T12:21:52Z
+orthography-app-BE,unfoldingWord,JavaScript,orthoapp_poc,,,,,https://github.com/unfoldingWord/orthography-app-BE,2026-04-16T08:07:38Z
+single-scripture-rcl,unfoldingWord,TypeScript,single-scripture-rcl,8644.0,2026-04-16T17:29:58.529Z,"gateway-edit, gateway-admin, next-js-template, create-app","bible-reference-range, gitea-react-toolkit, scripture-resources-rcl, tc-ui-toolkit, translation-helps-rcl, word-aligner, word-aligner-rcl",https://github.com/unfoldingWord/single-scripture-rcl,2026-04-16T17:24:46Z
+baruch,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/baruch,2026-04-20T22:22:05Z
+bt-servant-whatsapp-gateway,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-whatsapp-gateway,2026-04-30T15:09:54Z
+obs-app,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/obs-app,2026-05-05T15:16:31Z
+translation-helps-mcp,unfoldingWord,TypeScript,translation-helps-mcp,,,,,https://github.com/unfoldingWord/translation-helps-mcp,2026-05-05T16:33:48Z
+fred-zulip-bot-worker,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/fred-zulip-bot-worker,2026-05-09T16:01:43Z
+tc-study,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/tc-study,2026-05-11T19:02:48Z
+gateway-edit,unfoldingWord,JavaScript,gateway-edit,57.0,2024-04-25T19:00:31.705Z,,"bible-reference-rcl, enhanced-word-aligner-rcl, gitea-react-toolkit, markdown-translatable, resource-workspace-rcl, scripture-resources-rcl, scripture-tsv, single-scripture-rcl, tc-ui-toolkit, translation-helps-rcl, word-aligner, word-aligner-rcl",https://github.com/unfoldingWord/gateway-edit,2026-05-11T20:47:56Z
+bt-servant-web-client,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-web-client,2026-05-12T05:52:39Z
+gitea-react-toolkit,unfoldingWord,JavaScript,gitea-react-toolkit,15643.0,2026-05-12T13:15:42.563Z,"tc-create-app, gateway-edit, single-scripture-rcl, translation-helps-rcl, scripture-resources-rcl, gateway-admin, resource-checker, next-js-template, pdf-generator-rcl, hello-dcs-react-component-library, admin-app, create-app, greek-apparatus-app, book-package-viewer-poc, gitea-offline-poc, scripture-burrito-react-jsonschema-form",markdown-translatable,https://github.com/unfoldingWord/gitea-react-toolkit,2026-05-12T13:17:57Z
+uw-content-validation,unfoldingWord,JavaScript,uw-content-validation,1788.0,2023-01-11T14:47:58.316Z,"tc-create-app, gateway-admin, content-validation-app",usfm-js,https://github.com/unfoldingWord/uw-content-validation,2026-05-12T16:11:32Z
+bp-assistant-skills,unfoldingWord,JavaScript,cskillbp-prompt-over-code,,,,usfm-js,https://github.com/unfoldingWord/bp-assistant-skills,2026-05-12T20:35:53Z
+bp-assistant,unfoldingWord,JavaScript,zulip-bot,,,,usfm-js,https://github.com/unfoldingWord/bp-assistant,2026-05-13T10:40:39Z
+bt-servant-admin-portal,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-admin-portal,2026-05-13T15:18:06Z
+tc-create-app,unfoldingWord,JavaScript,tc-create-app,47.0,2022-02-22T21:12:10.659Z,,"bible-reference-range, datatable-translatable, dcs-branch-merger, gitea-react-toolkit, markdown-translatable, scripture-resources-rcl, tc-ui-toolkit, usfm-js, uw-content-validation, uw-languages-rcl, uw-tsv-parser, word-aligner",https://github.com/unfoldingWord/tc-create-app,2026-05-13T15:44:37Z
+bt-servant-telemetry,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-telemetry,2026-05-13T17:04:33Z
+bt-servant-worker,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-worker,2026-05-13T17:17:37Z
+bt-servant-telegram-gateway,unfoldingWord,TypeScript,,,,,,https://github.com/unfoldingWord/bt-servant-telegram-gateway,2026-05-13T17:32:06Z

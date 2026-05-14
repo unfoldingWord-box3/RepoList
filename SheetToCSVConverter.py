@@ -1,5 +1,4 @@
 import os
-import time
 
 from utilities import read_ods_sheets, safe_filename
 

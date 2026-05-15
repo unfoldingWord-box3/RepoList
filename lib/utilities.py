@@ -251,6 +251,97 @@ def fetch_repository_contributors(repo):
     return contributors
 
 
+def fetch_repository_last_commit_date(repo):
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+    default_branch = repo.get("default_branch")
+
+    if not owner or not repo_name:
+        return ""
+
+    query_params = {
+        "per_page": 1,
+    }
+
+    if default_branch:
+        query_params["sha"] = default_branch
+
+    commits_url = (
+        f"https://api.github.com/repos/"
+        f"{urllib.parse.quote(owner, safe='')}/"
+        f"{urllib.parse.quote(repo_name, safe='')}/commits?"
+        f"{urllib.parse.urlencode(query_params)}"
+    )
+
+    print(f"Fetching latest commit: {owner}/{repo_name}")
+
+    data, _ = github_request(commits_url, allow_not_found=True)
+    if not data:
+        return ""
+
+    commits = json.loads(data.decode("utf-8"))
+    if not commits:
+        return ""
+
+    return (
+        commits[0]
+        .get("commit", {})
+        .get("committer", {})
+        .get("date", "")
+    )
+
+
+def fetch_repository_last_release_date(repo):
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+
+    if not owner or not repo_name:
+        return ""
+
+    releases_url = (
+        f"https://api.github.com/repos/"
+        f"{urllib.parse.quote(owner, safe='')}/"
+        f"{urllib.parse.quote(repo_name, safe='')}/releases/latest"
+    )
+
+    print(f"Fetching latest release: {owner}/{repo_name}")
+
+    data, _ = github_request(releases_url, allow_not_found=True)
+    if not data:
+        return ""
+
+    release = json.loads(data.decode("utf-8"))
+    return release.get("published_at") or release.get("created_at", "")
+
+
+def fetch_repository_open_prs_count(repo):
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+
+    if not owner or not repo_name:
+        return ""
+
+    pulls_url = (
+        f"https://api.github.com/repos/"
+        f"{urllib.parse.quote(owner, safe='')}/"
+        f"{urllib.parse.quote(repo_name, safe='')}/pulls?"
+        f"{urllib.parse.urlencode({'state': 'open', 'per_page': 1})}"
+    )
+
+    print(f"Fetching open PR count: {owner}/{repo_name}")
+
+    data, link_header = github_request(pulls_url, allow_not_found=True)
+    if not data:
+        return ""
+
+    last_page_match = re.search(r'[?&]page=(\d+)>; rel="last"', link_header or "")
+    if last_page_match:
+        return int(last_page_match.group(1))
+
+    pulls = json.loads(data.decode("utf-8"))
+    return len(pulls)
+
+
 def get_next_page_url(link_header):
     if not link_header:
         return None

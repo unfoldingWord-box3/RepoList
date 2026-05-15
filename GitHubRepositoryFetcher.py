@@ -64,6 +64,9 @@ def fetch_repositories_for_org(org_name):
         for repo in page_repos:
             repo["github_dependents"] = fetch_repository_dependents(repo)
             repo["github_contributors"] = fetch_repository_contributors(repo)
+            repo["last_commit_date"] = fetch_repository_last_commit_date(repo)
+            repo["last_release_date"] = fetch_repository_last_release_date(repo)
+            repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
 
             language = (repo.get("language") or "").lower()
 
@@ -238,6 +241,13 @@ def write_ods(repos, output_file):
         "repo name",
         "organization name",
         "language",
+        "archived",
+        "is fork",
+        "pushed at",
+        "last commit date",
+        "last release date",
+        "open issues count",
+        "open prs count",
         "npmjs package name",
         "npmjs downloads last year",
         "npmjs last published",
@@ -257,6 +267,13 @@ def write_ods(repos, output_file):
                 repo.get("name", ""),
                 repo.get("owner", {}).get("login", ""),
                 repo.get("language") or "",
+                repo.get("archived", ""),
+                repo.get("fork", ""),
+                repo.get("pushed_at", ""),
+                repo.get("last_commit_date", ""),
+                repo.get("last_release_date", ""),
+                repo.get("open_issues_count", ""),
+                repo.get("open_prs_count", ""),
                 repo.get("npmjs_package_name", ""),
                 repo.get("npmjs_downloads_last_year", ""),
                 repo.get("npmjs_last_published", ""),

@@ -63,10 +63,10 @@ python SheetToCSVConverter.py
 ## Output
 
 - [unfoldingword_repos.ods](unfoldingword_repos.ods) — generated spreadsheet containing repository data
-- *.csv files — generated from the individual sheets in the spreadsheet by running `SheetToCSVConverter.py`
+- `*.csv` files — generated from the individual sheets in the spreadsheet by running `SheetToCSVConverter.py`
 
 
 ## Additional Information
 
-[SpreadsheetDocumentation.md](SpreadsheetDocumentation.md) - Documentation for the spreadsheet contents
-[CLAUDE.md](CLAUDE.md) - AI Documentation for RepoList
+[SpreadsheetDocumentation.md](SpreadsheetDocumentation.md) – Documentation for the spreadsheet contents
+[CLAUDE.md](CLAUDE.md) – AI Documentation for RepoList

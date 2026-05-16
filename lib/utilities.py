@@ -674,3 +674,34 @@ def fetch_npmjs_total_download_count(package_name, package_metadata):
 
     return total_downloads
 
+
+def fetch_repository_github_downloads(repo):
+    """
+    Fetches the total GitHub release asset download count and release count for a repository.
+    """
+    downloads = 0
+    release_count = 0
+    releases_url = repo.get("releases_url", "").replace("{/id}", "")
+
+    if not releases_url:
+        return downloads, release_count
+
+    query_params = urllib.parse.urlencode({
+        "per_page": 100,
+    })
+    url = f"{releases_url}?{query_params}"
+
+    while url:
+        print(f"Fetching GitHub release downloads: {url}")
+
+        data, link_header = github_request(url)
+        releases = json.loads(data.decode("utf-8"))
+        release_count += len(releases)
+
+        for release in releases:
+            for asset in release.get("assets", []):
+                downloads += asset.get("download_count", 0)
+
+        url = get_next_page_url(link_header)
+
+    return downloads, release_count

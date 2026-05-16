@@ -25,6 +25,8 @@ The `write_ods` function writes the same columns to both spreadsheet tabs:
 | **npmjs uses** | A comma-separated list of local npm packages from the fetched repository set that this package depends on. |
 | **github dependents** | A comma-separated list of GitHub repositories detected from the repository’s GitHub dependents page. |
 | **github contributors** | A comma-separated list of contributor names, logins, or emails fetched from the GitHub contributors API. |
+| **github release count** | The total number of GitHub releases found for the repository. |
+| **github downloads** | The total number of downloads across all GitHub release assets for the repository. This is the sum of each release asset’s `download_count`. |
 | **repo url** | The GitHub HTML URL for the repository. |
 | **last edit date** | The repository’s `updated_at` timestamp from GitHub, representing the last time repository metadata changed. |
 
@@ -37,10 +39,8 @@ The `write_ods` function writes the same columns to both spreadsheet tabs:
 - `open issues count` comes from GitHub’s repository metadata and may include both issues and pull requests.
 - `open prs count` is fetched separately from GitHub’s pull request API and represents only open pull requests.
 - `github dependents` is detected from GitHub’s dependents page and may be incomplete if GitHub changes the page layout or limits visibility.
+- `github release count` is fetched from GitHub releases and counts releases returned by the repository releases API.
+- `github downloads` is fetched from GitHub releases and only counts release asset downloads. It does not include repository clones, source archive downloads, npm downloads, or other GitHub traffic metrics.
 - `npmjs used by` and `npmjs uses` only describe relationships between packages found in the generated repository set. They do not include every package on npmjs.
 - Date/time values are written in the format returned by GitHub or npmjs, usually ISO 8601 UTC timestamps.
 - The **JavaScript TypeScript** sheet is a filtered view of the **Repositories** sheet, limited to repositories whose primary GitHub language is JavaScript or TypeScript.
-```
-
-
-Optional additional detail: if you want the documentation to be more self-contained, you could also add an **Output sheets** section before the table, but the existing bullet list already covers that adequately.

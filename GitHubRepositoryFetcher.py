@@ -12,7 +12,7 @@ from lib.utilities import load_env_file, github_request, fetch_repository_depend
     fetch_package_json, fetch_npmjs_package_metadata, npm_repo_is_from_uw, fetch_npmjs_last_published, \
     fetch_npmjs_download_count, fetch_nx_json, fetch_package_json_files, get_next_page_url, fetch_repository_json_file, \
     fetch_repository_last_commit_date, fetch_repository_last_release_date, fetch_repository_open_prs_count, \
-    fetch_npmjs_is_deprecated
+    fetch_npmjs_is_deprecated, fetch_repository_github_downloads
 
 ORG_NAMES = [
     "unfoldingWord-box3",
@@ -64,6 +64,7 @@ def fetch_repositories_for_org(org_name):
         for repo in page_repos:
             repo["github_dependents"] = fetch_repository_dependents(repo)
             repo["github_contributors"] = fetch_repository_contributors(repo)
+            repo["github_downloads"], repo["github_release_count"] = fetch_repository_github_downloads(repo)
             repo["last_commit_date"] = fetch_repository_last_commit_date(repo)
             repo["last_release_date"] = fetch_repository_last_release_date(repo)
             repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
@@ -257,6 +258,8 @@ def write_ods(repos, output_file):
         "npmjs uses",
         "github dependents",
         "github contributors",
+        "github release count",
+        "github downloads",
         "repo url",
         "last edit date",
     ]
@@ -284,6 +287,8 @@ def write_ods(repos, output_file):
                 ", ".join(repo.get("npmjs_uses", [])),
                 ", ".join(repo.get("github_dependents", [])),
                 ", ".join(repo.get("github_contributors", [])),
+                repo.get("github_release_count", ""),
+                repo.get("github_downloads", ""),
                 repo.get("html_url", ""),
                 repo.get("updated_at", ""),
             ])

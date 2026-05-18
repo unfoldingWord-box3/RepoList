@@ -41,32 +41,39 @@ cp env.sample .env
 ## Generate the Repository Spreadsheet
 
 Run:
-```
-bash
-python github_repos_csv.py
+```bash
+python GitHubRepositoryFetcher.py
 ```
 This generates an OpenDocument spreadsheet named:
 ```
-text
 unfoldingword_repos.ods
 ```
 
 ## Export Spreadsheet Sheets to CSV
 
 To split the data in [unfoldingword_repos.ods](unfoldingword_repos.ods) into separate CSV files, run:
-```
-bash
+```bash
 python SheetToCSVConverter.py
 ```
 
+## Classify Repositories
+
+To classify every repository by activity and usage status and produce a categorized spreadsheet, run:
+```bash
+python CatagorizeRepos.py
+```
+This reads the `Repositories` sheet from `unfoldingword_repos.ods`, applies classification rules, and writes `categorized_repos.ods`. See [ClassificationRules.md](ClassificationRules.md) for the full rule set.
 
 ## Output
 
-- [unfoldingword_repos.ods](unfoldingword_repos.ods) — generated spreadsheet containing repository data
-- `*.csv` files — generated from the individual sheets in the spreadsheet by running `SheetToCSVConverter.py`
+- [unfoldingword_repos.ods](unfoldingword_repos.ods) — generated spreadsheet containing repository data (sheets: `Repositories`, `JavaScript TypeScript`)
+- [Repositories.csv](Repositories.csv) — all repositories exported from the spreadsheet
+- [JavaScript TypeScript.csv](JavaScript%20TypeScript.csv) — JavaScript/TypeScript repositories exported from the spreadsheet
+- [categorized_repos.ods](categorized_repos.ods) — repositories with `classification` and `classification reason` columns added
 
 
 ## Additional Information
 
 [SpreadsheetDocumentation.md](SpreadsheetDocumentation.md) – Documentation for the spreadsheet contents
+[ClassificationRules.md](ClassificationRules.md) – Classification rules used by `CatagorizeRepos.py`
 [CLAUDE.md](CLAUDE.md) – AI Documentation for RepoList

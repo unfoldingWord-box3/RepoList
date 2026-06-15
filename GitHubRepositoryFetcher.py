@@ -21,6 +21,8 @@ Output file: unfoldingword_repos.ods
 """
 
 import json
+import os
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -389,6 +391,22 @@ def write_ods(repos, output_file):
 
 def main():
     load_env_file(ENV_FILE)
+
+    github_token = os.getenv("GITHUB_TOKEN")
+    if not github_token:
+        print(f"Error: GITHUB_TOKEN not found in {ENV_FILE}", file=sys.stderr)
+        print("Please ensure your .env file contains a valid GITHUB_TOKEN", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        github_request("https://api.github.com/user")
+        print("GitHub token verified.")
+    except urllib.error.HTTPError as error:
+        if error.code == 401:
+            print("Error: GITHUB_TOKEN is invalid or expired.", file=sys.stderr)
+        else:
+            print(f"Error: Could not verify GITHUB_TOKEN: {error.code} {error.reason}", file=sys.stderr)
+        sys.exit(1)
 
     repos = fetch_repositories()
     update_npmjs_dependencies(repos) # update repos with npmjs dependency info

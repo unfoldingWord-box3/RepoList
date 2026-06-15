@@ -792,9 +792,6 @@ def fetch_npmjs_package_metadata(package_name):
             return json.loads(response.read().decode("utf-8"))
 
     except urllib.error.HTTPError as error:
-        if error.code == 403:
-            return None
-
         if error.code == 404:
             return None
 

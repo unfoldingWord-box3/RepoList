@@ -238,6 +238,12 @@ def github_request(url, allow_not_found=False, allow_conflict=False):
                     f"GitHub rate limit exceeded. Try again in {max(reset_seconds, 0)} seconds.",
                     file=sys.stderr,
                 )
+                
+                # sleep after hitting the rate limit, then try again
+                sleep_duration = 0.5 + reset_seconds * 1.2
+                print(f"Sleeping for {sleep_duration} seconds...", file=sys.stderr)
+                time.sleep(sleep_duration)
+                return github_request(url, allow_not_found, allow_conflict)
             else:
                 print(f"GitHub API returned 403 Forbidden. (URL: {url})", file=sys.stderr)
 

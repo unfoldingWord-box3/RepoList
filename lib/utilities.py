@@ -118,36 +118,37 @@ def safe_filename(name):
 
 def urlopen_with_retry(request, retries=1, retry_delay_seconds=5):
     """
-    Open a URL with automatic retry logic for rate-limited requests.
+    Open a URL with automatic retry on transient network errors.
 
-    This function wraps urllib.request.urlopen() with retry logic specifically
-    designed to handle HTTP 429 (Too Many Requests) errors by waiting and retrying.
+    Retries on OSError/URLError (e.g. connection reset, timeout) but raises
+    immediately on HTTP errors so callers can inspect the status code and
+    headers directly. Rate-limit handling (403/429) is the caller's responsibility.
 
     Args:
         request (urllib.request.Request): The HTTP request object to execute.
-        retries (int, optional): Number of retry attempts for 429 errors. Defaults to 1.
+        retries (int, optional): Number of retry attempts for transient errors. Defaults to 1.
         retry_delay_seconds (int, optional): Seconds to wait between retries. Defaults to 5.
 
     Returns:
         http.client.HTTPResponse: The HTTP response object from a successful request.
 
     Raises:
-        urllib.error.HTTPError: If the request fails with 403, or if retries are exhausted
-                                for 429 errors, or for any other HTTP error.
+        urllib.error.HTTPError: Immediately on any HTTP error — not retried here.
+        urllib.error.URLError: If all retry attempts are exhausted for network errors.
     """
     for attempt in range(retries + 1):
         try:
             return urllib.request.urlopen(request)
-        except urllib.error.HTTPError as error:
-            if error.code == 429 and attempt < retries:
+        except urllib.error.HTTPError:
+            raise
+        except urllib.error.URLError as error:
+            if attempt < retries:
                 print(
-                    f"Received 429 Too Many Requests. Retrying in {retry_delay_seconds} second...",
+                    f"Network error, retrying in {retry_delay_seconds}s ({attempt + 1}/{retries}): {error.reason}",
                     file=sys.stderr,
                 )
                 time.sleep(retry_delay_seconds)
                 continue
-
-            print(f"HTTP Error {error.code}: {error.reason} (URL: {request.full_url})", file=sys.stderr)
             raise
 
 def load_env_file(env_file):
@@ -238,21 +239,30 @@ def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
             reset_time = error.headers.get("X-RateLimit-Reset")
             remaining = error.headers.get("X-RateLimit-Remaining")
 
-            print(f"GitHub rate limit ({error.code}). Remaining: {remaining}, Retry-After: {retry_after}, Reset: {reset_time}", file=sys.stderr)
+            # Determine what kind of limit this is, in priority order:
+            # 1. Retry-After header always means secondary rate limit
+            # 2. 429 without Retry-After is still a secondary rate limit
+            # 3. 403 with X-RateLimit-Remaining == "0" is a primary rate limit
+            # 4. 403 with none of the above is a permission/auth error — don't retry
+            if retry_after is not None or error.code == 429:
+                limit_type = "secondary"
+            elif error.code == 403 and remaining == "0":
+                limit_type = "primary"
+            else:
+                print(f"GitHub API returned 403 Forbidden (permission error). (URL: {url})", file=sys.stderr)
+                raise
 
             if _retry >= rate_limit_max_retry:
                 print(f"Exceeded max retries ({rate_limit_max_retry}) for rate limiting.", file=sys.stderr)
                 raise
 
-            # Prefer Retry-After (used for secondary limits), fall back to X-RateLimit-Reset
-            if retry_after:
-                sleep_duration = int(retry_after) + 1
-            elif reset_time:
-                sleep_duration = max(int(reset_time) - int(time.time()), 0) + 1
+            if limit_type == "secondary":
+                sleep_duration = int(retry_after) + 1 if retry_after else 60
+                print(f"GitHub secondary rate limit ({error.code}). Sleeping {sleep_duration}s before retry {_retry + 1}/{rate_limit_max_retry}...", file=sys.stderr)
             else:
-                sleep_duration = 60  # safe default if no header is present
+                sleep_duration = max(int(reset_time) - int(time.time()), 0) + 1 if reset_time else 60
+                print(f"GitHub primary rate limit. Remaining: {remaining}, Reset in {sleep_duration}s. Retry {_retry + 1}/{rate_limit_max_retry}...", file=sys.stderr)
 
-            print(f"Sleeping for {sleep_duration} seconds before retry {_retry + 1}/{rate_limit_max_retry}...", file=sys.stderr)
             time.sleep(sleep_duration)
             return github_request(url, allow_not_found, allow_conflict, _retry=_retry + 1)
 
@@ -1105,15 +1115,24 @@ def fetch_repository_github_downloads(repo):
     while url:
         print(f"Fetching GitHub release downloads: {url}")
 
-        data, link_header = github_request(url)
-        releases = json.loads(data.decode("utf-8"))
-        release_count += len(releases)
-
-        for release in releases:
-            for asset in release.get("assets", []):
-                downloads += asset.get("download_count", 0)
-
-        url = get_next_page_url(link_header)
+        try:
+            data, link_header = github_request(url)
+            if data is None:
+                print(f"No data returned for releases {url}")
+                break
+                
+            releases = json.loads(data.decode("utf-8"))
+            release_count += len(releases)
+    
+            for release in releases:
+                for asset in release.get("assets", []):
+                    downloads += asset.get("download_count", 0)
+    
+            url = get_next_page_url(link_header)
+            
+        except Exception as e:
+            print(f"Error fetching GitHub release downloads: {e}")
+            break
 
     return downloads, release_count
 

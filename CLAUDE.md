@@ -15,7 +15,7 @@ python GitHubRepositoryFetcher.py
 # Split the spreadsheet into per-sheet CSV files
 python SheetToCSVConverter.py
 
-# Classify repositories and produce categorized_repos.ods
+# Classify repositories and produce categorized_repos.csv and categorized_repos.ods
 python CatagorizeRepos.py
 ```
 
@@ -27,7 +27,7 @@ Three top-level scripts, one shared library:
 
 - **`SheetToCSVConverter.py`** — reads `unfoldingword_repos.ods` via pandas/odf and writes one CSV per sheet (`Repositories.csv`, `JavaScript TypeScript.csv`).
 
-- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `unfoldingword_repos.ods`, runs `determine_classification()` on every row, appends `classification` and `classification reason` columns, sorts by classification priority, and writes `categorized_repos.ods`. Classification labels (in priority order): `No longer used candidate`, `Keep - externally used`, `Keep - locally used`, `Manual review`, `Needs review`, `Dead - archived`, plus additional labels `Active`, `Dead candidate`, `Dead - deprecated`, `Stale`, `Stale but used`, `Stale package`, `Stale / neglected`, `Stale release process`. See `ClassificationRules.md` for the full rule set.
+- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `unfoldingword_repos.ods`, runs `determine_github_classification()` and `determine_npmjs_classification()` on every row, appends four columns (`classification`, `classification reason`, `npmjs classification`, `npmjs classification reason`), sorts by classification priority, and writes `categorized_repos.csv` and `categorized_repos.ods`. GitHub classification labels (in priority order): `No longer used candidate`, `Keep - externally used`, `Keep - locally used`, `Manual review`, `Needs review`, `Dead - archived`, plus additional labels `Active`, `Dead candidate`, `Dead - deprecated`, `Stale`, `Stale but used`, `Stale package`, `Stale / neglected`, `Stale release process`. npm classification labels: `Deprecated npm package`, `Keep - npm package in use`, `Deprecate npm package candidate`, `Manual review - npm package`. See `ClassificationRules.md` for the full rule set.
 
 - **`lib/utilities.py`** — all HTTP helpers, data-fetching functions, and ODS/CSV I/O utilities. Key design points:
   - `github_request()` / `github_html_request()` — thin wrappers around `urllib` with auth headers and 429 retry logic (`urlopen_with_retry`).

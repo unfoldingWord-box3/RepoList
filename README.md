@@ -58,10 +58,15 @@ To classify every repository by activity and usage status and produce a categori
 ```bash
 python CatagorizeRepos.py
 ```
-This reads the `Repositories` sheet from `unfoldingword_repos.ods`, applies classification rules, and writes `categorized_repos.ods`. See [ClassificationRules.md](ClassificationRules.md) for the full rule set.  
+This reads the `Repositories` sheet from `unfoldingword_repos.ods`, applies classification rules, and writes `categorized_repos.csv` and `categorized_repos.ods`. Two sets of classification columns are added:
+
+- `classification` / `classification reason` — GitHub repository lifecycle status
+- `npmjs classification` / `npmjs classification reason` — npm package lifecycle status (only for repositories with a published npm package)
+
+See [ClassificationRules.md](ClassificationRules.md) for the full rule set.
 
 ### Improving Classification Rules
-If you make changes to the rules, you will need to re-run this script to update the `determine_classification` function and rerun this script to update the `categorized_repos.ods`.
+If you make changes to the rules, you will need to re-run this script to update the `determine_github_classification` or `determine_npmjs_classification` functions and rerun this script to update the output files.
 
 
 ## Export Spreadsheet Sheets to CSV
@@ -77,7 +82,8 @@ python SheetToCSVConverter.py
 - [unfoldingword_repos.ods](unfoldingword_repos.ods) — generated spreadsheet containing repository data (sheets: `Repositories`, `JavaScript TypeScript`)
 - [Repositories.csv](Repositories.csv) — all repositories exported from the spreadsheet
 - [JavaScript TypeScript.csv](JavaScript%20TypeScript.csv) — JavaScript/TypeScript repositories exported from the spreadsheet
-- [categorized_repos.ods](categorized_repos.ods) — repositories with `classification` and `classification reason` columns added
+- [categorized_repos.csv](categorized_repos.csv) — categorized repositories exported as CSV
+- [categorized_repos.ods](categorized_repos.ods) — repositories with `classification`, `classification reason`, `npmjs classification`, and `npmjs classification reason` columns added
 
 
 ## Additional Information

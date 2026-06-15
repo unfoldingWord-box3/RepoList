@@ -1,4 +1,24 @@
 #!/usr/bin/env python3
+"""
+GitHub Repository Fetcher
+
+This script fetches repository data from specified GitHub organizations and generates
+an OpenDocument Spreadsheet (ODS) file containing detailed information about each repository.
+
+To run do `python GitHubRepositoryFetcher.py`.  This needs to be run before `python CatagorizeRepos.py`
+
+For JavaScript/TypeScript repositories, it also collects npm package metadata including:
+- Package names and publication dates
+- Download statistics
+- Dependency relationships between packages
+- Monorepo workspace information
+
+The script produces an ODS file with two sheets:
+1. Repositories - All repositories from the specified organizations
+2. JavaScript TypeScript - Filtered view of JS/TS repositories only
+
+Output file: unfoldingword_repos.ods
+"""
 
 import json
 import urllib.error

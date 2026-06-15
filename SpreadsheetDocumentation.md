@@ -47,16 +47,18 @@
 
 ---
 
-## categorized_repos.ods — column descriptions
+## categorized_repos.csv / categorized_repos.ods — column descriptions
 
-Produced by `CatagorizeRepos.py`. Contains all columns from the **Repositories** sheet of `unfoldingword_repos.ods`, plus two appended columns:
+Produced by `CatagorizeRepos.py`. Contains all columns from the **Repositories** sheet of `unfoldingword_repos.ods`, plus four appended columns:
 
 | Column | Description |
 |---|---|
-| **classification** | The classification label assigned to the repository by the automated rules in `CatagorizeRepos.py`. See possible values below. |
+| **classification** | The GitHub repository lifecycle label assigned by `determine_github_classification()`. See possible values below. |
 | **classification reason** | A human-readable explanation of why the repository received its classification label. |
+| **npmjs classification** | The npm package lifecycle label assigned by `determine_npmjs_classification()`. Empty for repositories with no published npm package. See possible values below. |
+| **npmjs classification reason** | A human-readable explanation of why the npm package received its classification label. |
 
-### Classification labels
+### GitHub classification labels
 
 Rules are applied in priority order; the first matching rule wins.
 
@@ -76,5 +78,16 @@ Rules are applied in priority order; the first matching rule wins.
 | `Dead - deprecated` | npm package is deprecated and last commit is over 24 months ago. |
 | `Dead candidate` | Very old with no usage, downloads, or releases; old unmodified fork; or obvious POC/demo with no dependents. |
 | `Needs review` | Did not match any automatic classification rule. |
+
+### npm classification labels
+
+Applied only to repositories that have a published npm package. Rules are applied in priority order; the first matching rule wins.
+
+| Label | Meaning |
+|---|---|
+| `Deprecated npm package` | Package is already explicitly marked as deprecated on the npm registry. |
+| `Keep - npm package in use` | Has local consumers, GitHub dependents, or ≥ 1,000 npm downloads in the last year. |
+| `Deprecate npm package candidate` | No detected local consumers, no GitHub dependents, and no npm downloads; or backed by an archived repository; or stale with low downloads; or name suggests obsolescence. |
+| `Manual review - npm package` | Security-sensitive or build-tool package (auth, cli, build, config, etc.), or low but nonzero usage with no detected local consumers. |
 
 See [ClassificationRules.md](ClassificationRules.md) for the full rule definitions and recommended actions per label.

@@ -46,6 +46,8 @@ NS = {
     "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
 }
 
+rate_limit_max_retry = 10
+
 def read_ods_sheets(input_file):
     """
     Read all sheets from an ODS file.
@@ -179,7 +181,7 @@ def load_env_file(env_file):
             if key and key not in os.environ:
                 os.environ[key] = value
 
-def github_request(url, allow_not_found=False, allow_conflict=False):
+def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
     """
     Make an authenticated request to the GitHub API.
 
@@ -205,6 +207,7 @@ def github_request(url, allow_not_found=False, allow_conflict=False):
                                 allow_not_found or allow_conflict flags. Provides
                                 detailed error messages for rate limiting and common errors.
     """
+    global rate_limit_max_retry
     headers = {
         "Accept": "application/vnd.github+json",
         "User-Agent": "unfoldingword-repo-list-script",
@@ -230,22 +233,28 @@ def github_request(url, allow_not_found=False, allow_conflict=False):
         if error.code == 409 and allow_conflict:
             return None, None
 
-        if error.code == 403:
+        if error.code in (403, 429):
+            retry_after = error.headers.get("Retry-After")
             reset_time = error.headers.get("X-RateLimit-Reset")
-            if reset_time:
-                reset_seconds = int(reset_time) - int(time.time())
-                print(
-                    f"GitHub rate limit exceeded. Try again in {max(reset_seconds, 0)} seconds.",
-                    file=sys.stderr,
-                )
-                
-                # sleep after hitting the rate limit, then try again
-                sleep_duration = 0.5 + reset_seconds * 1.2
-                print(f"Sleeping for {sleep_duration} seconds...", file=sys.stderr)
-                time.sleep(sleep_duration)
-                return github_request(url, allow_not_found, allow_conflict)
+            remaining = error.headers.get("X-RateLimit-Remaining")
+
+            print(f"GitHub rate limit ({error.code}). Remaining: {remaining}, Retry-After: {retry_after}, Reset: {reset_time}", file=sys.stderr)
+
+            if _retry >= rate_limit_max_retry:
+                print(f"Exceeded max retries ({rate_limit_max_retry}) for rate limiting.", file=sys.stderr)
+                raise
+
+            # Prefer Retry-After (used for secondary limits), fall back to X-RateLimit-Reset
+            if retry_after:
+                sleep_duration = int(retry_after) + 1
+            elif reset_time:
+                sleep_duration = max(int(reset_time) - int(time.time()), 0) + 1
             else:
-                print(f"GitHub API returned 403 Forbidden. (URL: {url})", file=sys.stderr)
+                sleep_duration = 60  # safe default if no header is present
+
+            print(f"Sleeping for {sleep_duration} seconds before retry {_retry + 1}/{rate_limit_max_retry}...", file=sys.stderr)
+            time.sleep(sleep_duration)
+            return github_request(url, allow_not_found, allow_conflict, _retry=_retry + 1)
 
         elif error.code == 404:
             print(f"Organization not found. (URL: {url})", file=sys.stderr)

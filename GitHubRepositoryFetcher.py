@@ -85,7 +85,7 @@ def fetch_repositories_for_org(org_name):
         page_repos = json.loads(data.decode("utf-8"))
 
         for repo in page_repos:
-            time.sleep(1)
+            time.sleep(2)
             repo["github_dependents"] = fetch_repository_dependents(repo)
             repo["github_contributors"] = fetch_repository_contributors(repo)
             repo["github_downloads"], repo["github_release_count"] = fetch_repository_github_downloads(repo)

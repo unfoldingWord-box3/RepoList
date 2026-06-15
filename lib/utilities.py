@@ -50,10 +50,18 @@ rate_limit_max_retry = 10
 
 def read_ods_sheets(input_file):
     """
-    Read all sheets from an ODS file.
+    Read all sheets from an ODS file into pandas DataFrames.
+
+    Uses pandas with the 'odf' engine to read an OpenDocument Spreadsheet file
+    and return all sheets as a dictionary of DataFrames.
+
+    Args:
+        input_file (str): Path to the ODS file to read.
 
     Returns:
-        dict[str, pandas.DataFrame]: Mapping of sheet names to DataFrames.
+        dict[str, pandas.DataFrame]: Mapping of sheet names to DataFrames, where
+                                     each DataFrame represents one sheet from the
+                                     ODS file with columns and rows preserved.
     """
     return pd.read_excel(
         input_file,
@@ -64,12 +72,20 @@ def read_ods_sheets(input_file):
 
 def write_ods_sheets(output_file, sheets):
     """
-    Write one or more sheets to an ODS file.
+    Write one or more pandas DataFrames to an ODS file as named sheets.
+
+    Creates or overwrites an OpenDocument Spreadsheet file with the provided
+    sheet data. Sheet names longer than 31 characters are automatically truncated
+    to comply with spreadsheet format limitations.
 
     Args:
-        output_file (str): Path to the ODS file to write.
+        output_file (str): Path to the ODS file to write. Parent directories must exist.
         sheets (dict[str, pandas.DataFrame] | pandas.DataFrame): Sheet data to write.
+            If a dict is provided, keys are sheet names and values are DataFrames.
             If a single DataFrame is provided, it is written to a sheet named "Sheet1".
+
+    Returns:
+        None
     """
     if isinstance(sheets, pd.DataFrame):
         sheets = {"Sheet1": sheets}
@@ -85,12 +101,19 @@ def write_ods_sheets(output_file, sheets):
 
 def write_rows_to_ods(output_file, sheet_name, rows):
     """
-    Write a list of dictionaries to a single-sheet ODS file.
+    Write a list of row dictionaries to a single-sheet ODS file.
+
+    Convenience wrapper that converts a list of dictionaries to a DataFrame
+    and writes it as a single sheet in an ODS file.
 
     Args:
         output_file (str): Path to the ODS file to write.
-        sheet_name (str): Name of the sheet.
-        rows (list[dict]): Rows to write.
+        sheet_name (str): Name of the sheet. Will be truncated to 31 characters if longer.
+        rows (list[dict]): List of row dictionaries where keys are column names.
+                          All dictionaries should have the same keys for consistent columns.
+
+    Returns:
+        None
     """
     dataframe = pd.DataFrame(rows)
     write_ods_sheets(output_file, {sheet_name: dataframe})
@@ -133,8 +156,9 @@ def urlopen_with_retry(request, retries=1, retry_delay_seconds=5):
         http.client.HTTPResponse: The HTTP response object from a successful request.
 
     Raises:
-        urllib.error.HTTPError: Immediately on any HTTP error — not retried here.
-        urllib.error.URLError: If all retry attempts are exhausted for network errors.
+        urllib.error.HTTPError: Immediately on any HTTP error (4xx, 5xx) — not retried here.
+        urllib.error.URLError: If all retry attempts are exhausted for network errors
+                              (connection refused, timeout, DNS failure, etc.).
     """
     for attempt in range(retries + 1):
         try:
@@ -184,18 +208,23 @@ def load_env_file(env_file):
 
 def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
     """
-    Make an authenticated request to the GitHub API.
+    Make an authenticated request to the GitHub API with automatic rate limit handling.
 
     Sends a request to the GitHub API with appropriate headers including authentication
-    if GITHUB_TOKEN is available. Handles common error cases including rate limiting,
-    not found, and conflict errors with optional suppression.
+    if GITHUB_TOKEN is available in environment variables. Automatically handles both
+    primary (hourly quota) and secondary (burst) rate limits with exponential backoff.
+    Optionally suppresses 404 Not Found and 409 Conflict errors for cases where these
+    are expected.
 
     Args:
-        url (str): The GitHub API URL to request.
+        url (str): The GitHub API URL to request (must start with https://api.github.com/).
         allow_not_found (bool, optional): If True, return (None, None) for 404 errors
                                           instead of raising. Defaults to False.
         allow_conflict (bool, optional): If True, return (None, None) for 409 errors
-                                         instead of raising. Defaults to False.
+                                         (e.g., empty repository) instead of raising.
+                                         Defaults to False.
+        _retry (int, optional): Internal parameter tracking retry count for rate limiting.
+                               Do not set manually.
 
     Returns:
         tuple[bytes, str | None]: A tuple of (response_data, link_header) where
@@ -206,7 +235,14 @@ def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
     Raises:
         urllib.error.HTTPError: For HTTP errors that are not suppressed by the
                                 allow_not_found or allow_conflict flags. Provides
-                                detailed error messages for rate limiting and common errors.
+                                detailed error messages for rate limiting and permission errors.
+
+    Note:
+        Rate limit handling:
+        - Primary rate limit (403 with X-RateLimit-Remaining: 0): Sleeps until X-RateLimit-Reset
+        - Secondary rate limit (429 or 403 with Retry-After): Sleeps for Retry-After seconds
+        - Maximum retry attempts: 10 (configurable via rate_limit_max_retry global)
+        - Unauthenticated: 60 requests/hour, Authenticated: 5,000 requests/hour
     """
     global rate_limit_max_retry
     headers = {
@@ -321,7 +357,7 @@ def github_html_request(url, allow_not_found=False):
             file=sys.stderr,
         )
         return None
-    
+
 
 def fetch_repository_dependents(repo):
     """
@@ -412,7 +448,7 @@ def fetch_repository_contributors(repo):
     )
 
     while next_url:
-        print(f"Fetching contributors: {owner}/{repo_name}")
+        print(f"Fetching contributors: {next_url}")
 
         data, link_header = github_request(next_url, allow_not_found=True)
         if not data:
@@ -498,20 +534,25 @@ def fetch_repository_last_commit_date(repo):
 
     print(f"Fetching latest commit: {owner}/{repo_name}")
 
-    data, _ = github_request(commits_url, allow_not_found=True, allow_conflict=True)
-    if not data:
-        return ""
+    try:
+        data, _ = github_request(commits_url, allow_not_found=True, allow_conflict=True)
+        if not data:
+            return ""
 
-    commits = json.loads(data.decode("utf-8"))
-    if not commits:
-        return ""
+        commits = json.loads(data.decode("utf-8"))
+        if not commits:
+            return ""
 
-    return (
-        commits[0]
-        .get("commit", {})
-        .get("committer", {})
-        .get("date", "")
-    )
+        return (
+            commits[0]
+            .get("commit", {})
+            .get("committer", {})
+            .get("date", "")
+        )
+
+    except Exception as e:
+        print(f"Error fetching latest commit: {e}")
+        return ""
 
 
 def fetch_repository_last_release_date(repo):
@@ -542,12 +583,17 @@ def fetch_repository_last_release_date(repo):
 
     print(f"Fetching latest release: {owner}/{repo_name}")
 
-    data, _ = github_request(releases_url, allow_not_found=True)
-    if not data:
-        return ""
+    try:
+        data, _ = github_request(releases_url, allow_not_found=True)
+        if not data:
+            return ""
 
-    release = json.loads(data.decode("utf-8"))
-    return release.get("published_at") or release.get("created_at", "")
+        release = json.loads(data.decode("utf-8"))
+        return release.get("published_at") or release.get("created_at", "")
+
+    except Exception as e:
+        print(f"Error fetching latest release: {e}")
+        return ""
 
 
 def fetch_repository_open_prs_count(repo):
@@ -579,16 +625,21 @@ def fetch_repository_open_prs_count(repo):
 
     print(f"Fetching open PR count: {owner}/{repo_name}")
 
-    data, link_header = github_request(pulls_url, allow_not_found=True)
-    if not data:
-        return ""
+    try:
+        data, link_header = github_request(pulls_url, allow_not_found=True)
+        if not data:
+            return ""
 
-    last_page_match = re.search(r'[?&]page=(\d+)>; rel="last"', link_header or "")
-    if last_page_match:
-        return int(last_page_match.group(1))
+        last_page_match = re.search(r'[?&]page=(\d+)>; rel="last"', link_header or "")
+        if last_page_match:
+            return int(last_page_match.group(1))
 
-    pulls = json.loads(data.decode("utf-8"))
-    return len(pulls)
+        pulls = json.loads(data.decode("utf-8"))
+        return len(pulls)
+
+    except Exception as e:
+        print(f"Error fetching open PR count: {e}")
+        return 0
 
 
 def get_next_page_url(link_header):
@@ -766,6 +817,7 @@ def fetch_package_json_files(repo):
             })
 
     return package_files
+
 
 def fetch_nx_json(repo):
     """
@@ -1120,21 +1172,22 @@ def fetch_repository_github_downloads(repo):
             if data is None:
                 print(f"No data returned for releases {url}")
                 break
-                
+
             releases = json.loads(data.decode("utf-8"))
             release_count += len(releases)
-    
+
             for release in releases:
                 for asset in release.get("assets", []):
                     downloads += asset.get("download_count", 0)
-    
+
             url = get_next_page_url(link_header)
-            
+
         except Exception as e:
             print(f"Error fetching GitHub release downloads: {e}")
             break
 
     return downloads, release_count
+
 
 def get_cell_text(cell):
     """

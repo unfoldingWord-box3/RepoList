@@ -21,6 +21,61 @@ cp env.sample .env                # then add your GITHUB_TOKEN
 
 - The token only needs read metadata permission on the target orgs.
 
+### Generating a GitHub token
+
+**To create a GitHub token:**
+
+For this script, a **fine-grained personal access token** is usually best.
+
+## Fine-grained token steps
+
+1. Go to:
+
+```plain text
+https://github.com/settings/personal-access-tokens
+```
+
+2. Click **Generate new token**.
+
+3. Give it a name, for example:
+
+```plain text
+Repo List Script
+```
+
+4. Set an expiration date.
+
+5. Under **Resource owner**, choose the account (e.g. unfoldingWord).
+
+6. Under **Repository access**, choose:
+
+```plain text
+All Repositories
+```
+
+
+If you need access to private repositories in the organization, choose the specific organization/repositories instead.
+
+7. For permissions, this script only needs read access to repository metadata. Use the minimum permissions available, such as:
+
+```plain text
+Metadata: Read-only
+```
+
+
+8. Click **Generate token**.
+
+9. Copy the token immediately. GitHub will only show it once.
+
+Then put it in your `.env` file:
+
+```plain text
+GITHUB_TOKEN=github_pat_your_token_here
+```
+
+
+The token is primarily needed to raise the GitHub API rate limit from 60 to 5,000 requests/hour. Since the target orgs are public, either option works.
+
 
 ## Caution
 - `.env` file contains your GitHub token and should not be committed to a public repository. It is ignored by git by adding it to `.gitignore` to help prevent accidental committing of the file.

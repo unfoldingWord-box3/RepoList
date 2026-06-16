@@ -536,6 +536,12 @@ def main():
             str(row.get("repo name", "")).lower(),
         )
     )
+    
+    for row in data_rows:
+        classification = row["classification"]
+        if classification in SORT_ORDER:
+            sort_rank = SORT_ORDER.index(classification)
+            row["classification"] = str(sort_rank) + "-" + classification
 
     classifications = sorted({row["classification"] for row in data_rows})
 

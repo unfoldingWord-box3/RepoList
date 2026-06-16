@@ -49,10 +49,11 @@
 
 ## categorized_repos.csv / categorized_repos.ods — column descriptions
 
-Produced by `CatagorizeRepos.py`. Contains all columns from the **Repositories** sheet of `unfoldingword_repos.ods`, plus four appended columns:
+Produced by `CatagorizeRepos.py`. Contains all columns from the **Repositories** sheet of `unfoldingword_repos.ods`, plus five appended columns:
 
 | Column | Description |
 |---|---|
+| **repo full name** | The fully-qualified repository name in `organization/repo-name` format. |
 | **classification** | The GitHub repository lifecycle label assigned by `determine_github_classification()`. See possible values below. |
 | **classification reason** | A human-readable explanation of why the repository received its classification label. |
 | **npmjs classification** | The npm package lifecycle label assigned by `determine_npmjs_classification()`. Empty for repositories with no published npm package. See possible values below. |
@@ -65,6 +66,7 @@ Rules are applied in priority order; the first matching rule wins.
 | Label | Meaning |
 |---|---|
 | `Active` | Last commit was within the last 12 months. |
+| `Protected private` | No last commit date available — likely a private or protected repository with restricted access. |
 | `Keep - locally used` | Used as a dependency by another npm package in the fetched set. |
 | `Keep - externally used` | Has GitHub dependents or ≥ 1,000 npm downloads in the last year. |
 | `Manual review` | High-risk or ambiguous: core product name, high issue/release/contributor count, or recent metadata edit with old code. |

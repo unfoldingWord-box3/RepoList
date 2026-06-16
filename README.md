@@ -1,7 +1,13 @@
-# GitHub Repository Spreadsheet Tools
+# GitHub Repository Discovery Tools
 
-Python scripts for collecting GitHub repository data (and associated npm data) on a set of organizations and for classifying the repositories based on usage and activity.  The goals is to help determine repositories that are no longer being used and may be archived and well as the npm releases that can be deprecated.
+Python scripts for collecting GitHub repository data (and associated npm data) on a set of organizations and for classifying the repositories based on usage and activity.  The goal is to help determine repositories that are no longer being used and may be archived and well as the npm releases that can be deprecated.
 
+The process is in two parts (more detail in [Running](#running)):
+
+1. Collecting GitHub repository data (and associated npm data) on a set of organizations.
+2. Classifying the repositories based on usage and activity.
+
+The advantage of this is that gathering the repository data is very slow. So only needs to be done infrequncently whenever new data needs to be collected. On the other hand, the classification process only needs to read the collected data from the generated spreadsheet and is very fast.  This allows the developer to rapidly iterate on classification rules.
 The goal is to codify the process of collecting and classifying GitHub repositories.  This way we have deterministic and auditable results rather than just trusting AI to do the right thing.
 
 ## Prerequisites
@@ -103,7 +109,9 @@ cp env.sample .env
 ```
   - Then edit `.env` and put in your GitHub token.
 
-## Generate the Repository Spreadsheet
+## Running
+
+### Generate the Repository Spreadsheet
 _Note: This will take a while to run, but only needs to be done once a quarter or so,._
 
 Run:
@@ -115,7 +123,7 @@ This generates an OpenDocument spreadsheet named:
 unfoldingword_repos.ods
 ```
 
-## Classify Repositories
+### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet, run:
 ```bash
@@ -132,8 +140,8 @@ See [ClassificationRules.md](ClassificationRules.md) for the full rule set.
 If you make changes to the rules, you will need to re-run this script to update the `determine_github_classification` or `determine_npmjs_classification` functions and rerun this script to update the output files.
 
 
-## Export Spreadsheet Sheets to CSV
-_Utility function that may be useful for other projects,_
+### Export Spreadsheet Sheets to CSV
+_Utility function that may be useful for other projects:_
 
 To split the data in [unfoldingword_repos.ods](unfoldingword_repos.ods) into separate CSV files, run:
 ```bash

@@ -484,6 +484,9 @@ def main():
     """
     headers, data_rows = load_repository_data(ODS_FILE, SHEET_NAME)
 
+    if "repo full name" not in headers:
+        headers.append("repo full name")
+
     if "classification" not in headers:
         headers.append("classification")
 
@@ -499,6 +502,9 @@ def main():
     for row in data_rows:
         print(row)
         classification, classification_reason = determine_github_classification(row)
+        repo_name = row.get("repo name")
+        organization = row.get("organization name")
+        repo_full_name = organization  + "/" + repo_name
 
         if is_empty(row.get("npmjs package name")):
             npmjs_classification = ""
@@ -506,6 +512,7 @@ def main():
         else:
             npmjs_classification, npmjs_classification_reason = determine_npmjs_classification(row)
 
+        row["repo full name"] = repo_full_name
         row["classification"] = classification
         row["classification reason"] = classification_reason
         row["npmjs classification"] = npmjs_classification

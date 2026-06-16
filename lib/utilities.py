@@ -121,6 +121,98 @@ def write_rows_to_ods(output_file, sheet_name, rows):
     write_ods_sheets(output_file, {sheet_name: dataframe})
 
 
+def update_ods_sheet_data(output_file, sheet_name, rows):
+    """
+    Update the data rows in a named sheet of an existing ODS file, preserving column styles.
+
+    If the file does not yet exist, falls back to write_rows_to_ods() to create it fresh.
+    When the file does exist, only the <table:table-row> elements in the target sheet are
+    replaced; all other content (column-width styles, other sheets, metadata) is kept intact,
+    so manually-set column widths survive across runs.
+
+    Args:
+        output_file (str): Path to the ODS file to update or create.
+        sheet_name (str): Name of the sheet whose rows should be replaced.
+        rows (list[dict]): New row data as a list of dictionaries.
+
+    Returns:
+        None
+    """
+    if not os.path.exists(output_file):
+        write_rows_to_ods(output_file, sheet_name, rows)
+        return
+
+    TABLE_TAG = f"{{{NS['table']}}}table"
+    TABLE_NAME_ATTR = f"{{{NS['table']}}}name"
+    TABLE_ROW_TAG = f"{{{NS['table']}}}table-row"
+
+    def register_all_namespaces(xml_bytes):
+        for prefix, uri in re.findall(rb'xmlns:(\w+)="([^"]+)"', xml_bytes):
+            ET.register_namespace(prefix.decode(), uri.decode())
+
+    def read_content_xml(zip_path):
+        with zipfile.ZipFile(zip_path, "r") as z:
+            return z.read("content.xml")
+
+    def find_table(root, name):
+        for table in root.iter(TABLE_TAG):
+            if table.get(TABLE_NAME_ATTR) == name:
+                return table
+        return None
+
+    # Write new data to a temp file so pandas formats the rows as valid ODS XML.
+    tmp_new = output_file + ".tmp_new.ods"
+    tmp_out = output_file + ".tmp_out.ods"
+    try:
+        write_rows_to_ods(tmp_new, sheet_name, rows)
+
+        existing_content = read_content_xml(output_file)
+        new_content = read_content_xml(tmp_new)
+
+        # Register every namespace prefix found in both files so ET preserves them.
+        register_all_namespaces(existing_content)
+        register_all_namespaces(new_content)
+
+        existing_root = ET.fromstring(existing_content)
+        new_root = ET.fromstring(new_content)
+
+        existing_table = find_table(existing_root, sheet_name)
+        new_table = find_table(new_root, sheet_name)
+
+        if existing_table is None or new_table is None:
+            # Sheet not found in one of the files — just replace the whole file.
+            os.replace(tmp_new, output_file)
+            return
+
+        # Remove old rows from the existing table, keeping column-style elements.
+        for child in list(existing_table):
+            if child.tag == TABLE_ROW_TAG:
+                existing_table.remove(child)
+
+        # Append new rows.
+        for row in new_table:
+            if row.tag == TABLE_ROW_TAG:
+                existing_table.append(row)
+
+        updated_xml = ET.tostring(existing_root, encoding="utf-8", xml_declaration=True)
+
+        # Rebuild the ZIP: copy every file from the existing ODS, replacing content.xml.
+        with zipfile.ZipFile(output_file, "r") as existing_zip:
+            with zipfile.ZipFile(tmp_out, "w", zipfile.ZIP_DEFLATED) as out_zip:
+                for item in existing_zip.infolist():
+                    if item.filename == "content.xml":
+                        out_zip.writestr(item, updated_xml)
+                    else:
+                        out_zip.writestr(item, existing_zip.read(item.filename))
+
+        os.replace(tmp_out, output_file)
+        print(f"Data updated in {output_file}")
+    finally:
+        for path in (tmp_new, tmp_out):
+            if os.path.exists(path):
+                os.remove(path)
+
+
 def safe_filename(name):
     """
     Convert a sheet name into a safe filename by replacing invalid characters.

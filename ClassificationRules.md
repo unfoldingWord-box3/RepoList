@@ -485,6 +485,20 @@ This rule benefits from manual confirmation.
 
 Before marking anything dead, apply keep rules.
 
+### Rule K0 — No last commit date (protected or private repository)
+
+```plain text
+last commit date is empty
+```
+
+**Classification:** `Protected private`
+
+The repository has no accessible last commit date. This typically indicates a private or organization-restricted repository where commit history is not publicly available or was not retrievable during data collection.
+
+**Recommended action:** Review manually with an account that has full organizational access. Do not treat as dead or stale — the absence of data is not evidence of inactivity.
+
+---
+
 ### Rule K1 — Recently active
 
 ```plain text

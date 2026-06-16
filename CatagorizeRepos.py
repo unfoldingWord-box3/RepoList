@@ -64,7 +64,7 @@ Example:
 """
 
 
-from lib.utilities import write_rows_to_ods, is_true, months_old, is_empty, as_int, contains_any, load_repository_data, \
+from lib.utilities import update_ods_sheet_data, is_true, months_old, is_empty, as_int, contains_any, load_repository_data, \
     write_list_to_csv
 
 ODS_FILE = "unfoldingword_repos.ods"
@@ -78,6 +78,7 @@ SORT_ORDER = [
     "Manual review",
     "Needs review",
     "Dead - archived",
+    "Protected private",
 ]
 
 
@@ -135,6 +136,8 @@ def determine_github_classification(row):
     last_edit_months = months_old(row.get("last edit date"))
     npm_last_published_months = months_old(row.get("npmjs last published"))
 
+    last_commit_date_empty = is_empty(row.get("last commit date"))
+
     npm_used_by_empty = is_empty(row.get("npmjs used by"))
     github_dependents_empty = is_empty(row.get("github dependents"))
     npm_package_empty = is_empty(row.get("npmjs package name"))
@@ -178,6 +181,9 @@ def determine_github_classification(row):
     has_local_use = not npm_used_by_empty
     has_github_dependents = not github_dependents_empty
     recently_active = last_commit_months is not None and last_commit_months <= 12
+
+    if last_commit_date_empty:
+        return "Protected private", "Repository has no last commit date — likely a private or protected repository with restricted access."
 
     if recently_active:
         return "Active", f"Last commit was within the last 12 months ({last_commit_months} months ago)."
@@ -538,7 +544,7 @@ def main():
         print(f"- {classification}")
 
     write_list_to_csv(CATEGORIZED_OUTPUT + ".csv", headers, data_rows)
-    write_rows_to_ods(CATEGORIZED_OUTPUT + ".ods", "Repositories", data_rows)
+    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "Repositories", data_rows)
 
 
 if __name__ == "__main__":

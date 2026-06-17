@@ -20,6 +20,9 @@ The script produces an ODS file with two sheets:
 Output file: unfoldingword_repos.ods
 """
 
+import base64
+import configparser
+import io
 import json
 import os
 import sys
@@ -45,6 +48,80 @@ ORG_NAMES = [
 ]
 OUTPUT_FILE = "unfoldingword_repos.ods"
 ENV_FILE = ".env"
+
+
+def fetch_repository_submodules(repo):
+    """
+    Fetch and parse a repository's .gitmodules file.
+
+    Args:
+        repo (dict): GitHub repository metadata from the repositories API.
+
+    Returns:
+        list[str]: A list of submodule entries formatted as "path -> url".
+                   Returns an empty list when the repository has no .gitmodules file
+                   or when the file cannot be parsed.
+    """
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+    default_branch = repo.get("default_branch")
+
+    if not owner or not repo_name:
+        return []
+
+    query_params = urllib.parse.urlencode({
+        "ref": default_branch,
+    }) if default_branch else ""
+
+    url = f"https://api.github.com/repos/{owner}/{repo_name}/contents/.gitmodules"
+    if query_params:
+        url = f"{url}?{query_params}"
+
+    try:
+        data, _ = github_request(url, allow_not_found=True)
+
+        if not data:
+            return []
+
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return []
+        print(f"Could not fetch .gitmodules for {owner}/{repo_name}: {error.code} {error.reason}")
+        return []
+
+    try:
+        gitmodules_metadata = json.loads(data.decode("utf-8"))
+        encoded_content = gitmodules_metadata.get("content", "")
+
+        if not encoded_content:
+            return []
+
+        gitmodules_text = base64.b64decode(encoded_content).decode("utf-8")
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as error:
+        print(f"Could not decode .gitmodules for {owner}/{repo_name}: {error}")
+        return []
+
+    parser = configparser.ConfigParser()
+
+    try:
+        parser.read_file(io.StringIO(gitmodules_text))
+    except configparser.Error as error:
+        print(f"Could not parse .gitmodules for {owner}/{repo_name}: {error}")
+        return []
+
+    submodules = []
+
+    for section_name in parser.sections():
+        if not section_name.startswith("submodule "):
+            continue
+
+        path = parser.get(section_name, "path", fallback="").strip()
+        submodule_url = parser.get(section_name, "url", fallback="").strip()
+
+        if submodule_url:
+            submodules.append(submodule_url)
+
+    return submodules
 
 
 def fetch_repositories_for_org(org_name):
@@ -86,13 +163,14 @@ def fetch_repositories_for_org(org_name):
         page_repos = json.loads(data.decode("utf-8"))
 
         for repo in page_repos:
-            time.sleep(2)
+            time.sleep(1)
             repo["github_dependents"] = fetch_repository_dependents(repo)
             repo["github_contributors"] = fetch_repository_contributors(repo)
             repo["github_downloads"], repo["github_release_count"] = fetch_repository_github_downloads(repo)
             repo["last_commit_date"] = fetch_repository_last_commit_date(repo)
             repo["last_release_date"] = fetch_repository_last_release_date(repo)
             repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
+            repo["git_submodules"] = fetch_repository_submodules(repo)
 
             language = (repo.get("language") or "").lower()
 
@@ -275,6 +353,7 @@ def write_ods(repos, output_file):
         "last release date",
         "open issues count",
         "open prs count",
+        "git submodules",
         "npmjs package name",
         "npm is deprecated",
         "npmjs downloads last year",
@@ -304,6 +383,7 @@ def write_ods(repos, output_file):
                 repo.get("last_release_date", ""),
                 repo.get("open_issues_count", ""),
                 repo.get("open_prs_count", ""),
+                ", ".join(repo.get("git_submodules", [])),
                 repo.get("npmjs_package_name", ""),
                 repo.get("npm_is_deprecated", ""),
                 repo.get("npmjs_downloads_last_year", ""),

@@ -2,3 +2,4 @@
 /.venv/
 RepoList.iml
 *.log
+/.idea/

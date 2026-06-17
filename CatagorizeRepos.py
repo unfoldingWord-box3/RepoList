@@ -68,8 +68,11 @@ from lib.utilities import update_ods_sheet_data, is_true, months_old, is_empty, 
     write_list_to_csv
 
 ODS_FILE = "unfoldingword_repos.ods"
+TAGGED_ODS_FILE = "tagged_repos.ods"
 SHEET_NAME = "Repositories"
 CATEGORIZED_OUTPUT = "categorized_repos"
+
+TAGGED_COLUMNS = ["Ask","Archive","Keep"]
 
 SORT_ORDER = [
     "No longer used candidate",
@@ -182,6 +185,9 @@ def determine_github_classification(row):
     has_github_dependents = not github_dependents_empty
     recently_active = last_commit_months is not None and last_commit_months <= 12
 
+    if archived:
+        return "Dead - archived", "Repository is archived."
+
     if last_commit_date_empty:
         return "Protected private", "Repository has no last commit date — likely a private or protected repository with restricted access."
 
@@ -196,9 +202,6 @@ def determine_github_classification(row):
 
     if contains_any(repo_name, core_terms):
         return "Manual review", "Repository name contains a core project term."
-
-    if archived:
-        return "Dead - archived", "Repository is archived."
 
     if npm_deprecated and last_commit_months is not None and last_commit_months > 24:
         return "Dead - deprecated", f"Npm package is deprecated and the last commit is older than 24 months ({last_commit_months} months ago)."
@@ -223,7 +226,6 @@ def determine_github_classification(row):
     if (
         last_commit_months is not None
         and last_commit_months > 60
-        and not archived
         and npm_used_by_empty
         and github_dependents_empty
         and github_downloads == 0
@@ -298,11 +300,14 @@ def determine_github_classification(row):
     if (
         last_commit_months is not None
         and last_commit_months > 18
-        and not archived
     ):
         return "Stale", f"Repository has had no commits in over 18 months ({last_commit_months} months ago) and is not archived."
 
-    if contains_any(repo_name, replacement_terms):
+    if (
+        contains_any(repo_name, replacement_terms)
+        and last_commit_months is not None
+        and last_commit_months > 12
+    ):
         return "No longer used candidate", "Repository name suggests it may be old, legacy, deprecated, obsolete, archived, or a backup."
 
     if (
@@ -489,6 +494,13 @@ def main():
         - SORT_ORDER: List defining classification priority order
     """
     headers, data_rows = load_repository_data(ODS_FILE, SHEET_NAME)
+    tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, SHEET_NAME)
+
+    headers = TAGGED_COLUMNS + headers
+    data_rows = [
+        {**{column: "" for column in TAGGED_COLUMNS}, **row}
+        for row in data_rows
+    ]
 
     if "repo full name" not in headers:
         headers.append("repo full name")
@@ -536,7 +548,44 @@ def main():
             str(row.get("repo name", "")).lower(),
         )
     )
-    
+
+    tagged_rows_by_repo_full_name = {}
+
+    for tagged_row in tagged_data_rows:
+        has_tagged_data = any(
+            not is_empty(tagged_row.get(column))
+            for column in TAGGED_COLUMNS
+        )
+
+        if not has_tagged_data:
+            continue
+
+        tagged_repo_full_name = tagged_row.get("repo full name")
+
+        if is_empty(tagged_repo_full_name):
+            tagged_repo_name = tagged_row.get("repo name")
+            tagged_organization = tagged_row.get("organization name")
+
+            if is_empty(tagged_repo_name) or is_empty(tagged_organization):
+                continue
+
+            tagged_repo_full_name = f"{tagged_organization}/{tagged_repo_name}"
+
+        tagged_rows_by_repo_full_name[str(tagged_repo_full_name).strip()] = tagged_row
+
+    for row in data_rows:
+        tagged_row = tagged_rows_by_repo_full_name.get(
+            str(row.get("repo full name", "")).strip()
+        )
+
+        if tagged_row is None:
+            continue
+
+        for column in TAGGED_COLUMNS:
+            row[column] = tagged_row.get(column, "")
+
+    print("Updated tagged columns in data rows")
+
     for row in data_rows:
         classification = row["classification"]
         if classification in SORT_ORDER:

@@ -397,7 +397,7 @@ def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
             return github_request(url, allow_not_found, allow_conflict, _retry=_retry + 1)
 
         elif error.code == 404:
-            print(f"Organization not found. (URL: {url})", file=sys.stderr)
+            print(f"File not found. (URL: {url})", file=sys.stderr)
 
         else:
             print(f"GitHub API error: {error.code} {error.reason} (URL: {url})", file=sys.stderr)
@@ -1428,6 +1428,12 @@ def read_ods_sheet(filename, sheet_name):
                 while len(row_data) < header_width:
                     row_data.append("")
 
+            # ODS files often store the remaining blank spreadsheet area as a
+            # repeated empty row. Do not expand those rows, or a small sheet can
+            # become hundreds of thousands of empty rows in memory.
+            if header_width is not None and all(is_empty(value) for value in row_data):
+                continue
+
             # Expand repeated rows after the row has been normalized. Use copy()
             # so each output row is an independent list.
             for _ in range(repeated_rows):
@@ -1490,7 +1496,11 @@ def load_repository_data(ODS_FILE, SHEET_NAME):
     rows = read_ods_sheet(ODS_FILE, SHEET_NAME)
 
     headers = rows[0]
-    data = [dict(zip(headers, row)) for row in rows[1:]]
+    data = [
+        dict(zip(headers, row))
+        for row in rows[1:]
+        if any(not is_empty(value) for value in row)
+    ]
 
     for row in data:
         for key, value in row.items():

@@ -499,6 +499,20 @@ The repository has no accessible last commit date. This typically indicates a pr
 
 ---
 
+### Rule M5 — Used as a git submodule
+
+```plain text
+is submodule of is not empty
+```
+
+**Classification:** `Manual review`
+
+The repository is referenced as a git submodule by at least one other repository in the fetched set. This is a direct code dependency regardless of the repository's own commit activity or npm usage signals.
+
+**Recommended action:** Identify which repositories depend on this submodule before archiving, renaming, or removing it. Submodule dependencies are not captured by npm usage fields.
+
+---
+
 ### Rule K1 — Recently active
 
 ```plain text

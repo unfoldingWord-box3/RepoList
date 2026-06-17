@@ -123,6 +123,7 @@ def fetch_repository_submodules(repo):
 
     return submodules
 
+repo_count = 0
 
 def fetch_repositories_for_org(org_name):
     """
@@ -143,6 +144,7 @@ def fetch_repositories_for_org(org_name):
               - 'npmjs_uses' (list): Initially empty, populated later by update_npmjs_dependencies
               - 'package_json' (dict): The parsed package.json content, or None if not available
     """
+    global repo_count
     repos = []
 
     query_params = urllib.parse.urlencode({
@@ -156,7 +158,8 @@ def fetch_repositories_for_org(org_name):
     url = f"{github_api_url}?{query_params}"
 
     while url:
-        print(f"Fetching: {url}")
+        repo_count += 1
+        print(f"{repo_count} - Fetching: {url}")
 
         data, link_header = github_request(url)
 

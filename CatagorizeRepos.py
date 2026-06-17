@@ -188,6 +188,9 @@ def determine_github_classification(row):
     if archived:
         return "Dead - archived", "Repository is archived."
 
+    if not is_empty(row.get("is submodule of")):
+        return "Manual review", "Repository is used as a git submodule by another repository."
+
     if last_commit_date_empty:
         return "Protected private", "Repository has no last commit date — likely a private or protected repository with restricted access."
 
@@ -466,10 +469,121 @@ def determine_npmjs_classification(row):
     )
 
 
+def is_github_repo(url):
+    """
+    Check if a URL is a GitHub repository URL.
+
+    Args:
+        url (str): URL to check
+
+    Returns:
+        bool: True if the URL is a GitHub repository URL, False otherwise
+    """
+    if is_empty(url):
+        return False
+
+    url = str(url).strip().lower()
+
+    # Check for common GitHub URL patterns
+    github_patterns = [
+        "github.com/",
+        "://github.com/",
+        "git@github.com:",
+    ]
+
+    return any(pattern in url for pattern in github_patterns)
+
+
+def split_github_repo(url):
+    """
+    Extract organization and repository name from a GitHub repository URL.
+
+    Parses various GitHub URL formats (HTTPS, SSH, etc.) and extracts the
+    organization/owner name and repository name components.
+
+    Args:
+        url (str): GitHub repository URL in formats such as:
+            - https://github.com/organization/repo
+            - https://github.com/organization/repo.git
+            - git@github.com:organization/repo.git
+            - github.com/organization/repo
+
+    Returns:
+        tuple[str, str]: A tuple containing:
+            - organization (str): Organization or owner name
+            - repo_name (str): Repository name (without .git suffix)
+        Returns (None, None) if URL cannot be parsed
+
+    Examples:
+        >>> split_github_repo("https://github.com/unfoldingWord/door43-catalog")
+        ('unfoldingWord', 'door43-catalog')
+        >>> split_github_repo("git@github.com:unfoldingWord/door43-catalog.git")
+        ('unfoldingWord', 'door43-catalog')
+    """
+    if is_empty(url):
+        return None, None
+
+    url = str(url).strip()
+
+    # Remove common prefixes
+    url = url.replace("https://", "").replace("http://", "").replace("git@", "")
+
+    # Remove github.com/ or github.com:
+    if url.startswith("github.com/"):
+        url = url[len("github.com/"):]
+    elif url.startswith("github.com:"):
+        url = url[len("github.com:"):]
+
+    # Remove .git suffix if present
+    if url.endswith(".git"):
+        url = url[:-4]
+
+    # Split by / to get organization and repo
+    parts = url.split("/")
+
+    if len(parts) >= 2:
+        organization = parts[0]
+        repo_name = parts[1]
+        return organization, repo_name
+
+    return None, None
+
+
+def add_submodule_relationships(data_rows):
+    """
+    Populate each repository row's 'is submodule of' field based on git submodule URLs.
+    """
+    for row in data_rows:
+        git_submodules = row.get("git submodules")
+        if not is_empty(git_submodules):
+            print(f"found submodules in: {row.get('repo name')}")
+            for submodule_url in git_submodules:
+                if is_github_repo(submodule_url):
+                    organization, repo_name = split_github_repo(submodule_url)
+
+                    for data_row in data_rows:
+                        if data_row.get("repo name") == repo_name and data_row.get("organization name") == organization:
+                            print(f"found submodule: {submodule_url} in {data_row.get('repo name')}")
+                            submodule_name = organization + "/" + repo_name
+                            is_submodule_of = data_row.get("is submodule of")
+                            if not is_submodule_of:
+                                is_submodule_of = submodule_name
+                            else:
+                                is_submodule_of = is_submodule_of + "," + submodule_name
+                            data_row["is submodule of"] = is_submodule_of
+
+                            break
+
+    for row in data_rows:
+        if "is submodule of" not in row:
+            row["is submodule of"] = ""
+
+
+
 def main():
     """
     Main entry point for repository categorization workflow.
-    
+
     Loads repository data from an ODS spreadsheet, applies GitHub and npm
     classification rules to each repository, sorts results by classification
     priority, and exports the categorized data to both CSV and ODS formats.
@@ -502,6 +616,9 @@ def main():
         for row in data_rows
     ]
 
+    if "is submodule of" not in headers:
+        headers.insert(headers.index("git submodules"), "is submodule of")
+
     if "repo full name" not in headers:
         headers.append("repo full name")
 
@@ -516,6 +633,8 @@ def main():
 
     if "npmjs classification reason" not in headers:
         headers.append("npmjs classification reason")
+
+    add_submodule_relationships(data_rows)
 
     for row in data_rows:
         print(row)

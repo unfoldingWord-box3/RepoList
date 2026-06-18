@@ -39,7 +39,7 @@ from lib.utilities import load_env_file, github_request, fetch_repository_depend
     fetch_package_json, fetch_npmjs_package_metadata, npm_repo_is_from_uw, fetch_npmjs_last_published, \
     fetch_npmjs_download_count, fetch_nx_json, fetch_package_json_files, get_next_page_url, fetch_repository_json_file, \
     fetch_repository_last_commit_date, fetch_repository_last_release_date, fetch_repository_open_prs_count, \
-    fetch_npmjs_is_deprecated, fetch_repository_github_downloads
+    fetch_npmjs_is_deprecated, fetch_repository_github_downloads, get_repos_by_npmjs_package_name
 
 ORG_NAMES = [
     "unfoldingWord-box3",
@@ -289,11 +289,7 @@ def update_npmjs_dependencies(repos):
     # Create a dictionary mapping npm package names to their corresponding repository objects
     # This allows O(1) lookup of repositories by their npm package name for efficient
     # dependency relationship building. Only repositories with an npm package name are included.
-    repos_by_npmjs_package_name = {
-        repo.get("npmjs_package_name"): repo
-        for repo in repos
-        if repo.get("npmjs_package_name")
-    }
+    repos_by_npmjs_package_name = get_repos_by_npmjs_package_name(repos)
 
     sub_modules = []
 

@@ -21,7 +21,6 @@ Classification Categories:
         - Dead: Archived, deprecated, or long-inactive with no usage
         - Stale: Inactive but with some usage or open issues
         - No longer used: Candidates for archival/cleanup
-        - Needs review: Default fallback for unmatched cases
 
     npm Packages:
         - Deprecated: Already marked as deprecated
@@ -62,10 +61,11 @@ Example:
     to each repository, and exports results to 'categorized_repos.csv' and
     'categorized_repos.ods' with added classification columns.
 """
+import sys
 
-
-from lib.utilities import update_ods_sheet_data, is_true, months_old, is_empty, as_int, contains_any, load_repository_data, \
-    write_list_to_csv
+from lib.utilities import ( update_ods_sheet_data,
+                           is_true, months_old, is_empty, as_int, contains_any, load_repository_data,
+                           write_list_to_csv)
 
 ODS_FILE = "unfoldingword_repos.ods"
 TAGGED_ODS_FILE = "tagged_repos.ods"
@@ -76,10 +76,9 @@ TAGGED_COLUMNS = ["Ask","Archive","Keep"]
 
 SORT_ORDER = [
     "No longer used candidate",
+    "Manual review",
     "Keep - externally used",
     "Keep - locally used",
-    "Manual review",
-    "Needs review",
     "Dead - archived",
     "Protected private",
 ]
@@ -117,7 +116,7 @@ def determine_github_classification(row):
     Returns:
         tuple[str, str]: A tuple containing:
             - classification (str): Category name (e.g., "Active", "Keep - locally used",
-              "Dead candidate", "Manual review", "Stale", "Needs review")
+              "Dead candidate", "Manual review", "Stale")
             - reason (str): Human-readable explanation for the classification decision
     
     Classification Priority:
@@ -127,7 +126,6 @@ def determine_github_classification(row):
         4. Dead: Archived, deprecated, or long-inactive with no usage
         5. Stale: Inactive but with some usage or open issues
         6. No longer used: Likely candidates for archival/cleanup
-        7. Needs review: Default fallback for unmatched cases
     """
     repo_name = row.get("repo name", "")
     archived = is_true(row.get("archived"))
@@ -331,7 +329,7 @@ def determine_github_classification(row):
     ):
         return "No longer used candidate", f"Repository has an npm package but no detected usage or downloads in the last year ({npm_downloads_last_year} npm downloads)."
 
-    return "Needs review", "Repository did not match any automatic classification rule."
+    return "Manual review", "Repository did not match any automatic classification rule."
 
 
 def determine_npmjs_classification(row):
@@ -357,7 +355,7 @@ def determine_npmjs_classification(row):
         tuple[str, str]: A tuple containing:
             - classification (str): Category name (e.g., "Deprecated npm package",
               "Keep - npm package in use", "Deprecate npm package candidate",
-              "Manual review - npm package", "Needs review")
+              "Manual review - npm package")
             - reason (str): Human-readable explanation for the classification decision
     
     Classification Logic:
@@ -399,10 +397,16 @@ def determine_npmjs_classification(row):
     ]
 
     if npm_package_empty:
-        return "Needs review", "No npmjs package is published for this repository."
+        return "Manual review", "No npmjs package is published for this repository."
 
     if npm_deprecated:
         return "Deprecated npm package", "Npm package is already explicitly marked as deprecated."
+
+    if archived:
+        return (
+            "Deprecate npm package candidate",
+            "Package is backed by an archived repository and is not marked deprecated on npmjs.",
+        )
 
     if contains_any(repo_name, sensitive_or_build_terms) or contains_any(npm_package_name, sensitive_or_build_terms):
         return (
@@ -418,12 +422,6 @@ def determine_npmjs_classification(row):
         return (
             "Keep - npm package in use",
             f"Package has detected local usage, GitHub dependents, or significant npm downloads ({npm_downloads_last_year} downloads in the last year).",
-        )
-
-    if archived:
-        return (
-            "Deprecate npm package candidate",
-            "Package is backed by an archived repository and is not marked deprecated on npmjs.",
         )
 
     if (
@@ -549,6 +547,181 @@ def split_github_repo(url):
     return None, None
 
 
+def npm_update_nested_used_by_sub(repos, repos_by_npmjs_package_name):
+    """
+    Perform one iteration of transitive npm dependency propagation.
+    
+    Scans all repositories and propagates transitive dependencies through the
+    dependency graph. When package A is used by package B, and package B uses
+    package C, this function adds package C to package A's "npmjs uses" list.
+    
+    This is a helper function called iteratively by npm_update_nested_used_by()
+    until no new dependency relationships are discovered.
+    
+    Args:
+        repos (list[dict]): List of repository data dictionaries containing:
+            - npmjs used by (str|list): Comma-separated string or list of packages
+              that depend on this package
+            - npmjs uses (str|list): Comma-separated string or list of packages
+              that this package depends on
+        repos_by_npmjs_package_name (dict): Dictionary mapping npm package names
+            to their repository data objects for efficient lookup
+    
+    Returns:
+        bool: True if any dependency relationships were added during this iteration,
+            False if no changes were made (indicating convergence)
+    
+    Side Effects:
+        Modifies the "npmjs uses" field in repository dictionaries to include
+        newly discovered transitive dependencies. Prints diagnostic messages when
+        updating dependency lists.
+    
+    Implementation Details:
+        1. Iterates through all repositories
+        2. For each repository with consumers (npmjs used by):
+           - Gets its own dependencies (npmjs uses)
+           - For each consumer package:
+             - Looks up the consumer's repository data
+             - Adds this repository's dependencies to the consumer's dependencies
+             - Marks change if any new dependencies were added
+        3. Returns whether any changes occurred
+    
+    Example:
+        If repository A uses [B], and C is used by [A]:
+            - C's dependencies will be added to A's "npmjs uses" list
+            - If C uses [D], then A's "npmjs uses" becomes [B, D]
+    """
+    changed = False
+    for repo in repos:
+        npmjs_used_by = repo.get("npmjs used by")
+        if npmjs_used_by:
+            npmjs_used_by = [module.strip() for module in npmjs_used_by.split(',')] \
+                if isinstance(npmjs_used_by, str) else npmjs_used_by
+
+            npmjs_uses = repo.get("npmjs uses")
+            if npmjs_uses:
+                npmjs_uses = [module.strip() for module in npmjs_uses.split(',')] \
+                    if isinstance(npmjs_uses, str) else npmjs_uses
+
+                for module_name in npmjs_used_by:
+                    if module_name in repos_by_npmjs_package_name:
+                        module = repos_by_npmjs_package_name[module_name]
+                        using_module_npmjs_uses = module.get("npmjs uses")
+                        if using_module_npmjs_uses:
+                            module_changed = False
+                            using_module_npmjs_uses = [module.strip() for module in using_module_npmjs_uses.split(',')] \
+                                if isinstance(using_module_npmjs_uses, str) else using_module_npmjs_uses
+
+                            for dependent_module in npmjs_uses:
+                                if dependent_module not in using_module_npmjs_uses:
+                                    print(
+                                        f"updating {module_name} to include {dependent_module}, and used {using_module_npmjs_uses}")
+                                    using_module_npmjs_uses.append(dependent_module)
+                                    module_changed = True
+
+                            if module_changed:
+                                changed = module_changed
+                                module["npmjs uses"] = using_module_npmjs_uses
+
+    return changed
+def get_repos_by_npmjs_package_name(data_rows):
+    """
+    Create a dictionary mapping npm package names to their repository data.
+
+    Args:
+        data_rows (list[dict]): List of repository data dictionaries
+    
+    Returns:
+        dict: Dictionary mapping npm package names to repository objects
+    """
+    repos_by_npmjs_package_name = {}
+
+    for repo in data_rows:
+        npm_name = repo.get("repo name")
+        if npm_name:
+            if npm_name not in repos_by_npmjs_package_name:
+                repos_by_npmjs_package_name[npm_name] = repo
+            else:
+                previous_repo = repos_by_npmjs_package_name[npm_name]
+                replace_repo = False
+
+                repo_org = repo.get("organization name", "")
+                previous_repo_org = previous_repo.get("organization name", "")
+                if repo_org.lower() == "unfoldingword" \
+                        and previous_repo_org.lower() != "unfoldingword":
+                    print(f"Replacing {previous_repo['full_name']} with {repo['full_name']} because org is {repo_org} is unfoldingword")
+                    replace_repo = True
+
+                if not is_true(repo.get("archived")) and is_true(previous_repo.get("archived")):
+                    print(f"Replacing {previous_repo['full_name']} with {repo['full_name']} because archive status")
+                    replace_repo = True
+
+                print(
+                    f"Error: npm package name {npm_name} already exists in the "
+                    f"repository data dictionary. Please provide a different npm package name "
+                    f"to prevent the overwriting of an existing npm package name.",
+                    file=sys.stderr,
+                )
+                print(f"previous repo: {previous_repo}")
+                print(f"current repo: {repo}")
+
+                if replace_repo:
+                    repos_by_npmjs_package_name[npm_name] = repo
+                    print(f"Replaced previous repo with current repo for npm package name: {npm_name}")
+
+
+    return repos_by_npmjs_package_name
+
+
+def npm_update_nested_used_by(data_rows):
+    """
+    Propagate nested npm dependency relationships through the repository graph.
+    
+    Iteratively updates npm package dependency information to include transitive
+    dependencies. When package A is used by package B, and package B uses package C,
+    this function ensures that package A's "npmjs uses" field also includes package C.
+    
+    This is an iterative process that continues until no new dependency relationships
+    are discovered (fixed-point iteration).
+    
+    Args:
+        data_rows (list[dict]): List of repository data dictionaries containing:
+            - npmjs package name (str): Name of the npm package
+            - npmjs used by (str|list): Comma-separated string or list of packages
+              that depend on this package
+            - npmjs uses (str|list): Comma-separated string or list of packages
+              that this package depends on
+    
+    Side Effects:
+        Modifies the "npmjs uses" field in repository dictionaries to include
+        transitive dependencies discovered through the dependency graph.
+    
+    Implementation Details:
+        1. Creates a lookup dictionary mapping npm package names to repositories
+        2. Iteratively scans all packages for new transitive dependencies
+        3. For each package that is used by others, propagates its dependencies
+           to those dependent packages
+        4. Continues iteration until convergence (no new relationships found)
+        5. Prints diagnostic information when updating dependency lists
+    
+    Example:
+        If the dependency graph is:
+            - Package A uses Package B
+            - Package C is used by Package A
+            - Package C uses Package D
+        
+        After running this function:
+            - Package A's "npmjs uses" will include both B and D
+            - This reflects that A transitively depends on D through C
+    """
+    changed = True
+
+    repos_by_npmjs_package_name = get_repos_by_npmjs_package_name(data_rows)
+
+    while changed:
+        changed = npm_update_nested_used_by_sub(data_rows, repos_by_npmjs_package_name)
+
+        
 def add_submodule_relationships(data_rows):
     """
     Populate each repository row's 'is submodule of' field based on git submodule URLs.
@@ -577,7 +750,6 @@ def add_submodule_relationships(data_rows):
     for row in data_rows:
         if "is submodule of" not in row:
             row["is submodule of"] = ""
-
 
 
 def main():
@@ -635,6 +807,7 @@ def main():
         headers.append("npmjs classification reason")
 
     add_submodule_relationships(data_rows)
+    npm_update_nested_used_by(data_rows)
 
     for row in data_rows:
         print(row)

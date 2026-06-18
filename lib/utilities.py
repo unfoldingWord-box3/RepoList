@@ -1647,3 +1647,48 @@ def contains_any(value, terms):
     return any(term in str(value).lower() for term in terms)
 
 
+def get_repos_by_npmjs_package_name(repos):
+    """
+    Create a dictionary mapping npm package names to their repository data.
+
+    Args:
+        repos (list[dict]): List of repository data dictionaries
+    
+    Returns:
+        dict: Dictionary mapping npm package names to repository objects
+    """
+    repos_by_npmjs_package_name = {}
+
+    for repo in repos:
+        npm_name = repo.get("npmjs package name")
+        if npm_name:
+            if npm_name not in repos_by_npmjs_package_name:
+                repos_by_npmjs_package_name[npm_name] = repo
+            else:
+                previous_repo = repos_by_npmjs_package_name[npm_name]
+                replace_repo = False
+                    
+                if repo.get("owner", {}).get("login", "").lower() == "unfoldingword" \
+                        and previous_repo.get("owner", {}).get("login", "").lower() != "unfoldingword":
+                    print(f"Replacing {previous_repo['full_name']} with {repo['full_name']} because org ")
+                    replace_repo = True
+
+                if not repo.get("archived", False) and previous_repo.get("archived", False):
+                    print(f"Replacing {previous_repo['full_name']} with {repo['full_name']} because archive status")
+                    replace_repo = True
+
+                print(
+                    f"Error: npm package name {npm_name} already exists in the "
+                    f"repository data dictionary. Please provide a different npm package name "
+                    f"to prevent the overwriting of an existing npm package name.",
+                    file=sys.stderr,
+                )
+                print(f"previous repo: {previous_repo}")
+                print(f"current repo: {repo}")
+                
+                if replace_repo:
+                    repos_by_npmjs_package_name[npm_name] = repo
+                    print(f"Replaced previous repo with current repo for npm package name: {npm_name}")
+                
+    
+    return repos_by_npmjs_package_name

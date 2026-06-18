@@ -70,7 +70,7 @@ Rules are applied in priority order; the first matching rule wins.
 | Label | Meaning |
 |---|---|
 | `Dead - archived` | Repository is archived on GitHub. |
-| `Manual review` | High-risk or ambiguous: used as a git submodule, core product name, high issue/release/contributor count, or recent metadata edit with old code. |
+| `Manual review` | High-risk or ambiguous: used as a git submodule, core product name, high issue/release/contributor count, recent metadata edit with old code, or did not match any other rule. |
 | `Protected private` | No last commit date available — likely a private or protected repository with restricted access. |
 | `Active` | Last commit was within the last 12 months. |
 | `Keep - locally used` | Used as a dependency by another npm package in the fetched set. |
@@ -83,7 +83,6 @@ Rules are applied in priority order; the first matching rule wins.
 | `Stale release process` | Recent commits but no release in over 24 months. |
 | `Stale` | No commits in over 18 months and not archived. |
 | `No longer used candidate` | Name suggests legacy/replaced content, old POC/demo, fork with no consumers, or npm package with no downloads. |
-| `Needs review` | Did not match any automatic classification rule. |
 
 ### npm classification labels
 
@@ -92,9 +91,9 @@ Applied only to repositories that have a published npm package. Rules are applie
 | Label | Meaning |
 |---|---|
 | `Deprecated npm package` | Package is already explicitly marked as deprecated on the npm registry. |
-| `Keep - npm package in use` | Has local consumers, GitHub dependents, or ≥ 1,000 npm downloads in the last year. |
-| `Deprecate npm package candidate` | No detected local consumers, no GitHub dependents, and no npm downloads; or backed by an archived repository; or stale with low downloads; or name suggests obsolescence. |
-| `Manual review - npm package` | Security-sensitive or build-tool package (auth, cli, build, config, etc.), or low but nonzero usage with no detected local consumers. |
+| `Deprecate npm package candidate` | Backed by an archived repository; or no detected local consumers, no GitHub dependents, and no npm downloads; or stale with low downloads; or name suggests obsolescence. |
+| `Manual review - npm package` | Security-sensitive or build-tool package (auth, cli, build, config, etc.) — but only if the backing repository is not archived. Or: low but nonzero usage with no detected local consumers. |
+| `Keep - npm package in use` | Has local consumers, GitHub dependents, or ≥ 1,000 npm downloads in the last year — checked after archived and sensitive-term rules. |
 
 See [ClassificationRules.md](ClassificationRules.md) for the full rule definitions and recommended actions per label.
 

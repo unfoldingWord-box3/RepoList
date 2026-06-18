@@ -122,7 +122,7 @@ AND npm is deprecated is not True
 ```
 **Classification:** `Deprecate npm package candidate`
 
-If the source repository is archived, the npm package is unlikely to receive maintenance.
+If the source repository is archived, the npm package is unlikely to receive maintenance. This rule is evaluated **before** the security/build-tool rule (P8), so an archived package is always classified here regardless of its name.
 
 **Exception:** If the package has significant downloads or known production usage, classify as `Manual review - npm package`.
 
@@ -167,12 +167,15 @@ Low download counts may represent real users, automated installs, CI, mirrors, o
 ```
 plain text
 npmjs package name is not empty
+AND archived = False
 AND repo name or npmjs package name contains:
   auth, login, token, crypto, security, deploy, build, cli, config, eslint, babel, webpack, rollup
 ```
 **Classification:** `Manual review - npm package`
 
 Some packages can have outsized impact even with low download counts, especially CLI tools, build tools, authentication utilities, or security-related modules.
+
+**Note:** This rule only applies when the backing repository is not archived. Archived repositories are handled by Rule P5 first.
 
 **Recommended action:** Require owner/security review before deprecation.
 

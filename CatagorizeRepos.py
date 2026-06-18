@@ -659,8 +659,7 @@ def get_repos_by_npmjs_package_name(data_rows):
                 print(
                     f"Error: npm package name {npm_name} already exists in the "
                     f"repository data dictionary. Please provide a different npm package name "
-                    f"to prevent the overwriting of an existing npm package name.",
-                    file=sys.stderr,
+                    f"to prevent the overwriting of an existing npm package name."
                 )
                 print(f"previous repo: {previous_repo}")
                 print(f"current repo: {repo}")

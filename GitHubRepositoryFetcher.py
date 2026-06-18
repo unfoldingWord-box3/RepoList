@@ -41,10 +41,10 @@ from lib.utilities import load_env_file, github_request, fetch_repository_depend
     fetch_repository_last_commit_date, fetch_repository_last_release_date, fetch_repository_open_prs_count, \
     fetch_npmjs_is_deprecated, fetch_repository_github_downloads, get_repos_by_npmjs_package_name
 
-ORG_NAMES = [
-    "unfoldingWord-box3",
+ORG_NAMES = [ # highest priority first
     "unfoldingWord",
     "unfoldingWord-dev",
+    "unfoldingWord-box3",
 ]
 OUTPUT_FILE = "unfoldingword_repos.ods"
 ENV_FILE = ".env"

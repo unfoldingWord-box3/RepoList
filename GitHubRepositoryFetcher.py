@@ -39,7 +39,8 @@ from lib.utilities import load_env_file, github_request, fetch_repository_depend
     fetch_package_json, fetch_npmjs_package_metadata, npm_repo_is_from_uw, fetch_npmjs_last_published, \
     fetch_npmjs_download_count, fetch_nx_json, fetch_package_json_files, get_next_page_url, fetch_repository_json_file, \
     fetch_repository_last_commit_date, fetch_repository_last_release_date, fetch_repository_open_prs_count, \
-    fetch_npmjs_is_deprecated, fetch_repository_github_downloads, get_repos_by_npmjs_package_name
+    fetch_npmjs_is_deprecated, fetch_repository_github_downloads, get_repos_by_npmjs_package_name, \
+    fetch_repository_commit_count
 
 ORG_NAMES = [ # highest priority first
     "unfoldingWord",
@@ -158,21 +159,26 @@ def fetch_repositories_for_org(org_name):
     url = f"{github_api_url}?{query_params}"
 
     while url:
-        repo_count += 1
-        print(f"{repo_count} - Fetching: {url}")
+        print(f"Fetching: {url}")
 
         data, link_header = github_request(url)
 
         page_repos = json.loads(data.decode("utf-8"))
 
         for repo in page_repos:
+            repo_count += 1
             time.sleep(1)
+            
+            repo_name = repo.get("name")
+            print(f"{repo_count} - Fetching repository: {repo_name}")
+            
             repo["github_dependents"] = fetch_repository_dependents(repo)
             repo["github_contributors"] = fetch_repository_contributors(repo)
             repo["github_downloads"], repo["github_release_count"] = fetch_repository_github_downloads(repo)
             repo["last_commit_date"] = fetch_repository_last_commit_date(repo)
             repo["last_release_date"] = fetch_repository_last_release_date(repo)
             repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
+            repo["commit_count"] = fetch_repository_commit_count(repo)
             repo["git_submodules"] = fetch_repository_submodules(repo)
 
             language = (repo.get("language") or "").lower()
@@ -352,6 +358,7 @@ def write_ods(repos, output_file):
         "last release date",
         "open issues count",
         "open prs count",
+        "commit count",
         "git submodules",
         "npmjs package name",
         "npm is deprecated",
@@ -382,6 +389,7 @@ def write_ods(repos, output_file):
                 repo.get("last_release_date", ""),
                 repo.get("open_issues_count", ""),
                 repo.get("open_prs_count", ""),
+                repo.get("commit_count", ""),
                 ", ".join(repo.get("git_submodules", [])),
                 repo.get("npmjs_package_name", ""),
                 repo.get("npm_is_deprecated", ""),

@@ -186,20 +186,20 @@ def determine_github_classification(row):
     if archived:
         return "Dead - archived", "Repository is archived."
 
-    if not is_empty(row.get("is submodule of")):
-        return "Manual review", "Repository is used as a git submodule by another repository."
-
     if last_commit_date_empty:
         return "Protected private", "Repository has no last commit date — likely a private or protected repository with restricted access."
+
+    if has_github_dependents or npm_downloads_last_year >= 1000:
+        return "Keep - externally used", f"Repository has GitHub dependents or at least 1,000 npm downloads in the last year ({npm_downloads_last_year} downloads)."
+
+    if not is_empty(row.get("is submodule of")):
+        return "Manual review", "Repository is used as a git submodule by another repository."
 
     if recently_active:
         return "Active", f"Last commit was within the last 12 months ({last_commit_months} months ago)."
 
     if has_local_use:
         return "Keep - locally used", "Repository is listed as used by an npm package."
-
-    if has_github_dependents or npm_downloads_last_year >= 1000:
-        return "Keep - externally used", f"Repository has GitHub dependents or at least 1,000 npm downloads in the last year ({npm_downloads_last_year} downloads)."
 
     if contains_any(repo_name, core_terms):
         return "Manual review", "Repository name contains a core project term."

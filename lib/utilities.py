@@ -736,6 +736,55 @@ def fetch_repository_open_prs_count(repo):
         return 0
 
 
+def fetch_repository_commit_count(repo):
+    """
+    Fetch the total number of commits in a repository's default branch.
+
+    Uses the GitHub API pagination headers with per_page=1 to read the last-page
+    number without downloading all commit data.
+
+    Args:
+        repo (dict): Repository object containing 'owner', 'name', and
+                     'default_branch' fields.
+
+    Returns:
+        int | str: Total commit count, or empty string if the repository info is
+                   incomplete, the repo is empty, or the request fails.
+    """
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+    default_branch = repo.get("default_branch")
+
+    if not owner or not repo_name:
+        return ""
+
+    params = {"per_page": 1, "sha": default_branch} if default_branch else {"per_page": 1}
+    commits_url = (
+        f"https://api.github.com/repos/"
+        f"{urllib.parse.quote(owner, safe='')}/"
+        f"{urllib.parse.quote(repo_name, safe='')}/commits?"
+        f"{urllib.parse.urlencode(params)}"
+    )
+
+    print(f"Fetching commit count: {owner}/{repo_name}")
+
+    try:
+        data, link_header = github_request(commits_url, allow_not_found=True)
+        if not data:
+            return ""
+
+        last_page_match = re.search(r'[?&]page=(\d+)>; rel="last"', link_header or "")
+        if last_page_match:
+            return int(last_page_match.group(1))
+
+        commits = json.loads(data.decode("utf-8"))
+        return len(commits)
+
+    except Exception as e:
+        print(f"Error fetching commit count for {owner}/{repo_name}: {e}")
+        return ""
+
+
 def get_next_page_url(link_header):
     """
     Extract the next page URL from a GitHub API Link header.

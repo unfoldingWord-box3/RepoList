@@ -17,6 +17,7 @@
 | **last release date** | The publication date of the latest GitHub release. If no published date is available, the release creation date is used. |
 | **open issues count** | The number of open issues reported by GitHub. Note that GitHub’s `open_issues_count` includes both issues and pull requests. |
 | **open prs count** | The number of currently open pull requests in the repository. |
+| **commit count** | The total number of commits on the repository's default branch. |
 | **npmjs package name** | The npm package name found in the repository’s `package.json`, when available. |
 | **npm is deprecated** | Whether the latest npm package version is marked as deprecated in the npm registry. Empty when no matching npm metadata was fetched. |
 | **npmjs downloads last year** | The npm download count for the package over the `last-year` period. |

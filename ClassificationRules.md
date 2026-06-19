@@ -26,6 +26,7 @@ Good columns to use:
 | Repository role | `is fork`, `repo name`, `organization name`, `language` |
 | Release/value signal | `github release count`, `github downloads` |
 | Human involvement | `github contributors` |
+| Commit history depth | `commit count` |
 
 ---
 
@@ -231,7 +232,24 @@ A deprecated npm package with no meaningful recent maintenance is a strong dead 
 
 ---
 
-### Rule D3 — Very old and no evidence of use
+### Rule D3 — Stub or experiment with very few commits and no recent activity
+
+```plain text
+commit count <= 5
+AND last commit date older than 3 years
+AND npmjs used by is empty
+AND github dependents is empty
+AND github downloads = 0
+AND github release count = 0
+```
+
+**Classification:** `Dead candidate`
+
+A repository with five or fewer commits that has had no activity in over three years with no evidence of use was almost certainly a stub, experiment, or scratch repo that never developed into a real project.
+
+---
+
+### Rule D4 — Very old and no evidence of use
 
 ```plain text
 last commit date older than 5 years
@@ -240,6 +258,7 @@ AND npmjs used by is empty
 AND github dependents is empty
 AND github downloads = 0
 AND github release count = 0
+AND commit count < 50
 ```
 
 
@@ -247,9 +266,11 @@ AND github release count = 0
 
 This catches old one-off scripts, prototypes, obsolete service code, old mobile apps, old DokuWiki/MediaWiki tooling, and unused experiments.
 
+**Note:** Repositories with 50 or more commits are excluded from this rule — they represent meaningful development history and fall through to `Stale` instead, which requires human review before action.
+
 ---
 
-### Rule D4 — Old fork with no local use
+### Rule D5 — Old fork with no local use
 
 ```plain text
 is fork = True
@@ -268,7 +289,7 @@ Forks are often snapshots or experiments. If they are old and not depended on, t
 
 ---
 
-### Rule D5 — Obvious POC/test/demo/template with old activity and no dependents
+### Rule D6 — Obvious POC/test/demo/template with old activity and no dependents
 
 ```plain text
 repo name contains any of:
@@ -286,7 +307,7 @@ This is especially useful for names like `*-poc`, `*-demo`, `*-old`, `Example*`,
 
 ---
 
-### Rule D6 — Empty or metadata-only repo with no recent activity
+### Rule D7 — Empty or metadata-only repo with no recent activity
 
 ```plain text
 language is empty
@@ -617,17 +638,18 @@ A high issue count may mean the repo is important but neglected.
 
 ---
 
-### Rule M2 — High release/download history
+### Rule M2 — High release/download/commit history
 
 ```plain text
 github release count >= 10
 OR github downloads >= 100
+OR commit count >= 100
 ```
 
 
 **Classification:** `Manual review`
 
-Older downloadable tools may still be used even without recent commits.
+A high commit count indicates sustained development effort. Repositories with 100 or more commits represent real investment and should not be automatically classified as dead or stale without a human review, even if they have no recent activity, releases, or downloads.
 
 ---
 
@@ -692,6 +714,7 @@ Subtract points:
 | `npmjs downloads last year >= 1000` | -25 |
 | `github release count >= 10` | -20 |
 | `github downloads >= 100` | -20 |
+| `commit count >= 100` | -20 |
 | `open prs count > 0` | -5 |
 | `open issues count > 0` | -5 |
 

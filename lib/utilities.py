@@ -121,6 +121,66 @@ def write_rows_to_ods(output_file, sheet_name, rows):
     write_ods_sheets(output_file, {sheet_name: dataframe})
 
 
+def _convert_hyperlink_cells(table):
+    """Convert =HYPERLINK("url","text") string cells to proper ODF hyperlink formula cells.
+
+    LibreOffice requires three things for a clickable HYPERLINK cell:
+      - table:formula='of:=HYPERLINK(url,display)'  (the formula)
+      - office:string-value="display"               (cached result, suppresses the ' prefix)
+      - <text:a xlink:href="url">display</text:a>  (rendered link text)
+    """
+    HYPERLINK_RE = re.compile(r'^=HYPERLINK\("([^"]+)",\s*"([^"]+)"\)$')
+
+    TEXT_NS_URI = NS["text"]
+    TABLE_NS_URI = NS["table"]
+    OFFICE_NS_URI = NS["office"]
+    XLINK_NS_URI = "http://www.w3.org/1999/xlink"
+
+    TABLE_ROW_TAG = f"{{{TABLE_NS_URI}}}table-row"
+    TABLE_CELL_TAG = f"{{{TABLE_NS_URI}}}table-cell"
+    TEXT_P_TAG = f"{{{TEXT_NS_URI}}}p"
+    TEXT_A_TAG = f"{{{TEXT_NS_URI}}}a"
+
+    converted = 0
+    for row_elem in table:
+        if row_elem.tag != TABLE_ROW_TAG:
+            continue
+        for cell in row_elem:
+            if cell.tag != TABLE_CELL_TAG:
+                continue
+            p_elems = [c for c in cell if c.tag == TEXT_P_TAG]
+            if not p_elems:
+                continue
+            p = p_elems[0]
+            cell_text = "".join(p.itertext()).strip()
+            m = HYPERLINK_RE.match(cell_text)
+            if not m:
+                continue
+            url, display = m.group(1), m.group(2)
+
+            # Remove any formula attribute — it causes Err:508 in LibreOffice when
+            # the of: namespace isn't declared. LibreOffice's own Insert > Hyperlink
+            # uses <text:a> + office:string-value with no formula attribute.
+            formula_attr = f"{{{TABLE_NS_URI}}}formula"
+            if formula_attr in cell.attrib:
+                del cell.attrib[formula_attr]
+
+            cell.set(f"{{{OFFICE_NS_URI}}}value-type", "string")
+            cell.set(f"{{{OFFICE_NS_URI}}}string-value", display)
+
+            # Replace <text:p> content with a <text:a> hyperlink element.
+            for child in list(p):
+                p.remove(child)
+            p.text = None
+            a = ET.SubElement(p, TEXT_A_TAG)
+            a.set(f"{{{XLINK_NS_URI}}}type", "simple")
+            a.set(f"{{{XLINK_NS_URI}}}href", url)
+            a.text = display
+            converted += 1
+
+    print(f"Converted {converted} cells to hyperlinks")
+
+
 def update_ods_sheet_data(output_file, sheet_name, rows):
     """
     Update the data rows in a named sheet of an existing ODS file, preserving column styles.
@@ -138,10 +198,6 @@ def update_ods_sheet_data(output_file, sheet_name, rows):
     Returns:
         None
     """
-    if not os.path.exists(output_file):
-        write_rows_to_ods(output_file, sheet_name, rows)
-        return
-
     TABLE_TAG = f"{{{NS['table']}}}table"
     TABLE_NAME_ATTR = f"{{{NS['table']}}}name"
     TABLE_ROW_TAG = f"{{{NS['table']}}}table-row"
@@ -160,28 +216,50 @@ def update_ods_sheet_data(output_file, sheet_name, rows):
                 return table
         return None
 
+    def save_root_to_zip(root, src_zip_path, out_path):
+        updated_xml = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+        with zipfile.ZipFile(src_zip_path, "r") as src_zip:
+            with zipfile.ZipFile(out_path, "w", zipfile.ZIP_DEFLATED) as out_zip:
+                for item in src_zip.infolist():
+                    if item.filename == "content.xml":
+                        out_zip.writestr(item, updated_xml)
+                    else:
+                        out_zip.writestr(item, src_zip.read(item.filename))
+
     # Write new data to a temp file so pandas formats the rows as valid ODS XML.
     tmp_new = output_file + ".tmp_new.ods"
     tmp_out = output_file + ".tmp_out.ods"
     try:
         write_rows_to_ods(tmp_new, sheet_name, rows)
 
-        existing_content = read_content_xml(output_file)
         new_content = read_content_xml(tmp_new)
-
-        # Register every namespace prefix found in both files so ET preserves them.
-        register_all_namespaces(existing_content)
+        # Register namespaces found in new content plus xlink (needed for hyperlinks).
         register_all_namespaces(new_content)
-
-        existing_root = ET.fromstring(existing_content)
+        ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
+        ET.register_namespace("office", NS["office"])
         new_root = ET.fromstring(new_content)
-
-        existing_table = find_table(existing_root, sheet_name)
         new_table = find_table(new_root, sheet_name)
 
+        if new_table is not None:
+            _convert_hyperlink_cells(new_table)
+
+        if not os.path.exists(output_file):
+            # Fresh create: save the hyperlink-converted content.
+            save_root_to_zip(new_root, tmp_new, tmp_out)
+            os.replace(tmp_out, output_file)
+            print(f"Data saved to {output_file}")
+            return
+
+        existing_content = read_content_xml(output_file)
+        register_all_namespaces(existing_content)
+        existing_root = ET.fromstring(existing_content)
+        existing_table = find_table(existing_root, sheet_name)
+
         if existing_table is None or new_table is None:
-            # Sheet not found in one of the files — just replace the whole file.
-            os.replace(tmp_new, output_file)
+            # Sheet not found — replace whole file with converted content.
+            save_root_to_zip(new_root, tmp_new, tmp_out)
+            os.replace(tmp_out, output_file)
+            print(f"Data saved to {output_file}")
             return
 
         # Remove old rows from the existing table, keeping column-style elements.
@@ -189,7 +267,7 @@ def update_ods_sheet_data(output_file, sheet_name, rows):
             if child.tag == TABLE_ROW_TAG:
                 existing_table.remove(child)
 
-        # Append new rows.
+        # Append new rows (already hyperlink-converted).
         for row in new_table:
             if row.tag == TABLE_ROW_TAG:
                 existing_table.append(row)
@@ -1646,13 +1724,23 @@ def parse_date(value):
 
     value = str(value).strip()
 
-    for date_format in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%m/%d/%Y", "%m/%d/%y"):
+    for date_format in (
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%dT%H:%M:%S.%fZ",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%d",
+        "%m/%d/%Y",
+        "%m/%d/%y",
+    ):
         try:
-            return datetime.datetime.strptime(value[:19], date_format)
+            return datetime.datetime.strptime(value, date_format)
         except ValueError:
             continue
 
-    return None
+    try:
+        return datetime.datetime.strptime(value[:10], "%Y-%m-%d")
+    except ValueError:
+        return None
 
 
 def months_old(value):

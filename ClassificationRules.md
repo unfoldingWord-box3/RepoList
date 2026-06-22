@@ -416,6 +416,8 @@ This category should focus on replacement/supersession and lack of consumers.
 ```plain text
 repo name contains:
   old, legacy, deprecated, obsolete, archive, backup
+
+AND last commit date older than 18 months
 ```
 
 
@@ -437,7 +439,7 @@ Examples of common strong indicators:
 repo name contains:
   poc, demo, example, sample, template, playground, test
 
-AND last commit date older than 12 months
+AND last commit date older than 18 months
 ```
 
 
@@ -453,6 +455,7 @@ This is slightly different from `Dead`: a repo can be “no longer used” even 
 is fork = True
 AND npmjs used by is empty
 AND github dependents is empty
+AND last commit date older than 18 months
 ```
 
 
@@ -469,6 +472,7 @@ npmjs package name is not empty
 AND npmjs used by is empty
 AND github dependents is empty
 AND npmjs downloads last year is empty or 0
+AND last commit date older than 18 months
 ```
 
 

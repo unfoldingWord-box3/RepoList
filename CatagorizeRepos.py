@@ -77,8 +77,7 @@ TAGGED_COLUMNS = ["Ask","Archive","Keep"]
 SORT_ORDER = [
     "No longer used candidate",
     "Manual review",
-    "Keep - externally used",
-    "Keep - locally used",
+    "Keep",
     "Dead - archived",
     "Protected private",
 ]
@@ -116,7 +115,7 @@ def determine_github_classification(row):
     Returns:
         tuple[str, str]: A tuple containing:
             - classification (str): Category name (e.g., "Active", "Keep - locally used",
-              "Dead candidate", "Manual review", "Stale")
+              "No longer used candidate", "Manual review", "Stale")
             - reason (str): Human-readable explanation for the classification decision
     
     Classification Priority:
@@ -132,12 +131,12 @@ def determine_github_classification(row):
     npm_deprecated = is_true(row.get("npm is deprecated"))
     is_fork = is_true(row.get("is fork"))
 
-    last_commit_months = months_old(row.get("last commit date"))
+    last_commit_date = row.get("last commit date")
+    last_commit_months = months_old(last_commit_date)
+    last_commit_date_empty = is_empty(last_commit_date)
     last_release_months = months_old(row.get("last release date"))
     last_edit_months = months_old(row.get("last edit date"))
     npm_last_published_months = months_old(row.get("npmjs last published"))
-
-    last_commit_date_empty = is_empty(row.get("last commit date"))
 
     npm_used_by_empty = is_empty(row.get("npmjs used by"))
     github_dependents_empty = is_empty(row.get("github dependents"))
@@ -194,7 +193,7 @@ def determine_github_classification(row):
 
     # ClassificationRules.md Rule K3 / K4
     if has_github_dependents or npm_downloads_last_year >= 1000:
-        return "Keep - externally used", f"Repository has GitHub dependents or at least 1,000 npm downloads in the last year ({npm_downloads_last_year} downloads)."
+        return "Keep", f"externally used - Repository has GitHub dependents or at least 1,000 npm downloads in the last year ({npm_downloads_last_year} downloads)."
 
     # ClassificationRules.md Rule M5
     if not is_empty(row.get("is submodule of")):
@@ -202,11 +201,11 @@ def determine_github_classification(row):
 
     # ClassificationRules.md Rule K1
     if recently_active:
-        return "Active", f"Last commit was within the last 12 months ({last_commit_months} months ago)."
+        return "Keep", f"Active - Last commit was within the last 12 months ({last_commit_months} months ago)."
 
     # ClassificationRules.md Rule K2
     if has_local_use:
-        return "Keep - locally used", "Repository is listed as used by an npm package."
+        return "Keep", "locally used - Repository is listed as used by an npm package."
 
     # ClassificationRules.md Rule K5
     if contains_any(repo_name, core_terms):
@@ -248,7 +247,7 @@ def determine_github_classification(row):
         and github_downloads == 0
         and github_release_count == 0
     ):
-        return "Dead candidate", f"Repository has very few commits ({commit_count}) and has had no activity in over 36 months ({last_commit_months} months ago) with no usage, downloads, or releases."
+        return "No longer used candidate", f"Repository has very few commits ({commit_count}) and has had no activity in over 36 months ({last_commit_months} months ago) with no usage, downloads, or releases."
 
     # ClassificationRules.md Rule D4
     if (
@@ -260,7 +259,7 @@ def determine_github_classification(row):
         and github_release_count == 0
         and (commit_count is None or commit_count < 50)
     ):
-        return "Dead candidate", f"Repository has had no commits in over 60 months ({last_commit_months} months ago) and has no usage, downloads ({github_downloads}), or releases ({github_release_count})."
+        return "No longer used candidate", f"Repository has had no commits in over 60 months ({last_commit_months} months ago) and has no usage, downloads ({github_downloads}), or releases ({github_release_count})."
 
     # ClassificationRules.md Rule D5
     if (
@@ -271,7 +270,7 @@ def determine_github_classification(row):
         and github_dependents_empty
         and github_downloads == 0
     ):
-        return "Dead candidate", f"Repository is an old fork with no detected usage or downloads ({github_downloads} downloads), and the last commit was over 36 months ago ({last_commit_months} months ago)."
+        return "No longer used candidate", f"Repository is an old fork with no detected usage or downloads ({github_downloads} downloads), and the last commit was over 36 months ago ({last_commit_months} months ago)."
 
     # ClassificationRules.md Rule D6
     if (
@@ -281,7 +280,7 @@ def determine_github_classification(row):
         and npm_used_by_empty
         and github_dependents_empty
     ):
-        return "Dead candidate", f"Repository name suggests cleanup/test/demo content, it has no detected usage, and the last commit was over 24 months ago ({last_commit_months} months ago)."
+        return "No longer used candidate", f"Repository name suggests cleanup/test/demo content, it has no detected usage, and the last commit was over 24 months ago ({last_commit_months} months ago)."
 
     # ClassificationRules.md Rule D7
     if (
@@ -292,7 +291,7 @@ def determine_github_classification(row):
         and last_commit_months is not None
         and last_commit_months > 36
     ):
-        return "Dead candidate", f"Repository has no language, releases ({github_release_count}), downloads ({github_downloads}), or npm package, and is older than 36 months ({last_commit_months} months since last commit)."
+        return "No longer used candidate", f"Repository has no language, releases ({github_release_count}), downloads ({github_downloads}), or npm package, and is older than 36 months ({last_commit_months} months since last commit)."
 
     # ClassificationRules.md Rule S3
     if (
@@ -304,7 +303,7 @@ def determine_github_classification(row):
             or npm_downloads_last_year > 0
         )
     ):
-        return "Stale but used", f"Repository has had no commits in over 18 months ({last_commit_months} months ago) but still has detected usage ({npm_downloads_last_year} npm downloads in the last year)."
+        return "Manual review", f"Stale but used - Repository has had no commits in over 18 months ({last_commit_months} months ago) but still has detected usage ({npm_downloads_last_year} npm downloads in the last year)."
 
     # ClassificationRules.md Rule S2
     if (
@@ -313,7 +312,7 @@ def determine_github_classification(row):
         and npm_last_published_months > 18
         and not npm_deprecated
     ):
-        return "Stale package", f"Npm package has not been published in over 18 months ({npm_last_published_months} months ago) and is not marked deprecated."
+        return "Manual review", f"Stale package - Npm package has not been published in over 18 months ({npm_last_published_months} months ago) and is not marked deprecated."
 
     # ClassificationRules.md Rule S4
     if (
@@ -321,7 +320,7 @@ def determine_github_classification(row):
         and last_commit_months > 12
         and (open_prs_count >= 5 or open_issues_count >= 20)
     ):
-        return "Stale / neglected", f"Repository has had no commits in over 12 months ({last_commit_months} months ago) and has many open PRs or issues ({open_prs_count} PRs, {open_issues_count} issues)."
+        return "Manual review", f"Stale/neglected - Repository has had no commits in over 12 months ({last_commit_months} months ago) and has many open PRs or issues ({open_prs_count} PRs, {open_issues_count} issues)."
 
     # ClassificationRules.md Rule S5
     if (
@@ -331,20 +330,20 @@ def determine_github_classification(row):
         and last_release_months > 24
         and github_release_count > 0
     ):
-        return "Stale release process", f"Repository has recent commits ({last_commit_months} months ago) but no release in over 24 months ({last_release_months} months ago), with {github_release_count} releases."
+        return "Manual review", f"Stale release process - Repository has recent commits ({last_commit_months} months ago) but no release in over 24 months ({last_release_months} months ago), with {github_release_count} releases."
 
     # ClassificationRules.md Rule S1
     if (
         last_commit_months is not None
         and last_commit_months > 18
     ):
-        return "Stale", f"Repository has had no commits in over 18 months ({last_commit_months} months ago) and is not archived."
+        return "Manual review", f"Stale - Repository has had no commits in over 18 months ({last_commit_months} months ago) and is not archived."
 
     # ClassificationRules.md Rule N1
     if (
         contains_any(repo_name, replacement_terms)
         and last_commit_months is not None
-        and last_commit_months > 12
+        and last_commit_months > 18
     ):
         return "No longer used candidate", "Repository name suggests it may be old, legacy, deprecated, obsolete, archived, or a backup."
 
@@ -352,12 +351,17 @@ def determine_github_classification(row):
     if (
         contains_any(repo_name, cleanup_terms)
         and last_commit_months is not None
-        and last_commit_months > 12
+        and last_commit_months > 18
     ):
-        return "No longer used candidate", f"Repository name suggests cleanup/test/demo content and it has had no commits in over 12 months ({last_commit_months} months ago)."
+        return "No longer used candidate", f"Repository name suggests cleanup/test/demo content and it has had no commits in over 18 months ({last_commit_months} months ago)."
 
     # ClassificationRules.md Rule N3
-    if is_fork and npm_used_by_empty and github_dependents_empty:
+    if (
+        is_fork
+        and npm_used_by_empty
+        and github_dependents_empty
+        and (last_commit_months is None or last_commit_months > 18)
+    ):
         return "No longer used candidate", "Repository is a fork with no detected npm or GitHub dependent usage."
 
     # ClassificationRules.md Rule N4
@@ -366,6 +370,7 @@ def determine_github_classification(row):
         and npm_used_by_empty
         and github_dependents_empty
         and npm_downloads_last_year == 0
+        and (last_commit_months is None or last_commit_months > 18)
     ):
         return "No longer used candidate", f"Repository has an npm package but no detected usage or downloads in the last year ({npm_downloads_last_year} npm downloads)."
 
@@ -839,7 +844,11 @@ def main():
         headers.insert(headers.index("git submodules"), "is submodule of")
 
     if "repo full name" not in headers:
-        headers.append("repo full name")
+        headers.insert(headers.index("Keep") + 1, "repo full name")
+
+    if "repo url" in headers:
+        headers.remove("repo url")
+    headers.insert(headers.index("repo full name") + 1, "repo url")
 
     if "classification" not in headers:
         headers.append("classification")
@@ -853,6 +862,21 @@ def main():
     if "npmjs classification reason" not in headers:
         headers.append("npmjs classification reason")
 
+    for col in ("github contributors", "github dependents"):
+        if col in headers:
+            headers.remove(col)
+        headers.insert(headers.index("last release date") + 1, col)
+
+    for col in ("github downloads", "github release count"):
+        if col in headers:
+            headers.remove(col)
+        headers.insert(headers.index("npmjs package name"), col)
+
+    for col in ("repo name", "organization name"):
+        if col in headers:
+            headers.remove(col)
+        headers.append(col)
+
     add_submodule_relationships(data_rows)
     npm_update_nested_used_by(data_rows)
 
@@ -861,7 +885,7 @@ def main():
         classification, classification_reason = determine_github_classification(row)
         repo_name = row.get("repo name")
         organization = row.get("organization name")
-        repo_full_name = organization  + "/" + repo_name
+        repo_full_name = organization + "/" + repo_name
 
         if is_empty(row.get("npmjs package name")):
             npmjs_classification = ""
@@ -937,8 +961,9 @@ def main():
     for classification in classifications:
         print(f"- {classification}")
 
+    ordered_rows = [{col: row.get(col, "") for col in headers} for row in data_rows]
     write_list_to_csv(CATEGORIZED_OUTPUT + ".csv", headers, data_rows)
-    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "Repositories", data_rows)
+    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "Repositories", ordered_rows)
 
 
 if __name__ == "__main__":

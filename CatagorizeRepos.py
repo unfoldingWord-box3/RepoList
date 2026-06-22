@@ -97,34 +97,80 @@ def determine_github_classification(row):
             - archived (bool/str): Whether repository is archived
             - npm is deprecated (bool/str): Whether npm package is deprecated
             - is fork (bool/str): Whether repository is a fork
-            - last commit date (str): Date of last commit
-            - last release date (str): Date of last release
-            - last edit date (str): Date of last edit
-            - npmjs last published (str): Date of last npm publish
-            - npmjs used by (str): List of local consumers
-            - github dependents (str): List of GitHub dependents
+            - last commit date (str): Date of last commit (ISO format or parseable date string)
+            - last release date (str): Date of last release (ISO format or parseable date string)
+            - last edit date (str): Date of last edit (ISO format or parseable date string)
+            - npmjs last published (str): Date of last npm publish (ISO format or parseable date string)
+            - npmjs used by (str): Comma-separated list of local npm package consumers
+            - github dependents (str): Comma-separated list of GitHub dependent repositories
             - npmjs package name (str): Associated npm package name
             - language (str): Primary programming language
-            - github downloads (int/str): Count of GitHub downloads
-            - github release count (int/str): Number of releases
+            - github downloads (int/str): Count of GitHub release downloads
+            - github release count (int/str): Number of GitHub releases
             - npmjs downloads last year (int/str): npm downloads in last year
             - open issues count (int/str): Number of open issues
             - open prs count (int/str): Number of open pull requests
             - github contributors (int/str): Number of contributors
+            - commit count (int/str): Total number of commits in repository
+            - is submodule of (str): Comma-separated list of repositories using this as a git submodule
     
     Returns:
         tuple[str, str]: A tuple containing:
-            - classification (str): Category name (e.g., "Active", "Keep - locally used",
-              "No longer used candidate", "Manual review", "Stale")
-            - reason (str): Human-readable explanation for the classification decision
+            - classification (str): Category name from predefined set:
+                * "Dead - archived": Repository is archived
+                * "Dead - deprecated": npm package deprecated and stale (>24 months)
+                * "Protected private": No commit data available (restricted access)
+                * "Keep": Active development or significant usage/dependents
+                * "Manual review": Requires human judgment (edge cases, core projects, high activity)
+                * "No longer used candidate": Likely abandoned, suitable for archival
+            - reason (str): Human-readable explanation for the classification decision,
+              including relevant metrics and thresholds that triggered the classification
     
-    Classification Priority:
-        1. Active: Recent commits (within 12 months)
-        2. Keep: Local usage, external dependents, or high downloads
-        3. Manual review: Core projects, high activity, or significant history
-        4. Dead: Archived, deprecated, or long-inactive with no usage
-        5. Stale: Inactive but with some usage or open issues
-        6. No longer used: Likely candidates for archival/cleanup
+    Classification Priority (evaluated in order):
+        1. Dead - archived: Repository archived status
+        2. Protected private: Missing commit date (restricted access)
+        3. Keep: External dependents or high npm downloads (≥1000/year)
+        4. Manual review: Used as git submodule
+        5. Keep: Recent commits (≤12 months)
+        6. Keep: Local npm package usage
+        7. Manual review: Core project terms in name
+        8. Dead - deprecated: npm deprecated + stale (>24 months)
+        9. Manual review: High open issues (≥50)
+        10. Manual review: Significant history (≥10 releases, ≥100 downloads, or ≥100 commits)
+        11. Manual review: Multiple contributors (≥5)
+        12. Manual review: Recent edits but old commits (edited ≤12 months, committed >36 months)
+        13. No longer used: Very low activity (≤5 commits, >36 months, no usage)
+        14. No longer used: Long inactive (>60 months, no usage, <50 commits)
+        15. No longer used: Old fork with no usage (>36 months)
+        16. No longer used: Cleanup/test/demo terms + stale (>24 months, no usage)
+        17. No longer used: No language/releases/downloads/npm + old (>36 months)
+        18. Manual review: Stale but used (>18 months, has usage)
+        19. Manual review: Stale npm package (>18 months unpublished, not deprecated)
+        20. Manual review: Stale with open issues/PRs (>12 months, ≥5 PRs or ≥20 issues)
+        21. Manual review: Stale release process (commits ≤24 months, releases >24 months)
+        22. Manual review: Stale (>18 months, not archived)
+        23. No longer used: Name suggests replacement (old/legacy/deprecated/obsolete/archive/backup)
+        24. No longer used: Cleanup terms in name + stale (>18 months)
+        25. No longer used: Fork with no usage
+        26. No longer used: npm package with no usage/downloads
+        27. Manual review: Default fallback for unmatched cases
+    
+    Notes:
+        - Uses helper functions: is_true(), months_old(), is_empty(), as_int(), contains_any()
+        - Classification rules correspond to documented rules in ClassificationRules.md
+        - All date comparisons use months_old() which returns None for invalid/empty dates
+        - Empty/None values are handled gracefully through helper functions
+        - Classification is deterministic based on the priority order above
+    
+    Examples:
+        >>> row = {"repo name": "active-project", "last commit date": "2024-01-15", "archived": False}
+        >>> determine_github_classification(row)
+        ('Keep', 'Active - Last commit was within the last 12 months (2 months ago).')
+        
+        >>> row = {"repo name": "old-demo", "last commit date": "2020-01-01", "archived": False, 
+        ...        "npmjs used by": "", "github dependents": ""}
+        >>> determine_github_classification(row)
+        ('No longer used candidate', 'Repository name suggests cleanup/test/demo content and it has had no commits in over 18 months (48 months ago).')
     """
     repo_name = row.get("repo name", "")
     archived = is_true(row.get("archived"))
@@ -850,8 +896,15 @@ def main():
         headers.remove("repo url")
     headers.insert(headers.index("repo full name") + 1, "repo url")
 
+    for col in ("repo full name2", "repo url2"):
+        if col in headers:
+            headers.remove(col)
+
     if "classification" not in headers:
         headers.append("classification")
+
+    headers.insert(headers.index("classification"), "repo full name2")
+    headers.insert(headers.index("classification"), "repo url2")
 
     if "classification reason" not in headers:
         headers.append("classification reason")
@@ -894,6 +947,8 @@ def main():
             npmjs_classification, npmjs_classification_reason = determine_npmjs_classification(row)
 
         row["repo full name"] = repo_full_name
+        row["repo full name2"] = repo_full_name
+        row["repo url2"] = row.get("repo url", "")
         row["classification"] = classification
         row["classification reason"] = classification_reason
         row["npmjs classification"] = npmjs_classification

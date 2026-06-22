@@ -59,6 +59,9 @@ Produced by `CatagorizeRepos.py`. Extends the **Repositories** sheet of `unfoldi
 | **Keep** | Manual review tag carried forward from `tagged_repos.ods`. Non-empty when the repository has been explicitly marked to keep active. |
 | **is submodule of** | Comma-separated list of repositories (in `organization/repo-name` format) that reference this repository as a git submodule. Derived from the `git submodules` field by `add_submodule_relationships()`. Empty if not used as a submodule by any repository in the fetched set. |
 | **repo full name** | The fully-qualified repository name in `organization/repo-name` format. |
+| **repo url** | The GitHub HTML URL for the repository. |
+| **repo full name2** | Duplicate of `repo full name`, placed immediately left of the `classification` column for quick reference when reviewing classifications. |
+| **repo url2** | Duplicate of `repo url`, placed immediately left of the `classification` column for quick reference when reviewing classifications. |
 | **classification** | The GitHub repository lifecycle label assigned by `determine_github_classification()`. See possible values below. |
 | **classification reason** | A human-readable explanation of why the repository received its classification label. |
 | **npmjs classification** | The npm package lifecycle label assigned by `determine_npmjs_classification()`. Empty for repositories with no published npm package. See possible values below. |

@@ -26,8 +26,10 @@ Constants:
     NS: Namespace dictionary for ODS XML parsing (office, table, text namespaces)
 """
 import base64
+import configparser
 import csv
 import datetime
+import io
 import json
 import os
 import pandas as pd
@@ -39,6 +41,7 @@ import urllib.parse
 import urllib.request
 import zipfile
 import xml.etree.ElementTree as ET
+from xml.sax.saxutils import escape
 
 NS = {
     "office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
@@ -1127,6 +1130,9 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES):
     if package_metadata is None:
         return False
 
+    org_names_extended = ORG_NAMES.copy()
+    org_names_extended.append("translationCoreApps") # add old organizations
+
     homepage = package_metadata.get("homepage") or ""
     repository = package_metadata.get("repository") or {}
 
@@ -1137,8 +1143,10 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES):
 
     homepage = homepage.lower()
     repository_url = repository_url.lower()
+    if not homepage and not repository_url:
+        return True # for now if this is not found then we treat it as from uw
 
-    in_uw_org = any(org_name.lower() in homepage or org_name.lower() in repository_url for org_name in ORG_NAMES)
+    in_uw_org = any((org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
     return in_uw_org
 
 
@@ -1830,6 +1838,421 @@ def get_repos_by_npmjs_package_name(repos):
                 if replace_repo:
                     repos_by_npmjs_package_name[npm_name] = repo
                     print(f"Replaced previous repo with current repo for npm package name: {npm_name}")
-                
-    
+
+
     return repos_by_npmjs_package_name
+
+
+def fetch_repository_submodules(repo):
+    """
+    Fetch and parse a repository's .gitmodules file.
+
+    Args:
+        repo (dict): GitHub repository metadata from the repositories API.
+
+    Returns:
+        list[str]: A list of submodule URLs. Returns an empty list when the
+                   repository has no .gitmodules file or when the file cannot be parsed.
+    """
+    owner = repo.get("owner", {}).get("login")
+    repo_name = repo.get("name")
+    default_branch = repo.get("default_branch")
+
+    if not owner or not repo_name:
+        return []
+
+    query_params = urllib.parse.urlencode({
+        "ref": default_branch,
+    }) if default_branch else ""
+
+    url = f"https://api.github.com/repos/{owner}/{repo_name}/contents/.gitmodules"
+    if query_params:
+        url = f"{url}?{query_params}"
+
+    try:
+        data, _ = github_request(url, allow_not_found=True)
+
+        if not data:
+            return []
+
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return []
+        print(f"Could not fetch .gitmodules for {owner}/{repo_name}: {error.code} {error.reason}")
+        return []
+
+    try:
+        gitmodules_metadata = json.loads(data.decode("utf-8"))
+        encoded_content = gitmodules_metadata.get("content", "")
+
+        if not encoded_content:
+            return []
+
+        gitmodules_text = base64.b64decode(encoded_content).decode("utf-8")
+    except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as error:
+        print(f"Could not decode .gitmodules for {owner}/{repo_name}: {error}")
+        return []
+
+    parser = configparser.ConfigParser()
+
+    try:
+        parser.read_file(io.StringIO(gitmodules_text))
+    except configparser.Error as error:
+        print(f"Could not parse .gitmodules for {owner}/{repo_name}: {error}")
+        return []
+
+    submodules = []
+
+    for section_name in parser.sections():
+        if not section_name.startswith("submodule "):
+            continue
+
+        submodule_url = parser.get(section_name, "url", fallback="").strip()
+
+        if submodule_url:
+            submodules.append(submodule_url)
+
+    return submodules
+
+
+def fetch_repositories_for_org(org_name, org_names, start_count=0):
+    """
+    Fetch all repositories for a given GitHub organization.
+
+    Args:
+        org_name (str): The name of the GitHub organization to fetch repositories from.
+        org_names (list[str]): All organization names, used for npm package ownership checks.
+        start_count (int): Starting repository count for progress display. Defaults to 0.
+
+    Returns:
+        tuple[list, int]: A tuple of (repos, count) where repos is a list of repository
+                          dictionaries and count is the total number fetched including start_count.
+    """
+    count = start_count
+    repos = []
+
+    query_params = urllib.parse.urlencode({
+        "per_page": 100,
+        "type": "all",
+        "sort": "updated",
+        "direction": "desc",
+    })
+
+    github_api_url = f"https://api.github.com/orgs/{org_name}/repos"
+    url = f"{github_api_url}?{query_params}"
+
+    while url:
+        print(f"Fetching: {url}")
+
+        data, link_header = github_request(url)
+
+        page_repos = json.loads(data.decode("utf-8"))
+
+        for repo in page_repos:
+            count += 1
+            time.sleep(1)
+
+            repo_name = repo.get("name")
+            print(f"{count} - Fetching repository: {repo_name}")
+
+            repo["github_dependents"] = fetch_repository_dependents(repo)
+            repo["github_contributors"] = fetch_repository_contributors(repo)
+            repo["github_downloads"], repo["github_release_count"] = fetch_repository_github_downloads(repo)
+            repo["last_commit_date"] = fetch_repository_last_commit_date(repo)
+            repo["last_release_date"] = fetch_repository_last_release_date(repo)
+            repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
+            repo["commit_count"] = fetch_repository_commit_count(repo)
+            repo["git_submodules"] = fetch_repository_submodules(repo)
+
+            language = (repo.get("language") or "").lower()
+
+            if language in ("javascript", "typescript"):
+                package_json = fetch_package_json(repo)
+
+                if package_json:
+                    npm_package_name = package_json.get("name", "")
+                    repo["npmjs_package_name"] = npm_package_name
+
+                    if package_json.get("private") is not True:
+                        npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
+
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names):
+                            repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
+                            repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
+                                npm_package_name,
+                                "last-year",
+                            )
+                            repo["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
+                        else:
+                            print(
+                                f"npm_package_name: {npm_package_name}, Homepage: {npm_package_metadata.get('homepage', 'N/A') if npm_package_metadata else 'N/A'}")
+
+                    workspaces = package_json.get("workspaces", None)
+                    if not workspaces:
+                        nx_json = fetch_nx_json(repo)
+                        if nx_json:
+                            workspaces = True
+
+                    if workspaces:
+                        repo["package_json_files"] = fetch_package_json_files(repo)
+
+                repo["npmjs_used_by"] = []
+                repo["npmjs_uses"] = []
+                repo["package_json"] = package_json
+
+        repos.extend(page_repos)
+
+        url = get_next_page_url(link_header)
+
+    return repos, count
+
+
+def fetch_repositories(org_names):
+    """
+    Fetch all repositories across multiple GitHub organizations.
+
+    Args:
+        org_names (list[str]): Organization names to fetch, highest priority first.
+
+    Returns:
+        list: Combined list of repository dictionaries from all organizations.
+    """
+    repos = []
+    count = 0
+    for org_name in org_names:
+        org_repos, count = fetch_repositories_for_org(org_name, org_names, count)
+        repos.extend(org_repos)
+    return repos
+
+
+def update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name):
+    package_json = repo.get("package_json") or []
+    current_package_name = repo.get("npmjs_package_name")
+
+    if not package_json:
+        return
+
+    if not current_package_name:
+        current_package_name = repo.get('name', '')
+
+    dependencies = {}
+
+    dependencies.update(package_json.get("dependencies") or {})
+    dependencies.update(package_json.get("devDependencies") or {})
+    dependencies.update(package_json.get("peerDependencies") or {})
+
+    for dependency_name in dependencies:
+        dependency_repo = repos_by_npmjs_package_name.get(dependency_name)
+
+        if dependency_repo is None:
+            continue
+
+        npmjs_used_by = dependency_repo.setdefault("npmjs_used_by", [])
+
+        if current_package_name not in npmjs_used_by:
+            npmjs_used_by.append(current_package_name)
+
+        npmjs_uses = repo.setdefault("npmjs_uses", [])
+
+        if dependency_name not in npmjs_uses:
+            npmjs_uses.append(dependency_name)
+
+
+def update_npmjs_dependencies(repos, org_names):
+    """
+    Update npm package dependency relationships within the repositories.
+
+    For each repository with a package.json file, analyzes its dependencies
+    and peerDependencies to build bidirectional relationships between packages.
+    Also handles monorepo subpackages.
+
+    Args:
+        repos (list): List of repository dictionaries.
+        org_names (list[str]): Organization names used for npm package ownership checks.
+
+    Returns:
+        None. Modifies repository dictionaries in place.
+    """
+    repos_by_npmjs_package_name = get_repos_by_npmjs_package_name(repos)
+
+    sub_modules = []
+
+    for repo in repos:
+        package_json_files = repo.get("package_json_files")
+        if package_json_files:
+            for package_json_file in package_json_files:
+                package_json_path = package_json_file.get("path")
+                if not package_json_path or (package_json_path == "package.json"):
+                    continue
+
+                package_json = fetch_repository_json_file(repo, package_json_path)
+                if package_json:
+                    sub_module = repo.copy()
+                    new_name = f"{repo.get('name', '')}/{package_json.get('name', '')}"
+                    sub_module["name"] = new_name
+                    sub_module["npmjs_used_by"] = []
+                    sub_module["npmjs_uses"] = []
+
+                    npm_package_name = package_json.get("name", "")
+                    sub_module["npmjs_package_name"] = npm_package_name
+
+                    if package_json.get("private") is not True:
+                        npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
+
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names):
+                            sub_module["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
+                            sub_module["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
+                                npm_package_name,
+                                "last-year",
+                            )
+                        else:
+                            print(
+                                f"npm_package_name: {npm_package_name}, Homepage: {npm_package_metadata.get('homepage', 'N/A') if npm_package_metadata else 'N/A'}")
+
+                    sub_module["package_json"] = package_json
+                    sub_modules.append(sub_module)
+
+    repos.extend(sub_modules)
+
+    for repo in repos:
+        update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name)
+
+
+def write_ods(repos, output_file):
+    """
+    Write repository data to an ODS file with two sheets.
+
+    Produces a Repositories sheet with all repos and a JavaScript TypeScript
+    sheet filtered to JS/TS repos only.
+
+    Args:
+        repos (list): List of repository dictionaries.
+        output_file (str): Path to the output ODS file.
+    """
+    headers = [
+        "repo name",
+        "organization name",
+        "language",
+        "archived",
+        "is fork",
+        "pushed at",
+        "last commit date",
+        "last release date",
+        "open issues count",
+        "open prs count",
+        "commit count",
+        "git submodules",
+        "npmjs package name",
+        "npm is deprecated",
+        "npmjs downloads last year",
+        "npmjs last published",
+        "npmjs used by",
+        "npmjs uses",
+        "github dependents",
+        "github contributors",
+        "github release count",
+        "github downloads",
+        "repo url",
+        "last edit date",
+    ]
+
+    def build_rows(filtered_repos):
+        rows = [headers]
+
+        for repo in filtered_repos:
+            rows.append([
+                repo.get("name", ""),
+                repo.get("owner", {}).get("login", ""),
+                repo.get("language") or "",
+                repo.get("archived", ""),
+                repo.get("fork", ""),
+                repo.get("pushed_at", ""),
+                repo.get("last_commit_date", ""),
+                repo.get("last_release_date", ""),
+                repo.get("open_issues_count", ""),
+                repo.get("open_prs_count", ""),
+                repo.get("commit_count", ""),
+                ", ".join(repo.get("git_submodules", [])),
+                repo.get("npmjs_package_name", ""),
+                repo.get("npm_is_deprecated", ""),
+                repo.get("npmjs_downloads_last_year", ""),
+                repo.get("npmjs_last_published", ""),
+                ", ".join(repo.get("npmjs_used_by", [])),
+                ", ".join(repo.get("npmjs_uses", [])),
+                ", ".join(repo.get("github_dependents", [])),
+                ", ".join(repo.get("github_contributors", [])),
+                repo.get("github_release_count", ""),
+                repo.get("github_downloads", ""),
+                repo.get("html_url", ""),
+                repo.get("updated_at", ""),
+            ])
+
+        return rows
+
+    def build_table(table_name, rows):
+        table_rows = []
+
+        for row in rows:
+            cells = []
+
+            for value in row:
+                text = escape(str(value))
+                cells.append(
+                    '<table:table-cell office:value-type="string">'
+                    f"<text:p>{text}</text:p>"
+                    "</table:table-cell>"
+                )
+
+            table_rows.append(
+                "<table:table-row>"
+                f"{''.join(cells)}"
+                "</table:table-row>"
+            )
+
+        return (
+            f'<table:table table:name="{escape(table_name)}">'
+            f"{''.join(table_rows)}"
+            "</table:table>"
+        )
+
+    js_ts_repos = [
+        repo
+        for repo in repos
+        if (repo.get("language") or "").lower() in ("javascript", "typescript")
+    ]
+
+    repositories_table = build_table("Repositories", build_rows(repos))
+    js_ts_table = build_table("JavaScript TypeScript", build_rows(js_ts_repos))
+
+    content_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content
+    xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+    xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+    xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+    office:version="1.2">
+    <office:body>
+        <office:spreadsheet>
+            {repositories_table}
+            {js_ts_table}
+        </office:spreadsheet>
+    </office:body>
+</office:document-content>
+'''
+
+    manifest_xml = '''<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest
+    xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+    manifest:version="1.2">
+    <manifest:file-entry manifest:full-path="/" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>
+    <manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>
+</manifest:manifest>
+'''
+
+    with zipfile.ZipFile(output_file, mode="w") as ods_file:
+        ods_file.writestr(
+            "mimetype",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            compress_type=zipfile.ZIP_STORED,
+        )
+        ods_file.writestr("content.xml", content_xml)
+        ods_file.writestr("META-INF/manifest.xml", manifest_xml)

@@ -493,7 +493,8 @@ def determine_npmjs_classification(row):
         return "Deprecated npm package", "Npm package is already explicitly marked as deprecated."
 
     # ClassificationRules.md Rule P5
-    if archived:
+    npm_last_published = row.get("npmjs last published")
+    if archived and npm_last_published:
         return (
             "Deprecate npm package candidate",
             "Package is backed by an archived repository and is not marked deprecated on npmjs.",
@@ -954,7 +955,8 @@ def main():
         row["repo full name2"] = repo_full_name
         row["repo url2"] = row.get("repo url", "")
         pkg_name = row.get("npmjs package name")
-        if not is_empty(pkg_name):
+        npmjs_last_published = row.get("npmjs last published")
+        if not is_empty(pkg_name) and not is_empty(npmjs_last_published):
             if isinstance(pkg_name, list):
                 pkg_name = pkg_name[0]
             row["npmjs url"] = f"https://www.npmjs.com/package/{pkg_name}"

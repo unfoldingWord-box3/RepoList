@@ -126,12 +126,16 @@ unfoldingword_repos.ods
 ### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet
-- first export `All our Github repos` as ods and save to `tagged_repos.ods`.  This makes sure we preserve the Ask, Archive, Keep, and Notes fields when new `categorized_repos.ods` is generated.
+- first export `All our Github repos` as ods and save to `tagged_repos.ods`.  This makes sure we preserve the 'Ask', 'Archive', 'Keep', and 'Notes' fields when new `categorized_repos.ods` is generated.
 - then run:
 ```bash
 python CatagorizeRepos.py
 ```
-This reads the `Repositories` sheet from `unfoldingword_repos.ods`, applies classification rules, and writes `categorized_repos.csv` and `categorized_repos.ods`. Two sets of classification columns are added:
+This 
+- reads the `Repositories` sheet from `unfoldingword_repos.ods`
+- applies classification rules
+- Copies the 'Ask', 'Archive', 'Keep', and 'Notes' fields from `tagged_repos.ods`.
+- writes `categorized_repos.csv` and `categorized_repos.ods`. Two sets of classification columns are added:
 
 - `classification` / `classification reason` — GitHub repository lifecycle status
 - `npmjs classification` / `npmjs classification reason` — npm package lifecycle status (only for repositories with a published npm package)

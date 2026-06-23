@@ -72,7 +72,7 @@ TAGGED_ODS_FILE = "tagged_repos.ods"
 SHEET_NAME = "Repositories"
 CATEGORIZED_OUTPUT = "categorized_repos"
 
-TAGGED_COLUMNS = ["Ask","Archive","Keep"]
+TAGGED_COLUMNS = ["Ask","Archive","Keep", "Notes"]
 
 SORT_ORDER = [
     "No longer used candidate",
@@ -890,7 +890,7 @@ def main():
         headers.insert(headers.index("git submodules"), "is submodule of")
 
     if "repo full name" not in headers:
-        headers.insert(headers.index("Keep") + 1, "repo full name")
+        headers.insert(headers.index("Notes") + 1, "repo full name")
 
     if "repo url" in headers:
         headers.remove("repo url")

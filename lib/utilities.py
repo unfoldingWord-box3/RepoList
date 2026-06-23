@@ -1797,7 +1797,7 @@ def get_repos_by_npmjs_package_name(repos):
     repos_by_npmjs_package_name = {}
 
     for repo in repos:
-        npm_name = repo.get("npmjs package name")
+        npm_name = repo.get("npmjs_package_name")
         if npm_name:
             if npm_name not in repos_by_npmjs_package_name:
                 repos_by_npmjs_package_name[npm_name] = repo

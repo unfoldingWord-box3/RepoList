@@ -125,7 +125,9 @@ unfoldingword_repos.ods
 
 ### Classify Repositories
 
-To classify every repository by activity and usage status and produce a categorized spreadsheet, run:
+To classify every repository by activity and usage status and produce a categorized spreadsheet
+- first export `All our Github repos` as ods and save to `tagged_repos.ods`.  This makes sure we preserve the Ask, Archive, Keep, and Notes fields when new `categorized_repos.ods` is generated.
+- then run:
 ```bash
 python CatagorizeRepos.py
 ```

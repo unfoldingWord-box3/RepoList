@@ -1794,7 +1794,12 @@ def contains_any(value, terms):
         bool: True if any term is found in the value (case-insensitive),
               False otherwise.
     """
-    return any(term in str(value).lower() for term in terms)
+    value_lower = str(value).lower()
+    for term in terms:
+        if term.lower() in value_lower:
+            return True
+
+    return False
 
 
 def get_repos_by_npmjs_package_name(repos):

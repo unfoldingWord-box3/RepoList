@@ -474,12 +474,10 @@ def determine_npmjs_classification(row):
     sensitive_or_build_terms = [
         "auth",
         "login",
-        "token",
         "crypto",
         "security",
         "deploy",
         "build",
-        "cli",
         "config",
         "eslint",
         "babel",
@@ -502,7 +500,9 @@ def determine_npmjs_classification(row):
         )
 
     # ClassificationRules.md Rule P8
-    if contains_any(repo_name, sensitive_or_build_terms) or contains_any(npm_package_name, sensitive_or_build_terms):
+    repo_name_contains_sensitive_terms = contains_any(repo_name, sensitive_or_build_terms)
+    npm_name_contains_sensitive_terms = contains_any(npm_package_name, sensitive_or_build_terms)
+    if repo_name_contains_sensitive_terms or npm_name_contains_sensitive_terms:
         return (
             "Manual review - npm package",
             "Package or repository name suggests a security-sensitive, CLI, deployment, configuration, or build-tool package.",
@@ -925,6 +925,10 @@ def main():
             headers.remove(col)
         headers.insert(headers.index("npmjs package name"), col)
 
+    if "npmjs url" in headers:
+        headers.remove("npmjs url")
+    headers.insert(headers.index("npmjs package name") + 1, "npmjs url")
+
     for col in ("repo name", "organization name"):
         if col in headers:
             headers.remove(col)
@@ -949,6 +953,13 @@ def main():
         row["repo full name"] = repo_full_name
         row["repo full name2"] = repo_full_name
         row["repo url2"] = row.get("repo url", "")
+        pkg_name = row.get("npmjs package name")
+        if not is_empty(pkg_name):
+            if isinstance(pkg_name, list):
+                pkg_name = pkg_name[0]
+            row["npmjs url"] = f"https://www.npmjs.com/package/{pkg_name}"
+        else:
+            row["npmjs url"] = ""
         row["classification"] = classification
         row["classification reason"] = classification_reason
         row["npmjs classification"] = npmjs_classification

@@ -28,7 +28,7 @@ from lib.npm_utils import (
     npm_repo_is_from_uw,
 )
 
-ODS_FILE = "unfoldingword_repos.ods"
+ODS_FILE = "sheets/unfoldingword_repos.ods"
 ENV_FILE = ".env"
 SHEET_NAME = "Repositories"
 JS_TS_SHEET_NAME = "JavaScript TypeScript"

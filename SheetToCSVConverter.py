@@ -2,8 +2,8 @@ import os
 
 from lib.utilities import read_ods_sheets, safe_filename
 
-INPUT_FILE = "unfoldingword_repos.ods"
-OUTPUT_DIR = "."
+INPUT_FILE = "sheets/unfoldingword_repos.ods"
+OUTPUT_DIR = "sheets"
 
 
 def main():

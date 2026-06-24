@@ -43,8 +43,8 @@ Input Data Requirements:
         - language and dependent information
 
 Output Files:
-    - categorized_repos.csv: CSV export of all categorized repositories
-    - categorized_repos.ods: ODS spreadsheet with categorized repositories
+    - sheets/categorized_repos.csv: CSV export of all categorized repositories
+    - sheets/categorized_repos.ods: ODS spreadsheet with categorized repositories
 
 Dependencies:
     - lib.utilities: Helper functions for data loading and export
@@ -57,9 +57,9 @@ Usage:
         to collect the repository data before catagorization.
 
 Example:
-    The script loads 'unfoldingword_repos.ods', applies classification rules
-    to each repository, and exports results to 'categorized_repos.csv' and
-    'categorized_repos.ods' with added classification columns.
+    The script loads 'sheets/unfoldingword_repos.ods', applies classification rules
+    to each repository, and exports results to 'sheets/categorized_repos.csv' and
+    'sheets/categorized_repos.ods' with added classification columns.
 """
 import sys
 
@@ -67,12 +67,16 @@ from lib.utilities import ( update_ods_sheet_data,
                            is_true, months_old, is_empty, as_int, contains_any, load_repository_data,
                            write_list_to_csv)
 
-ODS_FILE = "unfoldingword_repos.ods"
-TAGGED_ODS_FILE = "tagged_repos.ods"
+ODS_FILE = "sheets/unfoldingword_repos.ods"
+TAGGED_ODS_FILE = "sheets/tagged_repos.ods"
 SHEET_NAME = "Repositories"
-CATEGORIZED_OUTPUT = "categorized_repos"
+CATEGORIZED_OUTPUT = "sheets/categorized_repos"
 
 TAGGED_COLUMNS = ["Ask","Archive","Keep", "Notes"]
+TAGGED_NPM_COLUMNS = ["Ask-NPM","Deprecate-NPM","Keep-NPM", "Notes-NPM"]
+ALL_TAGGED_COLUMNS = TAGGED_COLUMNS + TAGGED_NPM_COLUMNS
+
+NPM_COLUMN_ORDER = ["Ask-NPM", "Deprecate-NPM", "Keep-NPM", "Notes-NPM", "npmjs package name", "npmjs url", "npm is deprecated", "npmjs downloads last year", "npmjs last published", "npmjs used by", "npmjs uses", "last edit date", "archived", "npmjs classification", "npmjs classification reason"]
 
 SORT_ORDER = [
     "No longer used candidate",
@@ -851,6 +855,26 @@ def add_submodule_relationships(data_rows):
             row["is submodule of"] = ""
 
 
+def prepend_tagged_columns(headers, data_rows, tagged_columns):
+    """
+    Prepend tagged columns to headers and initialize them in data rows.
+
+    Args:
+        headers (list[str]): List of column headers to modify.
+        data_rows (list[dict]): List of row dictionaries to modify.
+        tagged_columns (list[str]): Columns to prepend.
+
+    Returns:
+        tuple[list[str], list[dict]]: Updated headers and data rows.
+    """
+    headers = tagged_columns + headers
+    data_rows = [
+        {**{column: "" for column in tagged_columns}, **row}
+        for row in data_rows
+    ]
+    return headers, data_rows
+
+
 def main():
     """
     Main entry point for repository categorization workflow.
@@ -869,8 +893,8 @@ def main():
         7. Export results to CSV and ODS files
     
     Output Files:
-        - categorized_repos.csv: CSV export of all categorized repositories
-        - categorized_repos.ods: ODS spreadsheet with categorized repositories
+        - sheets/categorized_repos.csv: CSV export of all categorized repositories
+        - sheets/categorized_repos.ods: ODS spreadsheet with categorized repositories
     
     Global Dependencies:
         - ODS_FILE: Input spreadsheet filename
@@ -881,11 +905,7 @@ def main():
     headers, data_rows = load_repository_data(ODS_FILE, SHEET_NAME)
     tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, SHEET_NAME)
 
-    headers = TAGGED_COLUMNS + headers
-    data_rows = [
-        {**{column: "" for column in TAGGED_COLUMNS}, **row}
-        for row in data_rows
-    ]
+    headers, data_rows = prepend_tagged_columns(headers, data_rows, TAGGED_COLUMNS)
 
     if "is submodule of" not in headers:
         headers.insert(headers.index("git submodules"), "is submodule of")
@@ -930,6 +950,13 @@ def main():
         headers.remove("npmjs url")
     headers.insert(headers.index("npmjs package name") + 1, "npmjs url")
 
+    # Move TAGGED_NPM_COLUMNS before "npmjs package name"
+    npmjs_package_name_index = headers.index("npmjs package name")
+    for col in reversed(TAGGED_NPM_COLUMNS):
+        if col in headers:
+            headers.remove(col)
+        headers.insert(npmjs_package_name_index, col)
+    
     for col in ("repo name", "organization name"):
         if col in headers:
             headers.remove(col)
@@ -985,7 +1012,7 @@ def main():
     for tagged_row in tagged_data_rows:
         has_tagged_data = any(
             not is_empty(tagged_row.get(column))
-            for column in TAGGED_COLUMNS
+            for column in ALL_TAGGED_COLUMNS
         )
 
         if not has_tagged_data:
@@ -1012,7 +1039,7 @@ def main():
         if tagged_row is None:
             continue
 
-        for column in TAGGED_COLUMNS:
+        for column in ALL_TAGGED_COLUMNS:
             row[column] = tagged_row.get(column, "")
 
     print("Updated tagged columns in data rows")
@@ -1033,6 +1060,17 @@ def main():
     write_list_to_csv(CATEGORIZED_OUTPUT + ".csv", headers, data_rows)
     update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "Repositories", ordered_rows)
 
+    # Add new sheet for NPM Modules - filter rows with npm module name and reorder columns
+    npm_rows = [row for row in data_rows if not is_empty(row.get("npmjs package name"))]
+    
+    # Create new column order: NPM_COLUMN_ORDER columns first, then remaining columns
+    npm_headers = NPM_COLUMN_ORDER.copy()
+    for col in headers:
+        if col not in npm_headers:
+            npm_headers.append(col)
+    
+    npm_ordered_rows = [{col: row.get(col, "") for col in npm_headers} for row in npm_rows]
+    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "NPM Modules", npm_ordered_rows)
 
 if __name__ == "__main__":
     main()

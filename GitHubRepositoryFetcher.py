@@ -17,7 +17,7 @@ The script produces an ODS file with two sheets:
 1. Repositories - All repositories from the specified organizations
 2. JavaScript TypeScript - Filtered view of JS/TS repositories only
 
-Output file: unfoldingword_repos.ods
+Output file: sheets/unfoldingword_repos.ods
 """
 
 import os
@@ -34,7 +34,7 @@ ORG_NAMES = [  # highest priority first
     "unfoldingWord-dev",
     "unfoldingWord-box3",
 ]
-OUTPUT_FILE = "unfoldingword_repos.ods"
+OUTPUT_FILE = "sheets/unfoldingword_repos.ods"
 ENV_FILE = ".env"
 
 

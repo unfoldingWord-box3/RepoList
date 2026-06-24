@@ -249,12 +249,46 @@ def update_ods_sheet_data(output_file, sheet_name, rows):
         existing_root = ET.fromstring(existing_content)
         existing_table = find_table(existing_root, sheet_name)
 
-        if existing_table is None or new_table is None:
-            # Sheet not found — replace whole file with converted content.
+        if new_table is None:
+            # New table couldn't be parsed — replace whole file with converted content.
             save_root_to_zip(new_root, tmp_new, tmp_out)
             os.replace(tmp_out, output_file)
             print(f"Data saved to {output_file}")
             return
+
+        if existing_table is None:
+            # Sheet not found in existing file — add the new sheet to the existing file.
+            # Find the spreadsheet element that contains all tables.
+            spreadsheet = existing_root.find(f".//{{{NS['office']}}}spreadsheet")
+            if spreadsheet is not None:
+                # Find the "Repositories" sheet to insert after it (keep it first)
+                repositories_table = find_table(existing_root, "Repositories")
+                if repositories_table is not None:
+                    # Find the index of the Repositories table and insert after it
+                    tables = list(spreadsheet)
+                    repo_index = tables.index(repositories_table)
+                    spreadsheet.insert(repo_index + 1, new_table)
+                else:
+                    # No Repositories sheet found, just append
+                    spreadsheet.append(new_table)
+
+                updated_xml = ET.tostring(existing_root, encoding="utf-8", xml_declaration=True)
+                with zipfile.ZipFile(output_file, "r") as existing_zip:
+                    with zipfile.ZipFile(tmp_out, "w", zipfile.ZIP_DEFLATED) as out_zip:
+                        for item in existing_zip.infolist():
+                            if item.filename == "content.xml":
+                                out_zip.writestr(item, updated_xml)
+                            else:
+                                out_zip.writestr(item, existing_zip.read(item.filename))
+                os.replace(tmp_out, output_file)
+                print(f"Sheet '{sheet_name}' added to {output_file}")
+                return
+            else:
+                # Fallback: replace whole file if spreadsheet element not found.
+                save_root_to_zip(new_root, tmp_new, tmp_out)
+                os.replace(tmp_out, output_file)
+                print(f"Data saved to {output_file}")
+                return
 
         # Remove old rows from the existing table, keeping column-style elements.
         for child in list(existing_table):

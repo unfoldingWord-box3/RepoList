@@ -18,7 +18,7 @@ python UpdateNpmData.py
 # Split the spreadsheet into per-sheet CSV files
 python SheetToCSVConverter.py
 
-# Classify repositories and produce categorized_repos.csv and categorized_repos.ods
+# Classify repositories and produce sheets/categorized_repos.csv and sheets/categorized_repos.ods
 python CatagorizeRepos.py
 ```
 
@@ -28,13 +28,13 @@ Four top-level scripts, three shared libraries:
 
 ### Top-level scripts
 
-- **`GitHubRepositoryFetcher.py`** — orchestrator. Loops over the three orgs, calls `fetch_repositories_for_org()` (pagination via GitHub API Link headers), then enriches each repo dict in-place with dependents, contributors, last commit date, last release date, open PR count, and npm data. After all repos are fetched, calls `update_npmjs_dependencies()` to resolve cross-repo npm dependency relationships (including monorepo subpackages). Finally calls `write_ods()` to produce `unfoldingword_repos.ods` directly using the ODF XML format (no odfpy write API — raw XML zipped).
+- **`GitHubRepositoryFetcher.py`** — orchestrator. Loops over the three orgs, calls `fetch_repositories_for_org()` (pagination via GitHub API Link headers), then enriches each repo dict in-place with dependents, contributors, last commit date, last release date, open PR count, and npm data. After all repos are fetched, calls `update_npmjs_dependencies()` to resolve cross-repo npm dependency relationships (including monorepo subpackages). Finally calls `write_ods()` to produce `sheets/unfoldingword_repos.ods` directly using the ODF XML format (no odfpy write API — raw XML zipped).
 
-- **`UpdateNpmData.py`** — re-fetches npm registry data (downloads, publish date, deprecation status) for every npm package already recorded in `unfoldingword_repos.ods`, then rewrites both sheets in place. Run after `GitHubRepositoryFetcher.py` to refresh npm data without repeating all GitHub API calls. Also recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS.
+- **`UpdateNpmData.py`** — re-fetches npm registry data (downloads, publish date, deprecation status) for every npm package already recorded in `sheets/unfoldingword_repos.ods`, then rewrites both sheets in place. Run after `GitHubRepositoryFetcher.py` to refresh npm data without repeating all GitHub API calls. Also recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS.
 
-- **`SheetToCSVConverter.py`** — reads `unfoldingword_repos.ods` via pandas/odf and writes one CSV per sheet (`Repositories.csv`, `JavaScript TypeScript.csv`).
+- **`SheetToCSVConverter.py`** — reads `sheets/unfoldingword_repos.ods` via pandas/odf and writes one CSV per sheet (`sheets/Repositories.csv`, `sheets/JavaScript TypeScript.csv`).
 
-- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `unfoldingword_repos.ods`, runs `determine_github_classification()` and `determine_npmjs_classification()` on every row, appends four columns (`classification`, `classification reason`, `npmjs classification`, `npmjs classification reason`), sorts by classification priority, and writes `categorized_repos.csv` and `categorized_repos.ods`. GitHub classification labels (in priority order): `No longer used candidate`, `Keep - externally used`, `Keep - locally used`, `Manual review`, `Needs review`, `Dead - archived`, plus additional labels `Active`, `Dead candidate`, `Dead - deprecated`, `Stale`, `Stale but used`, `Stale package`, `Stale / neglected`, `Stale release process`. npm classification labels: `Deprecated npm package`, `Keep - npm package in use`, `Deprecate npm package candidate`, `Manual review - npm package`. See `ClassificationRules.md` for the full rule set.
+- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`, runs `determine_github_classification()` and `determine_npmjs_classification()` on every row, appends four columns (`classification`, `classification reason`, `npmjs classification`, `npmjs classification reason`), sorts by classification priority, and writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods`. GitHub classification labels (in priority order): `No longer used candidate`, `Keep - externally used`, `Keep - locally used`, `Manual review`, `Needs review`, `Dead - archived`, plus additional labels `Active`, `Dead candidate`, `Dead - deprecated`, `Stale`, `Stale but used`, `Stale package`, `Stale / neglected`, `Stale release process`. npm classification labels: `Deprecated npm package`, `Keep - npm package in use`, `Deprecate npm package candidate`, `Manual review - npm package`. See `ClassificationRules.md` for the full rule set.
 
 ### Shared libraries
 
@@ -42,7 +42,7 @@ Four top-level scripts, three shared libraries:
   - `urlopen_with_retry()` — urllib wrapper with retry on transient network errors; used by both `lib/github_utils.py` and `lib/npm_utils.py`.
   - `load_env_file()` — loads `.env` key=value pairs into `os.environ`.
   - ODS I/O: `read_ods_sheet()` (raw XML parser), `read_ods_sheets()` / `write_ods_sheets()` / `write_rows_to_ods()` (pandas-based helpers), `update_ods_sheet_data()` (in-place sheet row replacement that preserves column widths).
-  - `load_repository_data()` — loads `unfoldingword_repos.ods` Repositories sheet and returns `(headers, list[dict])`, normalizing comma-separated cells to lists.
+  - `load_repository_data()` — loads the Repositories sheet from an ODS file and returns `(headers, list[dict])`, normalizing comma-separated cells to lists.
   - `write_list_to_csv()` — writes row dicts to a CSV, flattening list values to comma-separated strings.
   - Data-manipulation helpers used by `CatagorizeRepos.py`: `is_empty()`, `is_true()`, `as_int()`, `parse_date()`, `months_old()`, `contains_any()`.
   - `contains_any(value, terms)` returns the first matching term string (truthy) or `""` (falsy) — not a bool — so callers can inspect which term fired.

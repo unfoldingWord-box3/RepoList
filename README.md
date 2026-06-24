@@ -99,7 +99,7 @@ The token is primarily needed to raise the GitHub API rate limit from 60 to 5,00
 
 - In [GitHubRepositoryFetcher.py](GitHubRepositoryFetcher.py):
   - `ORG_NAMES` contains the names of the GitHub organizations to fetch data from.
-  - `OUTPUT_FILE` is the name of the output CSV file.
+  - `OUTPUT_FILE` is the path of the output ODS file (default: `sheets/unfoldingword_repos.ods`).
 
 - If file `.env` is not present, Copy the sample environment file:
 
@@ -118,24 +118,24 @@ Run:
 ```bash
 python GitHubRepositoryFetcher.py
 ```
-This generates an OpenDocument spreadsheet named:
+This generates an OpenDocument spreadsheet at:
 ```
-unfoldingword_repos.ods
+sheets/unfoldingword_repos.ods
 ```
 
 ### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet
-- first export `All our Github repos` as ods and save to `tagged_repos.ods`.  This makes sure we preserve the 'Ask', 'Archive', 'Keep', and 'Notes' fields when new `categorized_repos.ods` is generated.
+- first export `All our Github repos` as ods and save to `sheets/tagged_repos.ods`.  This makes sure we preserve the 'Ask', 'Archive', 'Keep', and 'Notes' fields when new `categorized_repos.ods` is generated.
 - then run:
 ```bash
 python CatagorizeRepos.py
 ```
 This 
-- reads the `Repositories` sheet from `unfoldingword_repos.ods`
+- reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`
 - applies classification rules
-- Copies the 'Ask', 'Archive', 'Keep', and 'Notes' fields from `tagged_repos.ods`.
-- writes `categorized_repos.csv` and `categorized_repos.ods`. Two sets of classification columns are added:
+- Copies the 'Ask', 'Archive', 'Keep', and 'Notes' fields from `sheets/tagged_repos.ods`.
+- writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods`. Two sets of classification columns are added:
 
 - `classification` / `classification reason` — GitHub repository lifecycle status
 - `npmjs classification` / `npmjs classification reason` — npm package lifecycle status (only for repositories with a published npm package)
@@ -149,18 +149,18 @@ If you make changes to the rules, you will need to re-run this script to update 
 ### Export Spreadsheet Sheets to CSV
 _Utility function that may be useful for other projects:_
 
-To split the data in [unfoldingword_repos.ods](unfoldingword_repos.ods) into separate CSV files, run:
+To split the data in [sheets/unfoldingword_repos.ods](sheets/unfoldingword_repos.ods) into separate CSV files, run:
 ```bash
 python SheetToCSVConverter.py
 ```
 
 ## Output
 
-- [unfoldingword_repos.ods](unfoldingword_repos.ods) — generated spreadsheet containing repository data (sheets: `Repositories`, `JavaScript TypeScript`)
-- [Repositories.csv](Repositories.csv) — all repositories exported from the spreadsheet
-- [JavaScript TypeScript.csv](JavaScript%20TypeScript.csv) — JavaScript/TypeScript repositories exported from the spreadsheet
-- [categorized_repos.csv](categorized_repos.csv) — categorized repositories exported as CSV
-- [categorized_repos.ods](categorized_repos.ods) — repositories with `classification`, `classification reason`, `npmjs classification`, and `npmjs classification reason` columns added
+- [sheets/unfoldingword_repos.ods](sheets/unfoldingword_repos.ods) — generated spreadsheet containing repository data (sheets: `Repositories`, `JavaScript TypeScript`)
+- [sheets/Repositories.csv](sheets/Repositories.csv) — all repositories exported from the spreadsheet
+- [sheets/JavaScript TypeScript.csv](sheets/JavaScript%20TypeScript.csv) — JavaScript/TypeScript repositories exported from the spreadsheet
+- [sheets/categorized_repos.csv](sheets/categorized_repos.csv) — categorized repositories exported as CSV
+- [sheets/categorized_repos.ods](sheets/categorized_repos.ods) — repositories with `classification`, `classification reason`, `npmjs classification`, and `npmjs classification reason` columns added
 
 
 ## Additional Information

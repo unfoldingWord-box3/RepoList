@@ -69,7 +69,8 @@ from lib.utilities import ( update_ods_sheet_data,
 
 ODS_FILE = "sheets/unfoldingword_repos.ods"
 TAGGED_ODS_FILE = "sheets/tagged_repos.ods"
-SHEET_NAME = "Repositories"
+REPOS_SHEET_NAME = "Repositories"
+NPM_SHEET_NAME = "NPM Modules"
 CATEGORIZED_OUTPUT = "sheets/categorized_repos"
 
 TAGGED_COLUMNS = ["Ask","Archive","Keep", "Notes"]
@@ -84,6 +85,12 @@ SORT_ORDER = [
     "Keep",
     "Dead - archived",
     "Protected private",
+]
+NPM_SORT_ORDER = [
+    "Deprecate npm package candidate",
+    "Deprecated npm package",
+    "Keep - npm package in use",
+    "Manual review - npm package",
 ]
 
 
@@ -875,6 +882,67 @@ def prepend_tagged_columns(headers, data_rows, tagged_columns):
     return headers, data_rows
 
 
+def copy_tagged_data_to_rows(data_rows, tagged_data_rows, copy_columns):
+    """
+    Copy tagged column values from tagged rows to matching data rows.
+
+    Builds a lookup dictionary from tagged rows by repository full name,
+    then copies specified column values to matching rows in data_rows.
+
+    Args:
+        data_rows (list[dict]): List of row dictionaries to update.
+        tagged_data_rows (list[dict]): List of tagged row dictionaries to copy from.
+        copy_columns (list[str]): List of column names to copy.
+    """
+    # Build a lookup dictionary keyed by normalized repo full name for O(1) matching
+    tagged_rows_by_repo_full_name = {}
+
+    if len(tagged_data_rows) == 0:
+        return
+
+    for tagged_row in tagged_data_rows:
+        # Skip rows that have no tagged data in any of the columns we care about
+        has_tagged_data = any(
+            not is_empty(tagged_row.get(column))
+            for column in copy_columns
+        )
+
+        if not has_tagged_data:
+            continue
+
+        # Try to get the full name directly first
+        tagged_repo_full_name = tagged_row.get("repo full name")
+
+        # If no full name, construct it from organization and repo name
+        if is_empty(tagged_repo_full_name):
+            tagged_repo_name = tagged_row.get("repo name")
+            tagged_organization = tagged_row.get("organization name")
+
+            # Skip if we can't construct a valid identifier
+            if is_empty(tagged_repo_name) or is_empty(tagged_organization):
+                continue
+
+            tagged_repo_full_name = f"{tagged_organization}/{tagged_repo_name}"
+
+        # Store with normalized (stripped) key for consistent matching
+        tagged_rows_by_repo_full_name[str(tagged_repo_full_name).strip()] = tagged_row
+
+    # Apply tagged values to matching data rows
+    for row in data_rows:
+        # Look up the tagged row using the normalized repo full name
+        tagged_row = tagged_rows_by_repo_full_name.get(
+            str(row.get("repo full name", "")).strip()
+        )
+
+        # Skip if no matching tagged row was found
+        if tagged_row is None:
+            continue
+
+        # Copy each specified column value from the tagged row to the data row
+        for column in copy_columns:
+            row[column] = tagged_row.get(column, "")
+
+
 def main():
     """
     Main entry point for repository categorization workflow.
@@ -902,10 +970,18 @@ def main():
         - CATEGORIZED_OUTPUT: Base filename for output files
         - SORT_ORDER: List defining classification priority order
     """
-    headers, data_rows = load_repository_data(ODS_FILE, SHEET_NAME)
-    tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, SHEET_NAME)
+    headers, data_rows = load_repository_data(ODS_FILE, REPOS_SHEET_NAME)
+    tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, REPOS_SHEET_NAME)
 
-    headers, data_rows = prepend_tagged_columns(headers, data_rows, TAGGED_COLUMNS)
+    try:
+        npm_tagged_headers, npm_tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, NPM_SHEET_NAME)
+    except Exception as e:
+        print(f"Error loading NPM tagged data: {e}")
+        # fall back to using data from REPOS_SHEET_NAME
+        npm_tagged_headers = tagged_headers
+        npm_tagged_data_rows = tagged_data_rows
+
+    headers, data_rows = prepend_tagged_columns(headers, data_rows, ALL_TAGGED_COLUMNS)
 
     if "is submodule of" not in headers:
         headers.insert(headers.index("git submodules"), "is submodule of")
@@ -951,10 +1027,10 @@ def main():
     headers.insert(headers.index("npmjs package name") + 1, "npmjs url")
 
     # Move TAGGED_NPM_COLUMNS before "npmjs package name"
-    npmjs_package_name_index = headers.index("npmjs package name")
-    for col in reversed(TAGGED_NPM_COLUMNS):
+    for col in TAGGED_NPM_COLUMNS:
         if col in headers:
             headers.remove(col)
+        npmjs_package_name_index = headers.index("npmjs package name")
         headers.insert(npmjs_package_name_index, col)
     
     for col in ("repo name", "organization name"):
@@ -1007,40 +1083,8 @@ def main():
         )
     )
 
-    tagged_rows_by_repo_full_name = {}
-
-    for tagged_row in tagged_data_rows:
-        has_tagged_data = any(
-            not is_empty(tagged_row.get(column))
-            for column in ALL_TAGGED_COLUMNS
-        )
-
-        if not has_tagged_data:
-            continue
-
-        tagged_repo_full_name = tagged_row.get("repo full name")
-
-        if is_empty(tagged_repo_full_name):
-            tagged_repo_name = tagged_row.get("repo name")
-            tagged_organization = tagged_row.get("organization name")
-
-            if is_empty(tagged_repo_name) or is_empty(tagged_organization):
-                continue
-
-            tagged_repo_full_name = f"{tagged_organization}/{tagged_repo_name}"
-
-        tagged_rows_by_repo_full_name[str(tagged_repo_full_name).strip()] = tagged_row
-
-    for row in data_rows:
-        tagged_row = tagged_rows_by_repo_full_name.get(
-            str(row.get("repo full name", "")).strip()
-        )
-
-        if tagged_row is None:
-            continue
-
-        for column in ALL_TAGGED_COLUMNS:
-            row[column] = tagged_row.get(column, "")
+    copy_tagged_data_to_rows(data_rows, tagged_data_rows, TAGGED_COLUMNS)
+    copy_tagged_data_to_rows(data_rows, npm_tagged_data_rows, TAGGED_NPM_COLUMNS)
 
     print("Updated tagged columns in data rows")
 
@@ -1056,6 +1100,12 @@ def main():
     for classification in classifications:
         print(f"- {classification}")
 
+    for row in data_rows:
+        classification = row["npmjs classification"]
+        if classification in NPM_SORT_ORDER:
+            sort_rank = NPM_SORT_ORDER.index(classification)
+            row["npmjs classification"] = str(sort_rank) + "-" + classification
+
     ordered_rows = [{col: row.get(col, "") for col in headers} for row in data_rows]
     write_list_to_csv(CATEGORIZED_OUTPUT + ".csv", headers, data_rows)
     update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "Repositories", ordered_rows)
@@ -1070,7 +1120,10 @@ def main():
             npm_headers.append(col)
     
     npm_ordered_rows = [{col: row.get(col, "") for col in npm_headers} for row in npm_rows]
-    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", "NPM Modules", npm_ordered_rows)
+
+    npm_ordered_rows.sort(key=lambda row: row["npmjs classification"])
+
+    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", NPM_SHEET_NAME, npm_ordered_rows)
 
 if __name__ == "__main__":
     main()

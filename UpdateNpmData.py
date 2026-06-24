@@ -16,13 +16,15 @@ import sys
 from lib.utilities import (
     load_env_file,
     load_repository_data,
+    is_empty,
+    update_ods_sheet_data,
+)
+from lib.npm_utils import (
     fetch_npmjs_package_metadata,
     fetch_npmjs_last_published,
     fetch_npmjs_download_count,
     fetch_npmjs_is_deprecated,
     npm_repo_is_from_uw,
-    is_empty,
-    update_ods_sheet_data,
 )
 
 ODS_FILE = "unfoldingword_repos.ods"
@@ -92,6 +94,10 @@ def main():
     headers, data_rows = load_repository_data(ODS_FILE, SHEET_NAME)
     print(f"Loaded {len(data_rows)} repositories.")
 
+    if "npmjs maintainers" not in headers:
+        idx = headers.index("npmjs last published") if "npmjs last published" in headers else len(headers)
+        headers.insert(idx + 1, "npmjs maintainers")
+
     total = len(data_rows)
     updated = 0
     skipped = 0
@@ -121,6 +127,8 @@ def main():
         row["npm is deprecated"] = fetch_npmjs_is_deprecated(metadata)
         row["npmjs downloads last year"] = fetch_npmjs_download_count(pkg_name, "last-year")
         row["npmjs last published"] = fetch_npmjs_last_published(metadata)
+        maintainers = metadata.get("maintainers") or []
+        row["npmjs maintainers"] = [m.get("name", "") for m in maintainers if m.get("name")]
         updated += 1
 
     print(f"\nUpdated {updated} packages, skipped {skipped}.")

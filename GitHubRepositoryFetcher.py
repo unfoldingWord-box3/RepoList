@@ -25,13 +25,9 @@ import sys
 import urllib.error
 from datetime import datetime
 
-from lib.utilities import (
-    load_env_file,
-    github_request,
-    fetch_repositories,
-    update_npmjs_dependencies,
-    write_ods,
-)
+from lib.utilities import load_env_file
+from lib.github_utils import github_request, fetch_repositories, write_ods
+from lib.npm_utils import update_npmjs_dependencies
 
 ORG_NAMES = [  # highest priority first
     "unfoldingWord",

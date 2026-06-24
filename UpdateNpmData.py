@@ -14,7 +14,7 @@ Usage: python UpdateNpmData.py
 import sys
 
 from lib.utilities import (
-    extract_maintainer_names,
+    extract_npmjs_maintainer_names,
     load_env_file,
     load_repository_data,
     is_empty,
@@ -120,7 +120,7 @@ def main():
             skipped += 1
             continue
 
-        maintainers = extract_maintainer_names(metadata)
+        maintainers = extract_npmjs_maintainer_names(metadata)
         row["npmjs maintainers"] = maintainers
         if not npm_repo_is_from_uw(metadata, ORG_NAMES, maintainers):
             print(f"  Skipping — not from a uW org")

@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from lib.utilities import urlopen_with_retry, extract_maintainer_names
+from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names
 from lib.github_utils import fetch_repository_json_file
 
 
@@ -84,7 +84,7 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, maintainer_names):
     if package_metadata is None:
         return False
 
-    uw_maintainers = ['neutrinog', 'jakobaleksandrovich', 'klappy', 'photo-nomad', 'richmahn', 'mandolyte', 'jag3773', 'mvahowe', 'larsgson', 'abelpz', 'eliaspinero', 'kintsoogii']
+    uw_maintainers = ['neutrinog', 'jakobaleksandrovich', 'klappy', 'photo-nomad', 'richmahn', 'mandolyte', 'jag3773', 'mvahowe', 'larsgson', 'abelpz', 'eliaspinero', 'kintsoogii', 'macolon']
 
     org_names_extended = ORG_NAMES.copy()
     org_names_extended.append("translationCoreApps") # add old organizations
@@ -416,7 +416,7 @@ def update_npmjs_dependencies(repos, org_names):
                     if package_json.get("private") is not True:
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
-                        maintainers = extract_maintainer_names(npm_package_metadata)
+                        maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
                         if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
                             sub_module["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             sub_module["npmjs_downloads_last_year"] = fetch_npmjs_download_count(

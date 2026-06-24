@@ -29,7 +29,7 @@ import urllib.request
 import zipfile
 from xml.sax.saxutils import escape
 
-from lib.utilities import extract_maintainer_names, urlopen_with_retry
+from lib.utilities import extract_npmjs_maintainer_names, urlopen_with_retry
 
 
 def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
@@ -911,7 +911,7 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
                     if package_json.get("private") is not True:
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
-                        maintainers = extract_maintainer_names(npm_package_metadata)
+                        maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
                         if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
                             repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(

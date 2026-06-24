@@ -18,7 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from lib.utilities import urlopen_with_retry
+from lib.utilities import urlopen_with_retry, extract_maintainer_names
 from lib.github_utils import fetch_repository_json_file
 
 
@@ -66,7 +66,7 @@ def fetch_npmjs_package_metadata(package_name):
         return None
 
 
-def npm_repo_is_from_uw(package_metadata, ORG_NAMES):
+def npm_repo_is_from_uw(package_metadata, ORG_NAMES, maintainer_names):
     """
     Check if an npm package belongs to specified organizations.
 
@@ -84,6 +84,8 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES):
     if package_metadata is None:
         return False
 
+    uw_maintainers = ['neutrinog', 'jakobaleksandrovich', 'klappy', 'photo-nomad', 'richmahn', 'mandolyte', 'jag3773', 'mvahowe', 'larsgson', 'abelpz', 'eliaspinero', 'kintsoogii']
+
     org_names_extended = ORG_NAMES.copy()
     org_names_extended.append("translationCoreApps") # add old organizations
 
@@ -98,7 +100,10 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES):
     homepage = homepage.lower()
     repository_url = repository_url.lower()
     if not homepage and not repository_url:
-        return True # for now if this is not found then we treat it as from uw
+        # check if the maintainers are unfolding word
+        maintainer_names = [m.lower() for m in maintainer_names if isinstance(m, str)]
+        is_uw_maintainer = any(uw_maintainer.lower() in maintainer_names for uw_maintainer in uw_maintainers)
+        return is_uw_maintainer
 
     in_uw_org = any((org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
     return in_uw_org
@@ -411,12 +416,15 @@ def update_npmjs_dependencies(repos, org_names):
                     if package_json.get("private") is not True:
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
-                        if npm_repo_is_from_uw(npm_package_metadata, org_names):
+                        maintainers = extract_maintainer_names(npm_package_metadata)
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
                             sub_module["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             sub_module["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
                                 "last-year",
                             )
+                            sub_module["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
+                            sub_module["npmjs_maintainers"] = maintainers
                         else:
                             print(
                                 f"npm_package_name: {npm_package_name}, Homepage: {npm_package_metadata.get('homepage', 'N/A') if npm_package_metadata else 'N/A'}")

@@ -29,7 +29,7 @@ import urllib.request
 import zipfile
 from xml.sax.saxutils import escape
 
-from lib.utilities import is_empty, urlopen_with_retry
+from lib.utilities import extract_maintainer_names, urlopen_with_retry
 
 
 def github_request(url, allow_not_found=False, allow_conflict=False, _retry=0):
@@ -911,15 +911,16 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
                     if package_json.get("private") is not True:
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
-                        if npm_repo_is_from_uw(npm_package_metadata, org_names):
+                        maintainers = extract_maintainer_names(npm_package_metadata)
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
                             repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
                                 "last-year",
                             )
                             repo["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
-                            maintainers = npm_package_metadata.get("maintainers") or []
-                            repo["npmjs_maintainers"] = [m.get("name", "") for m in maintainers if m.get("name")]
+                            repo["npmjs_maintainers"] = maintainers
+
                         else:
                             print(
                                 f"npm_package_name: {npm_package_name}, Homepage: {npm_package_metadata.get('homepage', 'N/A') if npm_package_metadata else 'N/A'}")

@@ -14,6 +14,7 @@ Usage: python UpdateNpmData.py
 import sys
 
 from lib.utilities import (
+    extract_maintainer_names,
     load_env_file,
     load_repository_data,
     is_empty,
@@ -119,7 +120,9 @@ def main():
             skipped += 1
             continue
 
-        if not npm_repo_is_from_uw(metadata, ORG_NAMES):
+        maintainers = extract_maintainer_names(metadata)
+        row["npmjs maintainers"] = maintainers
+        if not npm_repo_is_from_uw(metadata, ORG_NAMES, maintainers):
             print(f"  Skipping — not from a uW org")
             skipped += 1
             continue
@@ -127,8 +130,6 @@ def main():
         row["npm is deprecated"] = fetch_npmjs_is_deprecated(metadata)
         row["npmjs downloads last year"] = fetch_npmjs_download_count(pkg_name, "last-year")
         row["npmjs last published"] = fetch_npmjs_last_published(metadata)
-        maintainers = metadata.get("maintainers") or []
-        row["npmjs maintainers"] = [m.get("name", "") for m in maintainers if m.get("name")]
         updated += 1
 
     print(f"\nUpdated {updated} packages, skipped {skipped}.")

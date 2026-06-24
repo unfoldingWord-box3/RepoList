@@ -747,3 +747,17 @@ def contains_any(value, terms):
             return term
 
     return ""
+
+
+def extract_maintainer_names(metadata):
+    """
+    Extract maintainer names from npm package metadata.
+
+    Args:
+        metadata (dict): npm package metadata containing maintainers list.
+
+    Returns:
+        list[str]: List of maintainer names, empty list if none found.
+    """
+    maintainers = metadata.get("maintainers") or []
+    return [m.get("name", "") for m in maintainers if m.get("name")]

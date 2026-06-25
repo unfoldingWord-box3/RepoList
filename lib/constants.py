@@ -1,7 +1,7 @@
 # lib/constants.py
 
-NODE_LANGUAGES = ("javascript", "typescript")
-OFTEN_GITHUB_MISTAKEN_LANGUAGES = ("", "HTML")
+NODE_LANGUAGES = ("javascript", "typescript", "svelte") # lowercase
+OFTEN_GITHUB_MISTAKEN_LANGUAGES = ("", "html") # lowercase
 
 REPO_ODS_FILE = "sheets/unfoldingword_repos.ods"
 TAGGED_ODS_FILE = "sheets/tagged_repos.ods"

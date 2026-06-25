@@ -17,7 +17,8 @@ from lib.constants import (
     REPOS_SHEET_NAME,
     JS_TS_SHEET_NAME,
     NPM_ORG_NAMES,
-    ORG_NAMES, NODE_LANGUAGES,
+    ORG_NAMES,
+    NODE_LANGUAGES,
 )
 from lib.utilities import (
     extract_npmjs_maintainer_names,

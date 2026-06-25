@@ -907,7 +907,7 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
                 if language in OFTEN_GITHUB_MISTAKEN_LANGUAGES:
                     package_json = fetch_package_json(repo)
                     if package_json: # if it has a package.json, it's probably a node repo'
-                        print(f"For {repo_name} Language field is {language}, but it's probably a node repo. Using package.json")
+                        print(f"For {repo_name} Language field is '{language}', but it's probably a node repo. Using package.json")
                         new_language = "Javascript"
                         language = new_language.lower()
                         repo["language"] = new_language

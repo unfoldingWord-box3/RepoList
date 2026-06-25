@@ -99,13 +99,13 @@ def main():
     total = len(data_rows)
     print(f"Fetching npm data for {total} github packages...")
 
-    org_packages = {}
+    org_modules = {}
 
     for org_name in NPM_ORG_NAMES:
         print(f"\nFetching all npm packages for @{org_name}...")
-        org_modules = fetch_npmjs_org_modules(org_name)
-        print(f"Found {len(org_modules.items())} modules in @{org_name}.")
-        org_packages[org_name] = org_modules
+        modules = fetch_npmjs_org_modules(org_name)
+        print(f"Found {len(modules.items())} modules in @{org_name}.")
+        org_modules[org_name] = modules
 
     # Index existing ODS rows by package name
     rows_by_package = {}
@@ -118,7 +118,7 @@ def main():
 
     # Add rows for packages discovered on npm that are not yet in the ODS
     new_count = 0
-    for org_name, modules in org_packages.items():
+    for org_name, modules in org_modules.items():
         for module_name, module_data in modules.items():
             if module_name not in rows_by_package:
                 # new_row = {col: "" for col in headers}
@@ -133,11 +133,11 @@ def main():
     if new_count:
         print(f"Added {new_count} new packages discovered from npm.")
 
-    total = len(org_packages)
+    total = sum(len(modules.items()) for modules in org_modules.values())
     updated = 0
     skipped = 0
 
-    # for i, pkg_name in enumerate(org_packages):
+    # for i, pkg_name in enumerate(org_modules):
     #     row = rows_by_package[pkg_name]
 
     for i, row in enumerate(data_rows):
@@ -159,7 +159,7 @@ def main():
 
         maintainers = extract_npmjs_maintainer_names(metadata)
         row["npmjs maintainers"] = maintainers
-        if not npm_repo_is_from_uw(metadata, ORG_NAMES, maintainers):
+        if not npm_repo_is_from_uw(metadata, ORG_NAMES, org_modules):
             print(f"  Skipping — not from a uW org")
             skipped += 1
             continue

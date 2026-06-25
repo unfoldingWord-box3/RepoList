@@ -66,7 +66,7 @@ def fetch_npmjs_package_metadata(package_name):
         return None
 
 
-def npm_repo_is_from_uw(package_metadata, ORG_NAMES, maintainer_names):
+def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules):
     """
     Check if an npm package belongs to specified organizations.
 
@@ -84,13 +84,12 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, maintainer_names):
     if package_metadata is None:
         return False
 
-    uw_maintainers = ['neutrinog', 'jakobaleksandrovich', 'klappy', 'photo-nomad', 'richmahn', 'mandolyte', 'jag3773', 'mvahowe', 'larsgson', 'abelpz', 'eliaspinero', 'kintsoogii', 'macolon']
-
     org_names_extended = ORG_NAMES.copy()
     org_names_extended.append("translationCoreApps") # add old organizations
 
     homepage = package_metadata.get("homepage") or ""
     repository = package_metadata.get("repository") or {}
+    module_name = package_metadata.get("name", "")
 
     if isinstance(repository, dict):
         repository_url = repository.get("url") or ""
@@ -100,10 +99,15 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, maintainer_names):
     homepage = homepage.lower()
     repository_url = repository_url.lower()
     if not homepage and not repository_url:
-        # check if the maintainers are unfolding word
-        maintainer_names = [m.lower() for m in maintainer_names if isinstance(m, str)]
-        is_uw_maintainer = any(uw_maintainer.lower() in maintainer_names for uw_maintainer in uw_maintainers)
-        return is_uw_maintainer
+        for org_name, org_data in org_modules:
+            found_in_org_modules = org_data[module_name]
+            if found_in_org_modules:
+                return True
+
+        # # check if the maintainers are unfolding word
+        # maintainer_names = [m.lower() for m in maintainer_names if isinstance(m, str)]
+        # is_uw_maintainer = any(uw_maintainer.lower() in maintainer_names for uw_maintainer in uw_maintainers)
+        # return is_uw_maintainer
 
     in_uw_org = any((org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
     return in_uw_org

@@ -795,3 +795,35 @@ def extract_npmjs_maintainer_names(npmjs_metadata):
     """
     maintainers = (npmjs_metadata or {}).get("maintainers") or []
     return [m.get("name", "") for m in maintainers if m.get("name")]
+
+
+
+def flexibleGet(name: str, row: dict) -> Any | None:
+    """
+    Retrieve a value from a dictionary using flexible key name matching.
+    
+    Attempts to get a value using the provided key name, and if not found,
+    tries alternative key formats by replacing spaces with underscores or
+    vice versa. This handles cases where column names may use either
+    spaces or underscores as word separators.
+    
+    Args:
+        name (str): The key name to look up in the dictionary. May contain
+                   spaces or underscores as word separators.
+        row (dict): Dictionary to retrieve the value from, typically
+                   representing a data row with column names as keys.
+    
+    Returns:
+        Any | None: The value associated with the key if found (trying the
+                   original name, then space-to-underscore, then underscore-to-space
+                   replacements), or None if no matching key exists.
+    """
+    value = row.get(name)
+    if value is None:
+        if " " in name:
+            new_name = name.replace(" ", "_")
+            value = row.get(name)
+        elif "_" in name:
+            new_name = name.replace("_", " ")
+            value = row.get(new_name)
+    return value

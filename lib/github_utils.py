@@ -30,6 +30,7 @@ import zipfile
 from xml.sax.saxutils import escape
 
 from lib.constants import NODE_LANGUAGES, OFTEN_GITHUB_MISTAKEN_LANGUAGES
+from lib.npm_utils import find_npm_org
 from lib.utilities import extract_npmjs_maintainer_names, urlopen_with_retry
 
 
@@ -843,18 +844,58 @@ def fetch_repository_submodules(repo):
     return submodules
 
 
-def fetch_repositories_for_org(org_name, org_names, start_count=0):
+def fetch_repositories_for_org(org_name, org_names, org_modules, start_count=0):
     """
-    Fetch all repositories for a given GitHub organization.
+    Fetch all repositories for a given GitHub organization with enriched metadata.
+
+    Retrieves all repositories from the specified organization via the GitHub API,
+    then enriches each repository with additional metadata including:
+    - GitHub metrics: dependents, contributors, downloads, commits, releases, PRs, submodules
+    - npm package data: package name, organization, deprecation status, downloads, maintainers
+    - Monorepo detection: package.json files in workspaces or Nx projects
+
+    For Node.js repositories (JavaScript, TypeScript, Svelte), attempts to detect and
+    correct language misclassification by GitHub by checking for package.json presence.
+    Only fetches npm metadata for published (non-private) packages that belong to the
+    specified organizations.
 
     Args:
         org_name (str): The name of the GitHub organization to fetch repositories from.
         org_names (list[str]): All organization names, used for npm package ownership checks.
-        start_count (int): Starting repository count for progress display. Defaults to 0.
+        org_modules (list[str]): List of npm organization names (without @ prefix, lowercase)
+                                 used for identifying npm packages owned by the organizations.
+        start_count (int, optional): Starting repository count for progress display. Defaults to 0.
 
     Returns:
-        tuple[list, int]: A tuple of (repos, count) where repos is a list of repository
-                          dictionaries and count is the total number fetched including start_count.
+        tuple[list[dict], int]: A tuple of (repos, count) where:
+            - repos: List of repository dictionaries with enriched metadata fields:
+                * All standard GitHub API fields (name, owner, language, etc.)
+                * github_dependents: list of dependent repository names
+                * github_contributors: list of contributor identifiers
+                * github_downloads: total release asset download count
+                * github_release_count: number of releases
+                * last_commit_date: ISO 8601 date of most recent commit
+                * last_release_date: ISO 8601 date of most recent release
+                * open_prs_count: number of open pull requests
+                * commit_count: total commits in default branch
+                * git_submodules: list of submodule URLs
+                * package_json: parsed package.json content (Node.js repos only)
+                * npmjs_package_name: npm package name (Node.js repos only)
+                * npmjs_last_published: last publish date (published packages only)
+                * npmjs_downloads_last_year: download count (published packages only)
+                * npm_organization: npm organization name (published packages only)
+                * npm_is_deprecated: deprecation status (published packages only)
+                * npmjs_maintainers: list of maintainer names (published packages only)
+                * npmjs_used_by: empty list (populated externally)
+                * npmjs_uses: empty list (populated externally)
+                * package_json_files: list of package.json locations (monorepos only)
+            - count: Total number of repositories fetched including start_count
+
+    Note:
+        - Adds 1 second delay between repository fetches to avoid rate limiting
+        - Paginated API calls fetch 100 repositories per page
+        - Repositories sorted by most recently updated
+        - Language detection corrects GitHub misclassification for HTML-only repos with package.json
     """
     from lib.npm_utils import (
         fetch_npmjs_package_metadata,
@@ -906,8 +947,9 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
                 # check if github made a mistake on the language field
                 if language in OFTEN_GITHUB_MISTAKEN_LANGUAGES:
                     package_json = fetch_package_json(repo)
-                    if package_json: # if it has a package.json, it's probably a node repo'
-                        print(f"For {repo_name} Language field is '{language}', but it's probably a node repo. Using package.json")
+                    if package_json:  # if it has a package.json, it's probably a node repo'
+                        print(
+                            f"For {repo_name} Language field is '{language}', but it's probably a node repo. Using package.json")
                         new_language = "Javascript"
                         language = new_language.lower()
                         repo["language"] = new_language
@@ -924,12 +966,13 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
                         maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
-                        if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names, org_modules):
                             repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
                                 "last-year",
                             )
+                            repo["npm_organization"] = find_npm_org(npm_package_metadata, org_modules)
                             repo["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
                             repo["npmjs_maintainers"] = maintainers
 
@@ -956,24 +999,51 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
 
     return repos, count
 
-
-def fetch_repositories(org_names):
+def fetch_repositories(org_names, org_modules):
     """
     Fetch all repositories across multiple GitHub organizations.
 
+    Iterates through each organization in the provided list, fetching all repositories
+    from each one. Maintains a running count of repositories processed for progress
+    tracking across all organizations.
+
     Args:
-        org_names (list[str]): Organization names to fetch, highest priority first.
+        org_names (list[str]): List of GitHub organization names to fetch repositories from,
+                               ordered by priority (highest priority first). Used both for
+                               fetching and for npm package ownership validation.
+        org_modules (list[str]): List of npm organization names (without @ prefix, lowercase)
+                                 used for identifying npm packages owned by the organizations.
 
     Returns:
-        list: Combined list of repository dictionaries from all organizations.
+        list[dict]: Combined list of repository dictionaries from all organizations.
+                    Each dictionary contains repository metadata from the GitHub API
+                    plus additional fields added by fetch_repositories_for_org():
+                    - github_dependents: list of dependent repositories
+                    - github_contributors: list of contributor identifiers
+                    - github_downloads: total release asset download count
+                    - github_release_count: number of releases
+                    - last_commit_date: ISO 8601 date of most recent commit
+                    - last_release_date: ISO 8601 date of most recent release
+                    - open_prs_count: number of open pull requests
+                    - commit_count: total commits in default branch
+                    - git_submodules: list of submodule URLs
+                    - package_json: parsed package.json content (for Node.js repos)
+                    - npmjs_package_name: npm package name (for Node.js repos)
+                    - npmjs_last_published: last publish date (for published packages)
+                    - npmjs_downloads_last_year: download count (for published packages)
+                    - npm_organization: npm organization name (for published packages)
+                    - npm_is_deprecated: deprecation status (for published packages)
+                    - npmjs_maintainers: list of maintainer names (for published packages)
+                    - npmjs_used_by: list of dependent packages (populated externally)
+                    - npmjs_uses: list of dependency packages (populated externally)
+                    - package_json_files: list of package.json locations (for monorepos)
     """
     repos = []
     count = 0
     for org_name in org_names:
-        org_repos, count = fetch_repositories_for_org(org_name, org_names, count)
+        org_repos, count = fetch_repositories_for_org(org_name, org_names, org_modules, count)
         repos.extend(org_repos)
     return repos
-
 
 def write_ods(repos, output_file):
     """

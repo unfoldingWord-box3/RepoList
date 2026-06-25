@@ -20,7 +20,7 @@ import urllib.request
 from typing import Any
 
 from lib.constants import NPM_ORG_NAMES
-from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names, is_empty
+from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names, is_empty, flexibleGet
 from lib.github_utils import fetch_repository_json_file
 
 
@@ -506,7 +506,9 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
     Returns:
         None. Modifies repository dictionaries in place.
     """
-    missing_modules, org_modules = fetch_npmjs_modules_for_all_orgs(repos)
+    if not org_modules:
+        org_modules = fetch_all_npmjs_modules_for_orgs()
+
     repos_by_npmjs_package_name = get_repos_by_npmjs_package_name(repos)
 
     sub_modules = []
@@ -540,6 +542,7 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
                                 npm_package_name,
                                 "last-year",
                             )
+                            sub_module["npm_organization"] = find_npm_org(npm_package_metadata, org_modules)
                             sub_module["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
                             sub_module["npmjs_maintainers"] = maintainers
                         else:
@@ -576,13 +579,45 @@ def fetch_npmjs_modules_for_all_orgs(data_rows) -> tuple[list[Any], dict[Any, An
                                  complete module data as returned by
                                  fetch_npmjs_org_modules().
     """
-    org_modules = {}
+    org_modules = fetch_all_npmjs_modules_for_orgs()
+    missing_modules = find_missing_npmjs_modules(data_rows, org_modules)
 
-    for org_name in NPM_ORG_NAMES:
-        print(f"\nFetching all npm packages for @{org_name}...")
-        modules = fetch_npmjs_org_modules(org_name)
-        print(f"Found {len(modules.items())} modules in @{org_name}.")
-        org_modules[org_name] = modules
+    return missing_modules, org_modules
+
+
+def find_missing_npmjs_modules(data_rows: list[dict], org_modules: dict[Any, Any]) -> list[Any]:
+    """
+    Find npm organization packages that are not represented in existing data rows.
+
+    Builds an index of tracked package names from ``data_rows`` using the
+    ``"npmjs package name"`` field, then compares that index with the package
+    names in ``org_modules``. Any npm package present in ``org_modules`` but
+    absent from ``data_rows`` is reported as newly discovered and returned in
+    the result list.
+
+    Package names from ``data_rows`` are normalized by:
+    - Reading the value via ``flexibleGet("npmjs package name", row)``.
+    - Ignoring empty values.
+    - Using the first item when the value is a list.
+    - Converting the value to a stripped string before comparison.
+
+    Args:
+        data_rows (list[dict]): Existing repository/package rows. Rows may contain
+            a ``"npmjs package name"`` field used to determine which npm packages
+            are already tracked.
+        org_modules (dict[Any, Any]): Mapping of organization names to package data.
+            Each organization value is expected to be a dictionary where keys are
+            npm package names and values are the corresponding npm package metadata,
+            as returned by ``fetch_all_npmjs_modules_for_orgs()``.
+
+    Returns:
+        list[Any]: Module metadata values for npm packages found in ``org_modules``
+        but not present in ``data_rows``. The input rows are not modified.
+
+    Side Effects:
+        Prints a message for each newly discovered module and a summary count when
+        one or more missing modules are found.
+    """
 
     # Index existing ODS rows by package name
     rows_by_package = {}
@@ -609,35 +644,28 @@ def fetch_npmjs_modules_for_all_orgs(data_rows) -> tuple[list[Any], dict[Any, An
 
     if len(missing_modules):
         print(f"Added {len(missing_modules)} new packages discovered from npm.")
-    return missing_modules, org_modules
+    return missing_modules
 
 
-def flexibleGet(name: str, row: dict) -> Any | None:
+def fetch_all_npmjs_modules_for_orgs() -> dict[Any, Any]:
     """
-    Retrieve a value from a dictionary using flexible key name matching.
-    
-    Attempts to get a value using the provided key name, and if not found,
-    tries alternative key formats by replacing spaces with underscores or
-    vice versa. This handles cases where column names may use either
-    spaces or underscores as word separators.
-    
-    Args:
-        name (str): The key name to look up in the dictionary. May contain
-                   spaces or underscores as word separators.
-        row (dict): Dictionary to retrieve the value from, typically
-                   representing a data row with column names as keys.
-    
+    Fetch all npm packages from all configured organizations.
+
+    Iterates through organizations specified in NPM_ORG_NAMES constant and
+    retrieves all their published npm packages. Prints progress information
+    for each organization.
+
     Returns:
-        Any | None: The value associated with the key if found (trying the
-                   original name, then space-to-underscore, then underscore-to-space
-                   replacements), or None if no matching key exists.
+        dict[Any, Any]: Dictionary mapping organization names to their module data,
+                       where each module dictionary contains package names as keys
+                       and package metadata as values (as returned by
+                       fetch_npmjs_org_modules()).
     """
-    value = row.get(name)
-    if value is None:
-        if " " in name:
-            new_name = name.replace(" ", "_")
-            value = row.get(name)
-        elif "_" in name:
-            new_name = name.replace("_", " ")
-            value = row.get(new_name)
-    return value
+    org_modules = {}
+
+    for org_name in NPM_ORG_NAMES:
+        print(f"\nFetching all npm packages for @{org_name}...")
+        modules = fetch_npmjs_org_modules(org_name)
+        print(f"Found {len(modules.items())} modules in @{org_name}.")
+        org_modules[org_name] = modules
+    return org_modules

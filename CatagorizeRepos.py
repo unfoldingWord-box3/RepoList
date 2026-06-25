@@ -61,7 +61,8 @@ Example:
     to each repository, and exports results to 'sheets/categorized_repos.csv' and
     'sheets/categorized_repos.ods' with added classification columns.
 """
-from lib.constants import REPO_ODS_FILE, TAGGED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME
+from lib.constants import REPO_ODS_FILE, TAGGED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME, \
+    NPM_ORG_NAMES
 
 from lib.utilities import ( update_ods_sheet_data,
                            is_true, months_old, is_empty, as_int, contains_any, load_repository_data,
@@ -477,6 +478,8 @@ def determine_npmjs_classification(row):
     npm_downloads_last_year = as_int(row.get("npmjs downloads last year"))
     npm_last_published_date = row.get("npmjs last published")
     npm_last_published_months = months_old(npm_last_published_date)
+    npm_organization = row.get("npm organization")
+    is_our_org = npm_organization in NPM_ORG_NAMES
 
     replacement_terms = ["old", "legacy", "deprecated", "obsolete", "archive", "backup"]
     sensitive_or_build_terms = [
@@ -507,8 +510,18 @@ def determine_npmjs_classification(row):
             f"Not Published so nothing to do.",
         )
 
+    # ClassificationRules.md Rule P10
+    if not is_our_org:
+        return (
+            "Nothing to do",
+            f"Not our org so nothing to do.",
+        )
+
     # ClassificationRules.md Rule P5
-    if archived and npm_last_published_date:
+    if (
+        archived
+        and npm_last_published_date
+    ):
         return (
             "Deprecate npm package candidate",
             "Package is backed by an archived repository and is not marked deprecated on npmjs.",
@@ -560,9 +573,9 @@ def determine_npmjs_classification(row):
 
     # ClassificationRules.md Rule P4
     if (
-            contains_any(repo_name, replacement_terms)
-            or contains_any(npm_package_name, replacement_terms)
-            and npm_last_published_date
+        contains_any(repo_name, replacement_terms)
+        or contains_any(npm_package_name, replacement_terms)
+        and npm_last_published_date
     ):
         return (
             "Deprecate npm package candidate",

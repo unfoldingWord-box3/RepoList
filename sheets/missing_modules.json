@@ -6,7 +6,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-24T12:41:09.053Z",
-    "searchScore": 97.00107,
+    "searchScore": 96.56115,
     "package": {
       "name": "@gabrielaillet/word-aligner-rcl",
       "keywords": [],
@@ -33,7 +33,7 @@
       }
     },
     "score": {
-      "final": 97.00107,
+      "final": 96.56115,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -51,7 +51,7 @@
     },
     "dependents": "1",
     "updated": "2026-06-24T14:16:34.320Z",
-    "searchScore": 65.98034,
+    "searchScore": 65.58323,
     "package": {
       "name": "suggesting-word-aligner-rcl",
       "keywords": [],
@@ -78,7 +78,7 @@
       }
     },
     "score": {
-      "final": 65.98034,
+      "final": 65.58323,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -96,7 +96,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-22T09:11:08.152Z",
-    "searchScore": 58.306625,
+    "searchScore": 57.537365,
     "package": {
       "name": "tc-checking-tool-rcl",
       "keywords": [],
@@ -127,7 +127,7 @@
       }
     },
     "score": {
-      "final": 58.306625,
+      "final": 57.537365,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -145,7 +145,7 @@
     },
     "dependents": "2",
     "updated": "2026-06-25T04:41:21.684Z",
-    "searchScore": 38.749447,
+    "searchScore": 38.798126,
     "package": {
       "name": "@oce-editor-tools/core",
       "keywords": [],
@@ -184,7 +184,7 @@
       }
     },
     "score": {
-      "final": 38.749447,
+      "final": 38.798126,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -202,7 +202,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T13:46:25.260Z",
-    "searchScore": 36.753384,
+    "searchScore": 35.804535,
     "package": {
       "name": "@oce-editor-tools/pk",
       "keywords": [],
@@ -240,7 +240,51 @@
       }
     },
     "score": {
-      "final": 36.753384,
+      "final": 35.804535,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 50,
+      "weekly": 1
+    },
+    "dependents": 0,
+    "updated": "2026-06-25T05:26:21.812Z",
+    "searchScore": 31.373705,
+    "package": {
+      "name": "html-usfm-pk",
+      "keywords": [],
+      "version": "0.1.2",
+      "description": "A React Component Library for editing Usfm - incl. Proskomma cache.",
+      "sanitized_name": "html-usfm-pk",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-04-05T17:48:06.532Z",
+      "links": {
+        "homepage": "https://pk-usfm-editor.netlify.app/",
+        "repository": "https://github.com/unfoldingword/html-usfm",
+        "npm": "https://www.npmjs.com/package/html-usfm-pk"
+      }
+    },
+    "score": {
+      "final": 31.373705,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -258,7 +302,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T16:16:34.819Z",
-    "searchScore": 31.57282,
+    "searchScore": 30.759539,
     "package": {
       "name": "translation-helps-patch",
       "keywords": [
@@ -289,51 +333,7 @@
       }
     },
     "score": {
-      "final": 31.57282,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 50,
-      "weekly": 1
-    },
-    "dependents": 0,
-    "updated": "2026-06-25T05:26:21.812Z",
-    "searchScore": 31.336218,
-    "package": {
-      "name": "html-usfm-pk",
-      "keywords": [],
-      "version": "0.1.2",
-      "description": "A React Component Library for editing Usfm - incl. Proskomma cache.",
-      "sanitized_name": "html-usfm-pk",
-      "publisher": {
-        "email": "lars.gunnarsson@unfoldingword.org",
-        "username": "larsgson"
-      },
-      "maintainers": [
-        {
-          "email": "lars.gunnarsson@unfoldingword.org",
-          "username": "larsgson"
-        }
-      ],
-      "license": "MIT",
-      "date": "2023-04-05T17:48:06.532Z",
-      "links": {
-        "homepage": "https://pk-usfm-editor.netlify.app/",
-        "repository": "https://github.com/unfoldingword/html-usfm",
-        "npm": "https://www.npmjs.com/package/html-usfm-pk"
-      }
-    },
-    "score": {
-      "final": 31.336218,
+      "final": 30.759539,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -351,7 +351,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T10:11:23.338Z",
-    "searchScore": 29.650799,
+    "searchScore": 29.21322,
     "package": {
       "name": "@oce-editor-tools/simple",
       "keywords": [],
@@ -389,7 +389,7 @@
       }
     },
     "score": {
-      "final": 29.650799,
+      "final": 29.21322,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -407,7 +407,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T19:06:14.493Z",
-    "searchScore": 27.301775,
+    "searchScore": 26.637918,
     "package": {
       "name": "@texttree/scripture-resources-rcl",
       "keywords": [],
@@ -441,7 +441,7 @@
       }
     },
     "score": {
-      "final": 27.301775,
+      "final": 26.637918,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -459,7 +459,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-24T04:46:17.879Z",
-    "searchScore": 25.617144,
+    "searchScore": 25.280018,
     "package": {
       "name": "usfm2json",
       "keywords": [
@@ -490,7 +490,7 @@
       }
     },
     "score": {
-      "final": 25.617144,
+      "final": 25.280018,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -508,7 +508,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-19T17:31:12.097Z",
-    "searchScore": 24.397755,
+    "searchScore": 24.436382,
     "package": {
       "name": "door43-client-fork",
       "keywords": [],
@@ -535,7 +535,7 @@
       }
     },
     "score": {
-      "final": 24.397755,
+      "final": 24.436382,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -553,7 +553,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-24T00:46:20.161Z",
-    "searchScore": 23.999586,
+    "searchScore": 23.410559,
     "package": {
       "name": "html-usfm-simple",
       "keywords": [],
@@ -579,7 +579,7 @@
       }
     },
     "score": {
-      "final": 23.999586,
+      "final": 23.410559,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -592,12 +592,56 @@
   },
   {
     "downloads": {
-      "monthly": 203,
-      "weekly": 58
+      "monthly": 73,
+      "weekly": 3
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T22:06:18.960Z",
+    "searchScore": 23.009596,
+    "package": {
+      "name": "book-package",
+      "keywords": [],
+      "version": "0.1.3",
+      "description": "A React Component Library for Single Piece Workflow resource identification.",
+      "sanitized_name": "book-package",
+      "publisher": {
+        "email": "cecil.new@gmail.com",
+        "username": "mandolyte"
+      },
+      "maintainers": [
+        {
+          "email": "cecil.new@gmail.com",
+          "username": "mandolyte"
+        }
+      ],
+      "license": "MIT",
+      "date": "2019-12-03T15:17:18.894Z",
+      "links": {
+        "homepage": "https://unfoldingword-box3.github.io/book-package/",
+        "repository": "https://github.com/unfoldingword-box3/book-package",
+        "npm": "https://www.npmjs.com/package/book-package"
+      }
+    },
+    "score": {
+      "final": 23.009596,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 195,
+      "weekly": 8
     },
     "dependents": "0",
-    "updated": "2026-06-18T17:01:10.571Z",
-    "searchScore": 23.71951,
+    "updated": "2026-06-25T17:06:13.127Z",
+    "searchScore": 22.953714,
     "package": {
       "name": "tc-electron-env",
       "keywords": [
@@ -667,7 +711,7 @@
       }
     },
     "score": {
-      "final": 23.71951,
+      "final": 22.953714,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -680,56 +724,12 @@
   },
   {
     "downloads": {
-      "monthly": 73,
-      "weekly": 3
+      "monthly": 281,
+      "weekly": 8
     },
     "dependents": 0,
-    "updated": "2026-06-24T22:06:18.960Z",
-    "searchScore": 23.271736,
-    "package": {
-      "name": "book-package",
-      "keywords": [],
-      "version": "0.1.3",
-      "description": "A React Component Library for Single Piece Workflow resource identification.",
-      "sanitized_name": "book-package",
-      "publisher": {
-        "email": "cecil.new@gmail.com",
-        "username": "mandolyte"
-      },
-      "maintainers": [
-        {
-          "email": "cecil.new@gmail.com",
-          "username": "mandolyte"
-        }
-      ],
-      "license": "MIT",
-      "date": "2019-12-03T15:17:18.894Z",
-      "links": {
-        "homepage": "https://unfoldingword-box3.github.io/book-package/",
-        "repository": "https://github.com/unfoldingword-box3/book-package",
-        "npm": "https://www.npmjs.com/package/book-package"
-      }
-    },
-    "score": {
-      "final": 23.271736,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 308,
-      "weekly": 54
-    },
-    "dependents": 0,
-    "updated": "2026-06-18T17:01:09.906Z",
-    "searchScore": 20.836563,
+    "updated": "2026-06-25T17:06:11.773Z",
+    "searchScore": 19.950027,
     "package": {
       "name": "electronite-packager",
       "keywords": [
@@ -801,7 +801,7 @@
       }
     },
     "score": {
-      "final": 20.836563,
+      "final": 19.950027,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -819,7 +819,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-24T14:51:18.970Z",
-    "searchScore": 19.938374,
+    "searchScore": 19.706554,
     "package": {
       "name": "wordmapbooster",
       "keywords": [],
@@ -846,7 +846,7 @@
       }
     },
     "score": {
-      "final": 19.938374,
+      "final": 19.706554,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -864,7 +864,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-19T00:11:09.209Z",
-    "searchScore": 19.673677,
+    "searchScore": 19.45213,
     "package": {
       "name": "usfm2html",
       "keywords": [
@@ -937,7 +937,7 @@
       }
     },
     "score": {
-      "final": 19.673677,
+      "final": 19.45213,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -955,7 +955,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-22T22:26:12.101Z",
-    "searchScore": 17.383736,
+    "searchScore": 17.170506,
     "package": {
       "name": "ptxaligner",
       "keywords": [
@@ -987,7 +987,7 @@
       }
     },
     "score": {
-      "final": 17.383736,
+      "final": 17.170506,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1005,7 +1005,7 @@
     },
     "dependents": "2",
     "updated": "2026-06-24T23:26:10.299Z",
-    "searchScore": 16.61307,
+    "searchScore": 16.374153,
     "package": {
       "name": "@usfm-tools/usj-core",
       "keywords": [
@@ -1037,7 +1037,7 @@
       }
     },
     "score": {
-      "final": 16.61307,
+      "final": 16.374153,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1055,7 +1055,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-24T09:11:19.889Z",
-    "searchScore": 16.568222,
+    "searchScore": 16.273212,
     "package": {
       "name": "gateway-language-translation-suite-prototype",
       "keywords": [],
@@ -1081,7 +1081,7 @@
       }
     },
     "score": {
-      "final": 16.568222,
+      "final": 16.273212,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1099,7 +1099,7 @@
     },
     "dependents": "2",
     "updated": "2026-06-25T04:41:21.684Z",
-    "searchScore": 139.58974,
+    "searchScore": 139.64977,
     "package": {
       "name": "@oce-editor-tools/core",
       "keywords": [],
@@ -1138,7 +1138,7 @@
       }
     },
     "score": {
-      "final": 139.58974,
+      "final": 139.64977,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1156,7 +1156,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T13:46:25.260Z",
-    "searchScore": 126.39643,
+    "searchScore": 126.4634,
     "package": {
       "name": "@oce-editor-tools/pk",
       "keywords": [],
@@ -1194,7 +1194,7 @@
       }
     },
     "score": {
-      "final": 126.39643,
+      "final": 126.4634,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1212,7 +1212,7 @@
     },
     "dependents": 0,
     "updated": "2026-06-23T10:11:23.338Z",
-    "searchScore": 111.791435,
+    "searchScore": 111.838806,
     "package": {
       "name": "@oce-editor-tools/simple",
       "keywords": [],
@@ -1250,7 +1250,7 @@
       }
     },
     "score": {
-      "final": 111.791435,
+      "final": 111.838806,
       "detail": {
         "popularity": 1,
         "quality": 1,

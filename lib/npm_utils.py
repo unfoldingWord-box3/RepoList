@@ -167,7 +167,7 @@ def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
             break
             
     if not found_org:
-        is_uw_maintained_ = is_uw_maintained(package_metadata.get("maintainers", []))
+        is_uw_maintained_ = is_uw_maintained(extract_npmjs_maintainer_names(package_metadata))
         if is_uw_maintained_:
             found_org = "unfoldingword"
 

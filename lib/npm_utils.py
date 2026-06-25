@@ -21,7 +21,6 @@ from typing import Any
 
 from lib.constants import NPM_ORG_NAMES
 from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names, is_empty, flexibleGet
-from lib.github_utils import fetch_repository_json_file
 
 
 def fetch_npmjs_package_metadata(package_name):
@@ -136,6 +135,8 @@ def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
         str : The organization name that contains the module, or None if the
                     module is not found in any organization.
     """
+    from lib.github_utils import fetch_repository_json_file
+
     found_org = ""
     module_name = package_metadata.get("name", "")
 

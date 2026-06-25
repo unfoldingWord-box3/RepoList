@@ -297,6 +297,85 @@ def fetch_npmjs_total_download_count(package_name, package_metadata):
     return total_downloads
 
 
+def fetch_npmjs_org_modules(org_name):
+    """
+    Fetch all package names for an npm organization using the npm search API.
+
+    Uses the npm search API to find all scoped packages (@org_name) with
+    offset-based pagination until all results are retrieved.
+
+    Args:
+        org_name (str): npm organization name without the @ prefix (e.g., 'unfoldingword').
+
+    Returns:
+        dict: Dictionary containing the list of package names.
+    """
+    PACKAGES_THRESHOLD = 1000
+
+    packages = {}
+    size = 250
+    threshold = size
+    from_idx = 0
+    org_name = org_name.strip().lstrip("@")
+    package_prefix = f"@{org_name}/"
+
+    while True:
+        params = urllib.parse.urlencode({
+            "text": package_prefix,
+            "size": size,
+            "from": from_idx,
+        })
+        url = f"https://registry.npmjs.org/-/v1/search?{params}"
+
+        print(f"Fetching npm org packages (offset {from_idx}): {url}")
+
+        request = urllib.request.Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "unfoldingword-repo-list-script",
+            },
+        )
+
+        try:
+            with urlopen_with_retry(request) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as error:
+            print(f"npm search API error: {error.code} {error.reason}", file=sys.stderr)
+            break
+
+        objects = data.get("objects", [])
+        total = data.get("total", 0)
+        threshold = total
+
+        print(
+            f"npm search returned {len(objects)} objects out of total {total} "
+            f"for query {package_prefix!r}"
+        )
+
+        need_to_filter = total > PACKAGES_THRESHOLD
+        if need_to_filter:
+            threshold = PACKAGES_THRESHOLD
+            print(f"This is a large number of results. Turning on filtering and limiting to {threshold}.")
+
+        if not objects:
+            break
+
+        for obj in objects:
+            pkg_name = obj.get("package", {}).get("name", "").strip()
+            if pkg_name:
+                if need_to_filter:
+                    if not pkg_name.startswith(package_prefix):
+                        continue # skip over packages that don't start with the prefix
+                packages[pkg_name] = obj
+
+        from_idx += len(objects)
+        if from_idx >= threshold or len(objects) < size:
+            break
+
+    return packages
+    
+
 def get_repos_by_npmjs_package_name(repos):
     """
     Create a dictionary mapping npm package names to their repository data.

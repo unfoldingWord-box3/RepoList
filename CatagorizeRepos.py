@@ -30,7 +30,7 @@ Classification Categories:
 
 Configuration Requirements:
     - ODS_FILE: Input spreadsheet filename
-    - SHEET_NAME: Name of sheet containing repository data
+    - REPOS_SHEET_NAME: Name of sheet containing repository data
     - CATEGORIZED_OUTPUT: Base filename for output files
     - SORT_ORDER: List defining classification priority order
 
@@ -61,17 +61,12 @@ Example:
     to each repository, and exports results to 'sheets/categorized_repos.csv' and
     'sheets/categorized_repos.ods' with added classification columns.
 """
-import sys
+from lib.constants import REPO_ODS_FILE, TAGGED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME
 
 from lib.utilities import ( update_ods_sheet_data,
                            is_true, months_old, is_empty, as_int, contains_any, load_repository_data,
                            write_list_to_csv)
 
-ODS_FILE = "sheets/unfoldingword_repos.ods"
-TAGGED_ODS_FILE = "sheets/tagged_repos.ods"
-REPOS_SHEET_NAME = "Repositories"
-NPM_SHEET_NAME = "NPM Modules"
-CATEGORIZED_OUTPUT = "sheets/categorized_repos"
 
 TAGGED_COLUMNS = ["Ask","Archive","Keep", "Notes"]
 TAGGED_NPM_COLUMNS = ["Ask-NPM","Deprecate-NPM","Keep-NPM", "Notes-NPM"]
@@ -965,12 +960,12 @@ def main():
         - sheets/categorized_repos.ods: ODS spreadsheet with categorized repositories
     
     Global Dependencies:
-        - ODS_FILE: Input spreadsheet filename
-        - SHEET_NAME: Name of sheet containing repository data
+        - REPO_ODS_FILE: Input spreadsheet filename
+        - REPOS_SHEET_NAME: Name of sheet containing repository data
         - CATEGORIZED_OUTPUT: Base filename for output files
         - SORT_ORDER: List defining classification priority order
     """
-    headers, data_rows = load_repository_data(ODS_FILE, REPOS_SHEET_NAME)
+    headers, data_rows = load_repository_data(REPO_ODS_FILE, REPOS_SHEET_NAME)
     tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, REPOS_SHEET_NAME)
 
     try:

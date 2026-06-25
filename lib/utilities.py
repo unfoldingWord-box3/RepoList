@@ -793,5 +793,5 @@ def extract_npmjs_maintainer_names(npmjs_metadata):
     Returns:
         list[str]: List of maintainer names, empty list if none found.
     """
-    maintainers = npmjs_metadata.get("maintainers") or []
+    maintainers = (npmjs_metadata or {}).get("maintainers") or []
     return [m.get("name", "") for m in maintainers if m.get("name")]

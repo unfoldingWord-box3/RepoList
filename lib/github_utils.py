@@ -29,6 +29,7 @@ import urllib.request
 import zipfile
 from xml.sax.saxutils import escape
 
+from lib.constants import NODE_LANGUAGES, OFTEN_GITHUB_MISTAKEN_LANGUAGES
 from lib.utilities import extract_npmjs_maintainer_names, urlopen_with_retry
 
 
@@ -898,11 +899,20 @@ def fetch_repositories_for_org(org_name, org_names, start_count=0):
             repo["open_prs_count"] = fetch_repository_open_prs_count(repo)
             repo["commit_count"] = fetch_repository_commit_count(repo)
             repo["git_submodules"] = fetch_repository_submodules(repo)
+            package_json = None
 
             language = (repo.get("language") or "").lower()
+            if not language in NODE_LANGUAGES:
+                # check if github made a mistake on the language field
+                if language in OFTEN_GITHUB_MISTAKEN_LANGUAGES:
+                    package_json = fetch_package_json(repo)
+                    if package_json: # if it has a package.json, it's probably a node repo'
+                        language = "javascript"
+                        repo["language"] = language
 
-            if language in ("javascript", "typescript"):
-                package_json = fetch_package_json(repo)
+            if language in NODE_LANGUAGES:
+                if not package_json:
+                    package_json = fetch_package_json(repo)
 
                 if package_json:
                     npm_package_name = package_json.get("name", "")
@@ -1065,7 +1075,7 @@ def write_ods(repos, output_file):
     js_ts_repos = [
         repo
         for repo in repos
-        if (repo.get("language") or "").lower() in ("javascript", "typescript")
+        if (repo.get("language") or "").lower() in NODE_LANGUAGES
     ]
 
     repositories_table = build_table("Repositories", build_rows(repos))

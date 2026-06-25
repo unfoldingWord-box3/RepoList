@@ -12,14 +12,12 @@ Usage: python UpdateNpmData.py
 """
 
 import json
-from typing import Any
 
 from lib.constants import (
     REPO_ODS_FILE,
     ENV_FILE,
     REPOS_SHEET_NAME,
     JS_TS_SHEET_NAME,
-    NPM_ORG_NAMES,
     ORG_NAMES,
     NODE_LANGUAGES,
 )
@@ -31,7 +29,6 @@ from lib.utilities import (
     update_ods_sheet_data,
 )
 from lib.npm_utils import (
-    fetch_npmjs_org_modules,
     fetch_npmjs_package_metadata,
     fetch_npmjs_last_published,
     fetch_npmjs_download_count,

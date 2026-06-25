@@ -67,31 +67,36 @@ def fetch_npmjs_package_metadata(package_name):
         return None
 
 
-def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules, maintainer_names):
+def npm_repo_is_from_uw(package_metadata, org_names, org_modules, maintainer_names):
     """
     Check if an npm package belongs to specified organizations.
 
     Examines the package's homepage and repository URL to determine if it
     belongs to any of the specified organization names. If neither homepage
     nor repository URL is available, falls back to checking if the package
-    name belongs to a known organization module.
+    name belongs to a known organization module. If the package is not found
+    in organization modules, checks if it meets the minimum UW maintainer
+    requirements.
 
     Args:
         package_metadata (dict | None): npm package metadata from fetch_npmjs_package_metadata().
-        ORG_NAMES (list[str]): List of organization names to check against.
+        org_names (list[str]): List of organization names to check against.
         org_modules (dict): Dictionary mapping organization names to their module data,
                            used for fallback organization lookup when homepage/repository
                            are unavailable.
+        maintainer_names (list[str]): List of package maintainer names to check against
+                                     UW maintainer requirements if other checks fail.
 
     Returns:
         bool: True if the package's homepage or repository URL contains any of
-              the specified organization names (case-insensitive), or if the
-              package belongs to a known organization module. False otherwise.
+              the specified organization names (case-insensitive), if the
+              package belongs to a known organization module, or if the package
+              meets the minimum UW maintainer requirements. False otherwise.
     """
     if package_metadata is None:
         return False
 
-    org_names_extended = ORG_NAMES.copy()
+    org_names_extended = org_names.copy()
     org_names_extended.append("translationCoreApps")  # add old organizations
 
     homepage = package_metadata.get("homepage") or ""
@@ -134,8 +139,8 @@ def is_uw_maintained(maintainer_names) -> bool:
               list, False otherwise.
     """
     maintainer_names_lower = [m.lower() for m in maintainer_names if isinstance(m, str)]
-    is_uw_maintained = all(uw_maintainer.lower() in maintainer_names_lower for uw_maintainer in MIN_UW_MAINTAINERS)
-    return is_uw_maintained
+    is_uw_maintained_ = all(uw_maintainer.lower() in maintainer_names_lower for uw_maintainer in MIN_UW_MAINTAINERS)
+    return is_uw_maintained_
 
 
 def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
@@ -522,20 +527,50 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
     """
     Update npm package dependency relationships within the repositories.
 
-    For each repository with a package.json file, analyzes its dependencies
-    and peerDependencies to build bidirectional relationships between packages.
-    Also handles monorepo subpackages.
+    Processes repositories to discover monorepo subpackages, fetch their npm metadata,
+    and build bidirectional dependency relationships between all packages.
+
+    For each repository with package.json files:
+    1. Identifies monorepo subpackages (non-root package.json files)
+    2. Fetches npm metadata for public packages
+    3. Validates package ownership using organization and maintainer checks
+    4. Creates virtual repository entries for each subpackage
+    5. Builds bidirectional dependency maps (npmjs_uses/npmjs_used_by)
 
     Args:
-        repos (list): List of repository dictionaries.
-        org_names (list[str]): Organization names used for npm package ownership checks.
+        repos (list[dict]): List of repository dictionaries to process. Each dictionary
+                           should contain repository metadata including 'package_json_files'
+                           if npm packages are present. Modified in-place to add subpackage
+                           entries and dependency relationships.
+        org_names (list[str]): Organization names used for npm package ownership validation.
+                              Passed to npm_repo_is_from_uw() to determine if packages
+                              belong to tracked organizations.
+        org_modules (dict): Dictionary mapping organization names to their npm module data.
+                           If None or empty, fetches fresh data via
+                           fetch_all_npmjs_modules_for_orgs(). Used for organization
+                           lookup when homepage/repository metadata is unavailable.
 
     Returns:
-        None. Modifies repository dictionaries in place.
+        None. Modifies the repos list in-place by:
+            - Adding virtual repository entries for monorepo subpackages
+            - Populating 'npmjs_uses' lists (packages this repo depends on)
+            - Populating 'npmjs_used_by' lists (packages that depend on this repo)
+            - Adding npm metadata fields for validated packages:
+                - npmjs_last_published: Publication date of latest version
+                - npmjs_downloads_last_year: Download count for past year
+                - npm_organization: Owning npm organization name
+                - npm_is_deprecated: Deprecation status
+                - npmjs_maintainers: List of package maintainer names
+
+    Side Effects:
+        - Prints progress messages during package metadata fetching
+        - Prints warnings for packages that fail ownership validation
+        - Makes HTTP requests to npm registry and downloads API
+        - Calls fetch_repository_json_file() to retrieve package.json contents
     """
 
     from lib.github_utils import fetch_repository_json_file
-    
+
     if not org_modules:
         org_modules = fetch_all_npmjs_modules_for_orgs()
 
@@ -566,7 +601,7 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
                         maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
-                        if npm_repo_is_from_uw(npm_package_metadata, org_names, maintainers):
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names, org_modules, maintainers):
                             sub_module["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             sub_module["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
@@ -586,7 +621,6 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
 
     for repo in repos:
         update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name)
-
 
 def fetch_npmjs_modules_for_all_orgs(data_rows) -> tuple[list[Any], dict[Any, Any]]:
     """

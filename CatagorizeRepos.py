@@ -507,11 +507,6 @@ def determine_npmjs_classification(row):
             f"Not Published so nothing to do.",
         )
 
-    return (
-        "Manual review - npm package",
-        "Published npm package did not match any automatic npm lifecycle classification rule.",
-    )
-
     # ClassificationRules.md Rule P5
     if archived and npm_last_published_date:
         return (

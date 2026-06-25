@@ -28,7 +28,7 @@ from datetime import datetime
 from lib.constants import REPO_ODS_FILE, ENV_FILE, ORG_NAMES
 from lib.utilities import load_env_file
 from lib.github_utils import github_request, fetch_repositories, write_ods
-from lib.npm_utils import update_npmjs_dependencies, fetch_npmjs_modules_for_all_orgs, fetch_all_npmjs_modules_for_orgs
+from lib.npm_utils import update_npmjs_dependencies, fetch_all_npmjs_modules_for_orgs
 
 OUTPUT_FILE = REPO_ODS_FILE
 

@@ -27,7 +27,6 @@ import datetime
 import os
 import re
 import sys
-import json
 from typing import Any
 import time
 import urllib.error

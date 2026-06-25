@@ -966,13 +966,13 @@ def fetch_repositories_for_org(org_name, org_names, org_modules, start_count=0):
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
                         maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
-                        if npm_repo_is_from_uw(npm_package_metadata, org_names, org_modules):
+                        if npm_repo_is_from_uw(npm_package_metadata, org_names, org_modules, maintainers):
                             repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
                                 "last-year",
                             )
-                            repo["npm_organization"] = find_npm_org(npm_package_metadata, org_modules)
+                            repo["npm_organization"] = find_npm_org(npm_package_metadata, org_modules, maintainers)
                             repo["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
                             repo["npmjs_maintainers"] = maintainers
 

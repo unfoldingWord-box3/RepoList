@@ -72,7 +72,7 @@ TAGGED_COLUMNS = ["Ask","Archive","Keep", "Notes"]
 TAGGED_NPM_COLUMNS = ["Ask-NPM","Deprecate-NPM","Keep-NPM", "Notes-NPM"]
 ALL_TAGGED_COLUMNS = TAGGED_COLUMNS + TAGGED_NPM_COLUMNS
 
-NPM_COLUMN_ORDER = ["Ask-NPM", "Deprecate-NPM", "Keep-NPM", "Notes-NPM", "npmjs package name", "npmjs url", "npm is deprecated", "npmjs downloads last year", "npmjs last published", "npmjs used by", "npmjs uses", "last edit date", "archived", "npmjs classification", "npmjs classification reason"]
+NPM_COLUMN_ORDER = ["Ask-NPM", "Deprecate-NPM", "Keep-NPM", "Notes-NPM", "npmjs package name", "npmjs url", "npm organization", "npmjs maintainers", "npm is deprecated", "npmjs downloads last year", "npmjs last published", "npmjs used by", "npmjs uses", "npmjs classification", "npmjs classification reason", "last edit date", "archived"]
 
 SORT_ORDER = [
     "No longer used candidate",
@@ -83,9 +83,10 @@ SORT_ORDER = [
 ]
 NPM_SORT_ORDER = [
     "Deprecate npm package candidate",
-    "Deprecated npm package",
     "Keep - npm package in use",
     "Manual review - npm package",
+    "Deprecated npm package",
+    "Nothing to do",
 ]
 
 
@@ -474,7 +475,8 @@ def determine_npmjs_classification(row):
     github_dependents_empty = is_empty(row.get("github dependents"))
 
     npm_downloads_last_year = as_int(row.get("npmjs downloads last year"))
-    npm_last_published_months = months_old(row.get("npmjs last published"))
+    npm_last_published_date = row.get("npmjs last published")
+    npm_last_published_months = months_old(npm_last_published_date)
 
     replacement_terms = ["old", "legacy", "deprecated", "obsolete", "archive", "backup"]
     sensitive_or_build_terms = [
@@ -498,9 +500,20 @@ def determine_npmjs_classification(row):
     if npm_deprecated:
         return "Deprecated npm package", "Npm package is already explicitly marked as deprecated."
 
+    # ClassificationRules.md Rule P7
+    if not npm_last_published_date:
+        return (
+            "Nothing to do",
+            f"Not Published so nothing to do.",
+        )
+
+    return (
+        "Manual review - npm package",
+        "Published npm package did not match any automatic npm lifecycle classification rule.",
+    )
+
     # ClassificationRules.md Rule P5
-    npm_last_published = row.get("npmjs last published")
-    if archived and npm_last_published:
+    if archived and npm_last_published_date:
         return (
             "Deprecate npm package candidate",
             "Package is backed by an archived repository and is not marked deprecated on npmjs.",
@@ -531,6 +544,7 @@ def determine_npmjs_classification(row):
         npm_used_by_empty
         and github_dependents_empty
         and npm_downloads_last_year == 0
+        and npm_last_published_date
     ):
         return (
             "Deprecate npm package candidate",
@@ -550,7 +564,11 @@ def determine_npmjs_classification(row):
         )
 
     # ClassificationRules.md Rule P4
-    if contains_any(repo_name, replacement_terms) or contains_any(npm_package_name, replacement_terms):
+    if (
+            contains_any(repo_name, replacement_terms)
+            or contains_any(npm_package_name, replacement_terms)
+            and npm_last_published_date
+    ):
         return (
             "Deprecate npm package candidate",
             "Package or repository name suggests it may be old, legacy, deprecated, obsolete, archived, or a backup.",

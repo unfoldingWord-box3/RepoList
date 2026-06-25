@@ -19,7 +19,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-from lib.constants import NPM_ORG_NAMES
+from lib.constants import NPM_ORG_NAMES, MIN_UW_MAINTAINERS
 from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names, is_empty, flexibleGet
 
 
@@ -67,7 +67,7 @@ def fetch_npmjs_package_metadata(package_name):
         return None
 
 
-def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules):
+def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules, maintainer_names):
     """
     Check if an npm package belongs to specified organizations.
 
@@ -108,14 +108,34 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules):
         found_org = find_npm_org(package_metadata, org_modules)
         return bool(found_org)
 
-        # # check if the maintainers are unfolding word
-        # maintainer_names = [m.lower() for m in maintainer_names if isinstance(m, str)]
-        # is_uw_maintainer = any(uw_maintainer.lower() in maintainer_names for uw_maintainer in uw_maintainers)
-        # return is_uw_maintainer
 
     in_uw_org = any(
         (org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
+
+    if not in_uw_org and maintainer_names:
+        return is_uw_maintained(maintainer_names)
+
     return in_uw_org
+
+
+def is_uw_maintained(maintainer_names) -> bool:
+    """
+    Check if a package is maintained by the minimum required UW maintainers.
+
+    Verifies that all maintainers specified in MIN_UW_MAINTAINERS constant
+    are present in the provided list of maintainer names (case-insensitive).
+
+    Args:
+        maintainer_names (list[str]): List of maintainer names to check against.
+                                      Non-string values are filtered out.
+
+    Returns:
+        bool: True if all required UW maintainers are present in the maintainer
+              list, False otherwise.
+    """
+    maintainer_names_lower = [m.lower() for m in maintainer_names if isinstance(m, str)]
+    is_uw_maintained = all(uw_maintainer.lower() in maintainer_names_lower for uw_maintainer in MIN_UW_MAINTAINERS)
+    return is_uw_maintained
 
 
 def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
@@ -145,6 +165,12 @@ def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
         if found_in_org_modules:
             found_org = org_name
             break
+            
+    if not found_org:
+        is_uw_maintained_ = is_uw_maintained(package_metadata.get("maintainers", []))
+        if is_uw_maintained_:
+            found_org = "unfoldingword"
+
     return found_org
 
 def fetch_npmjs_last_published(package_metadata):

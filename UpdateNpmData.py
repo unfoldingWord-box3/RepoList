@@ -36,7 +36,9 @@ from lib.npm_utils import (
     fetch_npmjs_last_published,
     fetch_npmjs_download_count,
     fetch_npmjs_is_deprecated,
-    npm_repo_is_from_uw, find_npm_org, fetch_npmjs_modules_for_all_orgs,
+    npm_repo_is_from_uw,
+    find_npm_org,
+    fetch_npmjs_modules_for_all_orgs,
 )
 
 def recompute_used_by(data_rows):
@@ -139,7 +141,7 @@ def main():
 
         maintainers = extract_npmjs_maintainer_names(metadata)
         row["npmjs maintainers"] = maintainers
-        if not npm_repo_is_from_uw(metadata, ORG_NAMES, org_modules):
+        if not npm_repo_is_from_uw(metadata, ORG_NAMES, org_modules, maintainers):
             print(f"  Skipping — not from a uW org")
             skipped += 1
             continue

@@ -507,6 +507,9 @@ def update_npmjs_dependencies(repos, org_names, org_modules):
     Returns:
         None. Modifies repository dictionaries in place.
     """
+
+    from lib.github_utils import fetch_repository_json_file
+    
     if not org_modules:
         org_modules = fetch_all_npmjs_modules_for_orgs()
 

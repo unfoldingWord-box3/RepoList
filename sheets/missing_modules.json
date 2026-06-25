@@ -1,0 +1,1264 @@
+[
+  {
+    "downloads": {
+      "monthly": 180,
+      "weekly": 49
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T12:41:09.053Z",
+    "searchScore": 97.00107,
+    "package": {
+      "name": "@gabrielaillet/word-aligner-rcl",
+      "keywords": [],
+      "version": "1.3.28",
+      "description": "[word-aligner-rcl](https://github.com/unfoldingWord/word-aligner-rcl).  word-aligner-rcl contains three react components: `WordAlignmentTool`, `SuggestingWordAligner` and `WordAligner`. UI components for aligning words in a verse.  See https://github.com/",
+      "sanitized_name": "@gabrielaillet/word-aligner-rcl",
+      "publisher": {
+        "email": "aillet.gabriel05@gmail.com",
+        "username": "gabrielaillet"
+      },
+      "maintainers": [
+        {
+          "email": "aillet.gabriel05@gmail.com",
+          "username": "gabrielaillet"
+        }
+      ],
+      "license": "MIT",
+      "date": "2026-05-20T12:15:12.040Z",
+      "links": {
+        "homepage": "https://github.com/gabrielaillet/word-aligner-rcl-pankosmia#readme",
+        "repository": "git+https://github.com/gabrielaillet/word-aligner-rcl-pankosmia.git",
+        "bugs": "https://github.com/gabrielaillet/word-aligner-rcl-pankosmia/issues",
+        "npm": "https://www.npmjs.com/package/@gabrielaillet/word-aligner-rcl"
+      }
+    },
+    "score": {
+      "final": 97.00107,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 55,
+      "weekly": 1
+    },
+    "dependents": "1",
+    "updated": "2026-06-24T14:16:34.320Z",
+    "searchScore": 65.98034,
+    "package": {
+      "name": "suggesting-word-aligner-rcl",
+      "keywords": [],
+      "version": "1.1.2",
+      "description": "This is a fork of [word-aligner-rcl](https://github.com/unfoldingWord/word-aligner-rcl).  word-aligner-rcl is a react component which allows a translator to connect source and target words in a translation and thus map out an alignment.",
+      "sanitized_name": "suggesting-word-aligner-rcl",
+      "publisher": {
+        "email": "Joshua@lansfords.com",
+        "username": "jedward7777"
+      },
+      "maintainers": [
+        {
+          "email": "Joshua@lansfords.com",
+          "username": "jedward7777"
+        }
+      ],
+      "license": "MIT",
+      "date": "2024-09-06T18:23:31.611Z",
+      "links": {
+        "homepage": "https://github.com/JEdward7777/word-aligner-rcl/tree/suggesting-word-aligner#readme",
+        "repository": "git+https://github.com/JEdward7777/word-aligner-rcl.git#suggesting-word-aligner",
+        "bugs": "https://github.com/JEdward7777/word-aligner-rcl/issues",
+        "npm": "https://www.npmjs.com/package/suggesting-word-aligner-rcl"
+      }
+    },
+    "score": {
+      "final": 65.98034,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 1679,
+      "weekly": 306
+    },
+    "dependents": 0,
+    "updated": "2026-06-22T09:11:08.152Z",
+    "searchScore": 58.306625,
+    "package": {
+      "name": "tc-checking-tool-rcl",
+      "keywords": [],
+      "version": "0.9.145",
+      "description": "[![Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com) [![Netlify Status](https://api.netlify.com/api/v1/badges/57413041-9de1-4d67-969e-3d5a2cd4225c/deploy-status)](https://app.netlify.com/sites/translati",
+      "sanitized_name": "tc-checking-tool-rcl",
+      "publisher": {
+        "email": "aillet.gabriel05@gmail.com",
+        "username": "gabrielaillet"
+      },
+      "maintainers": [
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "aillet.gabriel05@gmail.com",
+          "username": "gabrielaillet"
+        }
+      ],
+      "license": "MIT",
+      "date": "2026-06-15T09:06:40.040Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord-box/checking-tool-rcl#readme",
+        "repository": "git+https://github.com/unfoldingWord-box/checking-tool-rcl.git",
+        "bugs": "https://github.com/unfoldingWord-box/checking-tool-rcl/issues",
+        "npm": "https://www.npmjs.com/package/tc-checking-tool-rcl"
+      }
+    },
+    "score": {
+      "final": 58.306625,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 146,
+      "weekly": 21
+    },
+    "dependents": "2",
+    "updated": "2026-06-25T04:41:21.684Z",
+    "searchScore": 38.749447,
+    "package": {
+      "name": "@oce-editor-tools/core",
+      "keywords": [],
+      "version": "0.1.21-beta",
+      "description": "A React Component Library for editing PERF.",
+      "sanitized_name": "@oce-editor-tools/core",
+      "publisher": {
+        "email": "rich.mahn@unfoldingword.org",
+        "username": "richmahn"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-28T21:50:06.701Z",
+      "links": {
+        "homepage": "https://oce-editor-tools-core.netlify.app/",
+        "repository": "git+https://github.com/unfoldingword/oce-editor-tools.git",
+        "bugs": "https://github.com/unfoldingword/oce-editor-tools/issues",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/core"
+      }
+    },
+    "score": {
+      "final": 38.749447,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 95,
+      "weekly": 23
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T13:46:25.260Z",
+    "searchScore": 36.753384,
+    "package": {
+      "name": "@oce-editor-tools/pk",
+      "keywords": [],
+      "version": "0.1.19",
+      "description": "A React Component Library for editing Usfm - incl. Proskomma cache.",
+      "sanitized_name": "@oce-editor-tools/pk",
+      "publisher": {
+        "email": "abelper54@gmail.com",
+        "username": "abelpz"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-21T23:30:16.033Z",
+      "links": {
+        "homepage": "https://oce-editor-tools-pk.netlify.app/",
+        "repository": "https://github.com/unfoldingword/oce-editor-tools",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/pk"
+      }
+    },
+    "score": {
+      "final": 36.753384,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 54,
+      "weekly": 21
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T16:16:34.819Z",
+    "searchScore": 31.57282,
+    "package": {
+      "name": "translation-helps-patch",
+      "keywords": [
+        "translationhelps",
+        "translationhelpsintegration",
+        "translationnotes",
+        "openbiblestories"
+      ],
+      "version": "0.1.16",
+      "description": "Patched Translation helps to integrate with react application like autographa",
+      "sanitized_name": "translation-helps-patch",
+      "publisher": {
+        "email": "ashersamuel06@gmail.com",
+        "username": "asherphilip"
+      },
+      "maintainers": [
+        {
+          "email": "ashersamuel06@gmail.com",
+          "username": "asherphilip"
+        }
+      ],
+      "date": "2020-08-17T07:10:46.839Z",
+      "links": {
+        "homepage": "https://unfoldingword-box3.github.io/translation-helps/",
+        "repository": "git+https://github.com/friendsofagape/translation-helps.git",
+        "bugs": "https://github.com/friendsofagape/translation-helps/issues",
+        "npm": "https://www.npmjs.com/package/translation-helps-patch"
+      }
+    },
+    "score": {
+      "final": 31.57282,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 50,
+      "weekly": 1
+    },
+    "dependents": 0,
+    "updated": "2026-06-25T05:26:21.812Z",
+    "searchScore": 31.336218,
+    "package": {
+      "name": "html-usfm-pk",
+      "keywords": [],
+      "version": "0.1.2",
+      "description": "A React Component Library for editing Usfm - incl. Proskomma cache.",
+      "sanitized_name": "html-usfm-pk",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-04-05T17:48:06.532Z",
+      "links": {
+        "homepage": "https://pk-usfm-editor.netlify.app/",
+        "repository": "https://github.com/unfoldingword/html-usfm",
+        "npm": "https://www.npmjs.com/package/html-usfm-pk"
+      }
+    },
+    "score": {
+      "final": 31.336218,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 60,
+      "weekly": 23
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T10:11:23.338Z",
+    "searchScore": 29.650799,
+    "package": {
+      "name": "@oce-editor-tools/simple",
+      "keywords": [],
+      "version": "0.1.19",
+      "description": "A React Component Library for editing and viewing usfm.",
+      "sanitized_name": "@oce-editor-tools/simple",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-22T06:35:24.528Z",
+      "links": {
+        "homepage": "https://simple-oce-editor-tools.netlify.app/",
+        "repository": "https://github.com/unfoldingword/oce-editor-tools",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/simple"
+      }
+    },
+    "score": {
+      "final": 29.650799,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 58,
+      "weekly": 10
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T19:06:14.493Z",
+    "searchScore": 27.301775,
+    "package": {
+      "name": "@texttree/scripture-resources-rcl",
+      "keywords": [],
+      "version": "5.5.1",
+      "description": "A React Component Library for Rendering Scripture Resources.",
+      "sanitized_name": "@texttree/scripture-resources-rcl",
+      "publisher": {
+        "email": "alexzed@bk.ru",
+        "username": "valyukhov"
+      },
+      "maintainers": [
+        {
+          "email": "foxprogs@gmail.com",
+          "username": "foxprogs"
+        },
+        {
+          "email": "alexzed@bk.ru",
+          "username": "valyukhov"
+        },
+        {
+          "email": "braurs64@gmail.com",
+          "username": "paulge"
+        }
+      ],
+      "license": "MIT",
+      "date": "2024-12-23T17:44:55.676Z",
+      "links": {
+        "homepage": "https://tt-scripture-resources-rcl.netlify.com/",
+        "repository": "https://github.com/texttree/scripture-resources-rcl",
+        "npm": "https://www.npmjs.com/package/@texttree/scripture-resources-rcl"
+      }
+    },
+    "score": {
+      "final": 27.301775,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 52,
+      "weekly": 23
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T04:46:17.879Z",
+    "searchScore": 25.617144,
+    "package": {
+      "name": "usfm2json",
+      "keywords": [
+        "usfm",
+        "openbible",
+        "json"
+      ],
+      "version": "0.0.23",
+      "description": "Yet another USFM to JSON parser",
+      "sanitized_name": "usfm2json",
+      "publisher": {
+        "email": "thesmartwon@live.com",
+        "username": "thesmartwon"
+      },
+      "maintainers": [
+        {
+          "email": "thesmartwon@live.com",
+          "username": "thesmartwon"
+        }
+      ],
+      "license": "MIT",
+      "date": "2021-11-07T04:40:16.243Z",
+      "links": {
+        "homepage": "https://github.com/thesmartwon/usfm2json#readme",
+        "repository": "git+https://github.com/thesmartwon/usfm2json.git",
+        "bugs": "https://github.com/thesmartwon/usfm2json/issues",
+        "npm": "https://www.npmjs.com/package/usfm2json"
+      }
+    },
+    "score": {
+      "final": 25.617144,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 99,
+      "weekly": 53
+    },
+    "dependents": 0,
+    "updated": "2026-06-19T17:31:12.097Z",
+    "searchScore": 24.397755,
+    "package": {
+      "name": "door43-client-fork",
+      "keywords": [],
+      "version": "0.9.11",
+      "description": "A client library for interacting with the Door43 Resource API.",
+      "sanitized_name": "door43-client-fork",
+      "publisher": {
+        "email": "murmax82@gmail.com",
+        "username": "mxaln"
+      },
+      "maintainers": [
+        {
+          "email": "murmax82@gmail.com",
+          "username": "mxaln"
+        }
+      ],
+      "license": "MIT",
+      "date": "2025-09-05T14:13:11.570Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord-dev/node-door43-client#readme",
+        "repository": "git+https://github.com/unfoldingWord-dev/node-door43-client.git",
+        "bugs": "https://github.com/unfoldingWord-dev/node-door43-client/issues",
+        "npm": "https://www.npmjs.com/package/door43-client-fork"
+      }
+    },
+    "score": {
+      "final": 24.397755,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 23,
+      "weekly": 3
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T00:46:20.161Z",
+    "searchScore": 23.999586,
+    "package": {
+      "name": "html-usfm-simple",
+      "keywords": [],
+      "version": "0.1.2",
+      "description": "A React Component Library for editing and viewing usfm.",
+      "sanitized_name": "html-usfm-simple",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-04-06T06:46:38.897Z",
+      "links": {
+        "homepage": "https://uw-editor.netlify.app/",
+        "repository": "https://github.com/unfoldingword/html-usfm",
+        "npm": "https://www.npmjs.com/package/html-usfm-simple"
+      }
+    },
+    "score": {
+      "final": 23.999586,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 203,
+      "weekly": 58
+    },
+    "dependents": "0",
+    "updated": "2026-06-18T17:01:10.571Z",
+    "searchScore": 23.71951,
+    "package": {
+      "name": "tc-electron-env",
+      "keywords": [
+        "tc-electron-env",
+        "translationCore"
+      ],
+      "version": "0.10.0",
+      "description": "A library for accessing electron environment",
+      "sanitized_name": "tc-electron-env",
+      "publisher": {
+        "email": "bruce.mclean@unfoldingword.org",
+        "username": "photo-nomad"
+      },
+      "maintainers": [
+        {
+          "email": "info@neutrinographics.com",
+          "username": "neutrinog"
+        },
+        {
+          "email": "jakobaleksandrovich@gmail.com",
+          "username": "jakobaleksandrovich"
+        },
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "cecil.new@gmail.com",
+          "username": "mandolyte"
+        },
+        {
+          "email": "jag3773@gmail.com",
+          "username": "jag3773"
+        },
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "eliasrpt14@gmail.com",
+          "username": "eliaspinero"
+        }
+      ],
+      "license": "ISC",
+      "date": "2022-03-15T16:52:54.855Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord/tc-electron-env#readme",
+        "repository": "git+https://github.com/unfoldingWord/tc-electron-env.git",
+        "bugs": "https://github.com/unfoldingWord/tc-electron-env/issues",
+        "npm": "https://www.npmjs.com/package/tc-electron-env"
+      }
+    },
+    "score": {
+      "final": 23.71951,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 73,
+      "weekly": 3
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T22:06:18.960Z",
+    "searchScore": 23.271736,
+    "package": {
+      "name": "book-package",
+      "keywords": [],
+      "version": "0.1.3",
+      "description": "A React Component Library for Single Piece Workflow resource identification.",
+      "sanitized_name": "book-package",
+      "publisher": {
+        "email": "cecil.new@gmail.com",
+        "username": "mandolyte"
+      },
+      "maintainers": [
+        {
+          "email": "cecil.new@gmail.com",
+          "username": "mandolyte"
+        }
+      ],
+      "license": "MIT",
+      "date": "2019-12-03T15:17:18.894Z",
+      "links": {
+        "homepage": "https://unfoldingword-box3.github.io/book-package/",
+        "repository": "https://github.com/unfoldingword-box3/book-package",
+        "npm": "https://www.npmjs.com/package/book-package"
+      }
+    },
+    "score": {
+      "final": 23.271736,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 308,
+      "weekly": 54
+    },
+    "dependents": 0,
+    "updated": "2026-06-18T17:01:09.906Z",
+    "searchScore": 20.836563,
+    "package": {
+      "name": "electronite-packager",
+      "keywords": [
+        "electron",
+        "packager",
+        "bundler",
+        "app"
+      ],
+      "version": "17.1.1-graphite",
+      "description": "Customize and package your Electronite app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
+      "sanitized_name": "electronite-packager",
+      "publisher": {
+        "email": "bruce.mclean@unfoldingword.org",
+        "username": "photo-nomad"
+      },
+      "maintainers": [
+        {
+          "email": "info@neutrinographics.com",
+          "username": "neutrinog"
+        },
+        {
+          "email": "jakobaleksandrovich@gmail.com",
+          "username": "jakobaleksandrovich"
+        },
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "cecil.new@gmail.com",
+          "username": "mandolyte"
+        },
+        {
+          "email": "jag3773@gmail.com",
+          "username": "jag3773"
+        },
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "eliasrpt14@gmail.com",
+          "username": "eliaspinero"
+        }
+      ],
+      "license": "BSD-2-Clause",
+      "date": "2023-02-22T15:12:42.929Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord-box3/electronite-packager",
+        "repository": "git+https://github.com/unfoldingWord-box3/electronite-packager.git",
+        "bugs": "https://github.com/unfoldingWord-box3/electronite-packager/issues",
+        "npm": "https://www.npmjs.com/package/electronite-packager"
+      }
+    },
+    "score": {
+      "final": 20.836563,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 19,
+      "weekly": 9
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T14:51:18.970Z",
+    "searchScore": 19.938374,
+    "package": {
+      "name": "wordmapbooster",
+      "keywords": [],
+      "version": "1.0.3",
+      "description": "Adds an AI boost to wordmap.  Wordmap is a tool for helping word alignments between a source and target language.",
+      "sanitized_name": "wordmapbooster",
+      "publisher": {
+        "email": "Joshua@lansfords.com",
+        "username": "jedward7777"
+      },
+      "maintainers": [
+        {
+          "email": "Joshua@lansfords.com",
+          "username": "jedward7777"
+        }
+      ],
+      "license": "ISC",
+      "date": "2025-09-09T14:22:03.128Z",
+      "links": {
+        "homepage": "https://github.com/JEdward7777/wordmapbooster#readme",
+        "repository": "git+https://github.com/JEdward7777/wordmapbooster.git",
+        "bugs": "https://github.com/JEdward7777/wordmapbooster/issues",
+        "npm": "https://www.npmjs.com/package/wordmapbooster"
+      }
+    },
+    "score": {
+      "final": 19.938374,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 80,
+      "weekly": 12
+    },
+    "dependents": 0,
+    "updated": "2026-06-19T00:11:09.209Z",
+    "searchScore": 19.673677,
+    "package": {
+      "name": "usfm2html",
+      "keywords": [
+        "usfm",
+        "bible",
+        "proskomma",
+        "cli",
+        "html"
+      ],
+      "version": "0.1.4",
+      "description": "Convert USFM to HTML using Proskomma and Sofria renderers.",
+      "sanitized_name": "usfm2html",
+      "publisher": {
+        "email": "rich.mahn@unfoldingword.org",
+        "username": "richmahn"
+      },
+      "maintainers": [
+        {
+          "email": "info@neutrinographics.com",
+          "username": "neutrinog"
+        },
+        {
+          "email": "jakobaleksandrovich@gmail.com",
+          "username": "jakobaleksandrovich"
+        },
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "cecil.new@gmail.com",
+          "username": "mandolyte"
+        },
+        {
+          "email": "jag3773@gmail.com",
+          "username": "jag3773"
+        },
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "eliasrpt14@gmail.com",
+          "username": "eliaspinero"
+        }
+      ],
+      "license": "UNLICENSED",
+      "date": "2026-05-14T23:45:14.783Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord/node-usfm2html-cli",
+        "repository": "git+https://github.com/unfoldingWord/node-usfm2html-cli.git",
+        "bugs": "https://github.com/unfoldingWord/node-usfm2html-cli/issues",
+        "npm": "https://www.npmjs.com/package/usfm2html"
+      }
+    },
+    "score": {
+      "final": 19.673677,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 39,
+      "weekly": 18
+    },
+    "dependents": 0,
+    "updated": "2026-06-22T22:26:12.101Z",
+    "searchScore": 17.383736,
+    "package": {
+      "name": "ptxaligner",
+      "keywords": [
+        "ptx",
+        "align",
+        "usfm",
+        "perf"
+      ],
+      "version": "1.4.1",
+      "description": "a command line tool to pre-align PTX files with a greek usfm and another usfm from the desired language, into one pre-aligned usfm.",
+      "sanitized_name": "ptxaligner",
+      "publisher": {
+        "email": "npmdanielc-n@protonmail.com",
+        "username": "danielc-n"
+      },
+      "maintainers": [
+        {
+          "email": "npmdanielc-n@protonmail.com",
+          "username": "danielc-n"
+        }
+      ],
+      "license": "ISC",
+      "date": "2022-10-14T14:42:14.246Z",
+      "links": {
+        "homepage": "https://github.com/DanielC-N/ptxaligner#readme",
+        "repository": "git+https://github.com/DanielC-N/ptxaligner.git",
+        "bugs": "https://github.com/DanielC-N/ptxaligner/issues",
+        "npm": "https://www.npmjs.com/package/ptxaligner"
+      }
+    },
+    "score": {
+      "final": 17.383736,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 39,
+      "weekly": 8
+    },
+    "dependents": "2",
+    "updated": "2026-06-24T23:26:10.299Z",
+    "searchScore": 16.61307,
+    "package": {
+      "name": "@usfm-tools/usj-core",
+      "keywords": [
+        "usfm",
+        "usj",
+        "scripture",
+        "alignment"
+      ],
+      "version": "0.1.1",
+      "description": "USJ document helpers: chapter slicing and alignment stripping (no editor / OT)",
+      "sanitized_name": "@usfm-tools/usj-core",
+      "publisher": {
+        "email": "abelper54@gmail.com",
+        "username": "abelpz"
+      },
+      "maintainers": [
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        }
+      ],
+      "license": "MIT",
+      "date": "2026-04-29T22:48:33.583Z",
+      "links": {
+        "homepage": "https://github.com/abelpz/usfm-ast#readme",
+        "repository": "git+https://github.com/abelpz/usfm-ast.git",
+        "bugs": "https://github.com/abelpz/usfm-ast/issues",
+        "npm": "https://www.npmjs.com/package/@usfm-tools/usj-core"
+      }
+    },
+    "score": {
+      "final": 16.61307,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 19,
+      "weekly": 2
+    },
+    "dependents": 0,
+    "updated": "2026-06-24T09:11:19.889Z",
+    "searchScore": 16.568222,
+    "package": {
+      "name": "gateway-language-translation-suite-prototype",
+      "keywords": [],
+      "version": "0.9.0-alpha.17",
+      "sanitized_name": "gateway-language-translation-suite-prototype",
+      "publisher": {
+        "email": "christopher@klapp.name",
+        "username": "klappy"
+      },
+      "maintainers": [
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        }
+      ],
+      "license": "MIT",
+      "date": "2020-01-03T22:32:26.293Z",
+      "links": {
+        "homepage": "https://glts.netlify.com/",
+        "repository": "https://github.com/unfoldingWord/gateway-language-translation-suite-prototype",
+        "bugs": "https://github.com/unfoldingWord/gateway-language-translation-suite-prototype/issues",
+        "npm": "https://www.npmjs.com/package/gateway-language-translation-suite-prototype"
+      }
+    },
+    "score": {
+      "final": 16.568222,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 146,
+      "weekly": 21
+    },
+    "dependents": "2",
+    "updated": "2026-06-25T04:41:21.684Z",
+    "searchScore": 139.58974,
+    "package": {
+      "name": "@oce-editor-tools/core",
+      "keywords": [],
+      "version": "0.1.21-beta",
+      "description": "A React Component Library for editing PERF.",
+      "sanitized_name": "@oce-editor-tools/core",
+      "publisher": {
+        "email": "rich.mahn@unfoldingword.org",
+        "username": "richmahn"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-28T21:50:06.701Z",
+      "links": {
+        "homepage": "https://oce-editor-tools-core.netlify.app/",
+        "repository": "git+https://github.com/unfoldingword/oce-editor-tools.git",
+        "bugs": "https://github.com/unfoldingword/oce-editor-tools/issues",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/core"
+      }
+    },
+    "score": {
+      "final": 139.58974,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 95,
+      "weekly": 23
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T13:46:25.260Z",
+    "searchScore": 126.39643,
+    "package": {
+      "name": "@oce-editor-tools/pk",
+      "keywords": [],
+      "version": "0.1.19",
+      "description": "A React Component Library for editing Usfm - incl. Proskomma cache.",
+      "sanitized_name": "@oce-editor-tools/pk",
+      "publisher": {
+        "email": "abelper54@gmail.com",
+        "username": "abelpz"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-21T23:30:16.033Z",
+      "links": {
+        "homepage": "https://oce-editor-tools-pk.netlify.app/",
+        "repository": "https://github.com/unfoldingword/oce-editor-tools",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/pk"
+      }
+    },
+    "score": {
+      "final": 126.39643,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 60,
+      "weekly": 23
+    },
+    "dependents": 0,
+    "updated": "2026-06-23T10:11:23.338Z",
+    "searchScore": 111.791435,
+    "package": {
+      "name": "@oce-editor-tools/simple",
+      "keywords": [],
+      "version": "0.1.19",
+      "description": "A React Component Library for editing and viewing usfm.",
+      "sanitized_name": "@oce-editor-tools/simple",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-09-22T06:35:24.528Z",
+      "links": {
+        "homepage": "https://simple-oce-editor-tools.netlify.app/",
+        "repository": "https://github.com/unfoldingword/oce-editor-tools",
+        "npm": "https://www.npmjs.com/package/@oce-editor-tools/simple"
+      }
+    },
+    "score": {
+      "final": 111.791435,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  }
+]

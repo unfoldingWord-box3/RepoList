@@ -11,6 +11,9 @@ GitHub repository metadata.
 Usage: python UpdateNpmData.py
 """
 
+import json
+from typing import Any
+
 from lib.constants import (
     REPO_ODS_FILE,
     ENV_FILE,
@@ -33,7 +36,7 @@ from lib.npm_utils import (
     fetch_npmjs_last_published,
     fetch_npmjs_download_count,
     fetch_npmjs_is_deprecated,
-    npm_repo_is_from_uw,
+    npm_repo_is_from_uw, find_npm_org, fetch_npmjs_modules_for_all_orgs,
 )
 
 def recompute_used_by(data_rows):
@@ -96,42 +99,19 @@ def main():
         idx = headers.index("npmjs last published") if "npmjs last published" in headers else len(headers)
         headers.insert(idx + 1, "npmjs maintainers")
 
+    if "npm organization" not in headers:
+        idx = headers.index("npmjs package name") if "npmjs package name" in headers else len(headers)
+        headers.insert(idx + 1, "npm organization")
+
     total = len(data_rows)
     print(f"Fetching npm data for {total} github packages...")
 
-    org_modules = {}
+    missing_modules, org_modules = fetch_npmjs_modules_for_all_orgs(data_rows)
 
-    for org_name in NPM_ORG_NAMES:
-        print(f"\nFetching all npm packages for @{org_name}...")
-        modules = fetch_npmjs_org_modules(org_name)
-        print(f"Found {len(modules.items())} modules in @{org_name}.")
-        org_modules[org_name] = modules
-
-    # Index existing ODS rows by package name
-    rows_by_package = {}
-    for row in data_rows:
-        pkg = row.get("npmjs package name")
-        if not is_empty(pkg):
-            if isinstance(pkg, list):
-                pkg = pkg[0]
-            rows_by_package[str(pkg).strip()] = row
-
-    # Add rows for packages discovered on npm that are not yet in the ODS
-    new_count = 0
-    for org_name, modules in org_modules.items():
-        for module_name, module_data in modules.items():
-            if module_name not in rows_by_package:
-                # new_row = {col: "" for col in headers}
-                # new_row["npmjs package name"] = module_name
-                # new_row["npmjs used by"] = []
-                # new_row["npmjs uses"] = []
-                # data_rows.append(new_row)
-                # rows_by_package[module_name] = new_row
-                print(f"  New module {module_name} found")
-                new_count += 1
-    
-    if new_count:
-        print(f"Added {new_count} new packages discovered from npm.")
+    # save missing modules to a file
+    with open("sheets/missing_modules.json", "w", encoding="utf-8") as f:
+        json.dump(missing_modules, f, indent=2, ensure_ascii=False)
+    print(f"Saved {len(missing_modules)} missing modules to sheets/missing_modules.json")
 
     total = sum(len(modules.items()) for modules in org_modules.values())
     updated = 0
@@ -164,6 +144,7 @@ def main():
             skipped += 1
             continue
 
+        row["npm organization"] = find_npm_org(metadata, org_modules)
         row["npm is deprecated"] = fetch_npmjs_is_deprecated(metadata)
         row["npmjs downloads last year"] = fetch_npmjs_download_count(pkg_name, "last-year")
         row["npmjs last published"] = fetch_npmjs_last_published(metadata)
@@ -178,6 +159,10 @@ def main():
 
     ordered_rows = [{col: row.get(col, "") for col in headers} for row in data_rows]
 
+    for i, row in enumerate(ordered_rows):
+        if (not "npmjs maintainers" in row) or (not "npm organization" in row):
+            print(f"data missing for {row.get('repo name')}")
+
     print(f"Writing {REPOS_SHEET_NAME} sheet to {REPO_ODS_FILE}...")
     update_ods_sheet_data(REPO_ODS_FILE, REPOS_SHEET_NAME, ordered_rows)
 
@@ -189,6 +174,11 @@ def main():
     update_ods_sheet_data(REPO_ODS_FILE, JS_TS_SHEET_NAME, js_ts_rows)
 
     print("Done.")
+
+
+def initialize_data(key: str, row):
+    if key not in row or is_empty(row[key]):
+        row[key] = ""
 
 
 if __name__ == "__main__":

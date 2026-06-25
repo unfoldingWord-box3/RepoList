@@ -1000,6 +1000,7 @@ def write_ods(repos, output_file):
         "commit count",
         "git submodules",
         "npmjs package name",
+        "npm organization",
         "npm is deprecated",
         "npmjs downloads last year",
         "npmjs last published",

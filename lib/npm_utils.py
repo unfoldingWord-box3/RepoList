@@ -17,8 +17,10 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Any
 
-from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names
+from lib.constants import NPM_ORG_NAMES
+from lib.utilities import urlopen_with_retry, extract_npmjs_maintainer_names, is_empty
 from lib.github_utils import fetch_repository_json_file
 
 
@@ -71,25 +73,30 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules):
     Check if an npm package belongs to specified organizations.
 
     Examines the package's homepage and repository URL to determine if it
-    belongs to any of the specified organization names.
+    belongs to any of the specified organization names. If neither homepage
+    nor repository URL is available, falls back to checking if the package
+    name belongs to a known organization module.
 
     Args:
         package_metadata (dict | None): npm package metadata from fetch_npmjs_package_metadata().
         ORG_NAMES (list[str]): List of organization names to check against.
+        org_modules (dict): Dictionary mapping organization names to their module data,
+                           used for fallback organization lookup when homepage/repository
+                           are unavailable.
 
     Returns:
         bool: True if the package's homepage or repository URL contains any of
-              the specified organization names (case-insensitive), False otherwise.
+              the specified organization names (case-insensitive), or if the
+              package belongs to a known organization module. False otherwise.
     """
     if package_metadata is None:
         return False
 
     org_names_extended = ORG_NAMES.copy()
-    org_names_extended.append("translationCoreApps") # add old organizations
+    org_names_extended.append("translationCoreApps")  # add old organizations
 
     homepage = package_metadata.get("homepage") or ""
     repository = package_metadata.get("repository") or {}
-    module_name = package_metadata.get("name", "")
 
     if isinstance(repository, dict):
         repository_url = repository.get("url") or ""
@@ -99,19 +106,45 @@ def npm_repo_is_from_uw(package_metadata, ORG_NAMES, org_modules):
     homepage = homepage.lower()
     repository_url = repository_url.lower()
     if not homepage and not repository_url:
-        for org_name, org_data in org_modules:
-            found_in_org_modules = org_data[module_name]
-            if found_in_org_modules:
-                return True
+        found_org = find_npm_org(package_metadata, org_modules)
+        return bool(found_org)
 
         # # check if the maintainers are unfolding word
         # maintainer_names = [m.lower() for m in maintainer_names if isinstance(m, str)]
         # is_uw_maintainer = any(uw_maintainer.lower() in maintainer_names for uw_maintainer in uw_maintainers)
         # return is_uw_maintainer
 
-    in_uw_org = any((org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
+    in_uw_org = any(
+        (org_name.lower() in homepage or org_name.lower() in repository_url) for org_name in org_names_extended)
     return in_uw_org
 
+
+def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
+    """
+    Find which organization a given npm module belongs to.
+
+    Searches through the organization modules dictionary to determine if a module
+    name exists in any of the tracked organizations.
+
+    Args:
+        package_metadata (dict): npm package metadata from fetch_npmjs_package_metadata(),
+                                containing at minimum a 'name' field with the package name.
+        org_modules (dict): Dictionary mapping organization names to their module data,
+                           where each org_data contains module names as keys.
+
+    Returns:
+        str : The organization name that contains the module, or None if the
+                    module is not found in any organization.
+    """
+    found_org = ""
+    module_name = package_metadata.get("name", "")
+
+    for org_name, org_data in org_modules.items():
+        found_in_org_modules = org_data.get(module_name, None)
+        if found_in_org_modules:
+            found_org = org_name
+            break
+    return found_org
 
 def fetch_npmjs_last_published(package_metadata):
     """
@@ -458,7 +491,7 @@ def update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name
             npmjs_uses.append(dependency_name)
 
 
-def update_npmjs_dependencies(repos, org_names):
+def update_npmjs_dependencies(repos, org_names, org_modules):
     """
     Update npm package dependency relationships within the repositories.
 
@@ -473,6 +506,7 @@ def update_npmjs_dependencies(repos, org_names):
     Returns:
         None. Modifies repository dictionaries in place.
     """
+    missing_modules, org_modules = fetch_npmjs_modules_for_all_orgs(repos)
     repos_by_npmjs_package_name = get_repos_by_npmjs_package_name(repos)
 
     sub_modules = []
@@ -519,3 +553,91 @@ def update_npmjs_dependencies(repos, org_names):
 
     for repo in repos:
         update_repo_npmjs_dependency_relationships(repo, repos_by_npmjs_package_name)
+
+
+def fetch_npmjs_modules_for_all_orgs(data_rows) -> tuple[list[Any], dict[Any, Any]]:
+    """
+    Fetch all npm packages for configured organizations and identify missing modules.
+
+    Retrieves all npm packages from the organizations specified in NPM_ORG_NAMES,
+    then cross-references them with existing data rows to identify packages that
+    are published on npm but not yet tracked in the data.
+
+    Args:
+        data_rows (list[dict]): List of existing data row dictionaries, each containing
+                               repository/package information with at least a
+                               "npmjs package name" field.
+
+    Returns:
+        tuple[list[Any], dict[Any, Any]]: A tuple containing:
+            - missing_modules (list): List of module data dictionaries for packages
+                                     found on npm but not in data_rows.
+            - org_modules (dict): Dictionary mapping organization names to their
+                                 complete module data as returned by
+                                 fetch_npmjs_org_modules().
+    """
+    org_modules = {}
+
+    for org_name in NPM_ORG_NAMES:
+        print(f"\nFetching all npm packages for @{org_name}...")
+        modules = fetch_npmjs_org_modules(org_name)
+        print(f"Found {len(modules.items())} modules in @{org_name}.")
+        org_modules[org_name] = modules
+
+    # Index existing ODS rows by package name
+    rows_by_package = {}
+    for row in data_rows:
+        pkg = flexibleGet("npmjs package name", row)
+        if not is_empty(pkg):
+            if isinstance(pkg, list):
+                pkg = pkg[0]
+            rows_by_package[str(pkg).strip()] = row
+
+    # Add rows for packages discovered on npm that are not yet in the ODS
+    missing_modules = []
+    for org_name, modules in org_modules.items():
+        for module_name, module_data in modules.items():
+            if module_name not in rows_by_package:
+                # new_row = {col: "" for col in headers}
+                # new_row["npmjs package name"] = module_name
+                # new_row["npmjs used by"] = []
+                # new_row["npmjs uses"] = []
+                # data_rows.append(new_row)
+                # rows_by_package[module_name] = new_row
+                print(f"  New module {module_name} found")
+                missing_modules.append(module_data)
+
+    if len(missing_modules):
+        print(f"Added {len(missing_modules)} new packages discovered from npm.")
+    return missing_modules, org_modules
+
+
+def flexibleGet(name: str, row: dict) -> Any | None:
+    """
+    Retrieve a value from a dictionary using flexible key name matching.
+    
+    Attempts to get a value using the provided key name, and if not found,
+    tries alternative key formats by replacing spaces with underscores or
+    vice versa. This handles cases where column names may use either
+    spaces or underscores as word separators.
+    
+    Args:
+        name (str): The key name to look up in the dictionary. May contain
+                   spaces or underscores as word separators.
+        row (dict): Dictionary to retrieve the value from, typically
+                   representing a data row with column names as keys.
+    
+    Returns:
+        Any | None: The value associated with the key if found (trying the
+                   original name, then space-to-underscore, then underscore-to-space
+                   replacements), or None if no matching key exists.
+    """
+    value = row.get(name)
+    if value is None:
+        if " " in name:
+            new_name = name.replace(" ", "_")
+            value = row.get(name)
+        elif "_" in name:
+            new_name = name.replace("_", " ")
+            value = row.get(new_name)
+    return value

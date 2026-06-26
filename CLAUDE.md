@@ -30,11 +30,11 @@ Four top-level scripts, three shared libraries:
 
 - **`GitHubRepositoryFetcher.py`** — orchestrator. Loops over the three orgs, calls `fetch_repositories_for_org()` (pagination via GitHub API Link headers), then enriches each repo dict in-place with dependents, contributors, last commit date, last release date, open PR count, and npm data. After all repos are fetched, calls `update_npmjs_dependencies()` to resolve cross-repo npm dependency relationships (including monorepo subpackages). Finally calls `write_ods()` to produce `sheets/unfoldingword_repos.ods` directly using the ODF XML format (no odfpy write API — raw XML zipped).
 
-- **`UpdateNpmData.py`** — re-fetches npm registry data (downloads, publish date, deprecation status) for every npm package already recorded in `sheets/unfoldingword_repos.ods`, then rewrites both sheets in place. Run after `GitHubRepositoryFetcher.py` to refresh npm data without repeating all GitHub API calls. Also recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS.
+- **`UpdateNpmData.py`** — discovers all `@unfoldingword`-scoped packages via the npm search API, then re-fetches npm registry data (downloads, publish date, deprecation status, broken status, npm organization) for every package recorded in `sheets/unfoldingword_repos.ods`. Saves packages present in the npm org but missing from the ODS to `sheets/missing_modules.json`. Rewrites both sheets in place. Also recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Run after `GitHubRepositoryFetcher.py` to refresh npm data without repeating all GitHub API calls.
 
 - **`SheetToCSVConverter.py`** — reads `sheets/unfoldingword_repos.ods` via pandas/odf and writes one CSV per sheet (`sheets/Repositories.csv`, `sheets/JavaScript TypeScript.csv`).
 
-- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`, runs `determine_github_classification()` and `determine_npmjs_classification()` on every row, appends four columns (`classification`, `classification reason`, `npmjs classification`, `npmjs classification reason`), sorts by classification priority, and writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods`. GitHub classification labels (in priority order): `No longer used candidate`, `Keep - externally used`, `Keep - locally used`, `Manual review`, `Needs review`, `Dead - archived`, plus additional labels `Active`, `Dead candidate`, `Dead - deprecated`, `Stale`, `Stale but used`, `Stale package`, `Stale / neglected`, `Stale release process`. npm classification labels: `Deprecated npm package`, `Keep - npm package in use`, `Deprecate npm package candidate`, `Manual review - npm package`. See `ClassificationRules.md` for the full rule set.
+- **`CatagorizeRepos.py`** — reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`, runs `determine_github_classification()` and `determine_npmjs_classification()` on every row, appends four columns (`classification`, `classification reason`, `npmjs classification`, `npmjs classification reason`), sorts by classification priority, and writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods`. Also writes a filtered `NPM Modules` sheet with npm-focused column ordering. GitHub classification labels (sort order): `Archive/Delete candidate`, `Manual review`, `Keep`, `Nothing to do`, `Protected private`. npm classification labels: `Nothing to do`, `Deprecate npm package candidate`, `Repair npm package`, `Manual review - npm package`, `Keep - npm package in use`. Rule logic is documented in `ClassificationRules.md`.
 
 ### Shared libraries
 
@@ -58,7 +58,12 @@ Four top-level scripts, three shared libraries:
 
 - **`lib/npm_utils.py`** — all npm registry functions and dependency graph management. Key contents:
   - `fetch_npmjs_package_metadata()` — fetches full package metadata from the npm registry.
-  - `npm_repo_is_from_uw()` — checks whether a package's homepage/repository URL maps back to a uW org.
+  - `npm_repo_is_from_uw()` — checks whether a package's homepage/repository URL maps back to a uW org; signature is `(package_metadata, org_names, org_modules, maintainer_names)`.
+  - `is_uw_maintained()` — checks whether a package's maintainer list contains a known uW maintainer.
+  - `find_npm_org()` — returns the npm organization name that owns a package, or `None`.
+  - `fetch_npmjs_org_packages()` — discovers all packages in a scoped npm org via the npm search API (paginated).
+  - `fetch_npmjs_modules_for_all_orgs()` — calls `fetch_npmjs_org_packages()` for each org in `NPM_ORG_NAMES`, compares against ODS data, and returns `(missing_modules, org_modules)`.
+  - `npm_repo_check_if_broken()` — returns a description string if the package metadata indicates a broken/misconfigured package, else `None`.
   - `fetch_npmjs_last_published()`, `fetch_npmjs_is_deprecated()`, `fetch_npmjs_download_count()`, `fetch_npmjs_total_download_count()` — individual npm data fetchers.
   - `get_repos_by_npmjs_package_name()` — builds a `{package_name: repo}` index.
   - `update_repo_npmjs_dependency_relationships()` / `update_npmjs_dependencies()` — populates `npmjs uses` / `npmjs used by` fields by cross-referencing `dependencies`, `devDependencies`, and `peerDependencies` across all repos, including monorepo subpackages.

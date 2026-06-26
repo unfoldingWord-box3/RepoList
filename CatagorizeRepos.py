@@ -85,90 +85,69 @@ SORT_ORDER = [
 NPM_SORT_ORDER = [
     "Deprecate npm package candidate",
     "Repair npm package"
-    "Manual review - npm package",
+    "Manual review",
     "Nothing to do",
 ]
 
 
 def determine_github_classification(row):
     """
-    Classify a GitHub repository based on activity, usage, and metadata.
+    Classify a GitHub repository's lifecycle status for archival consideration.
     
-    Evaluates repository data against a prioritized set of classification rules
-    to determine its lifecycle status and recommended action. The function checks
-    for active development, usage patterns, staleness, and potential for cleanup.
+    Evaluates repository activity, usage patterns, and metadata to determine if a
+    repository should be kept active, archived, or requires manual review based on
+    commit history, external dependencies, and usage metrics.
     
     Args:
-        row (dict): Repository data containing metadata fields such as:
+        row (dict): Repository data containing GitHub and npm metadata:
             - repo name (str): Name of the repository
             - archived (bool/str): Whether repository is archived
             - npm is deprecated (bool/str): Whether npm package is deprecated
             - is fork (bool/str): Whether repository is a fork
-            - last commit date (str): Date of last commit (ISO format or parseable date string)
-            - last release date (str): Date of last release (ISO format or parseable date string)
-            - last edit date (str): Date of last edit (ISO format or parseable date string)
-            - npmjs last published (str): Date of last npm publish (ISO format or parseable date string)
-            - npmjs used by (str): Comma-separated list of local npm package consumers
-            - github dependents (str): Comma-separated list of GitHub dependent repositories
-            - npmjs package name (str): Associated npm package name
+            - last commit date (str): Date of last commit
+            - last release date (str): Date of last release
+            - last edit date (str): Date of last repository edit
+            - npmjs last published (str): Date npm package was last published
+            - npmjs used by (str): List of npm package consumers
+            - github dependents (str): List of GitHub dependents
+            - npmjs package name (str): Name of published npm package
             - language (str): Primary programming language
-            - github downloads (int/str): Count of GitHub release downloads
+            - github downloads (int/str): Number of GitHub release downloads
             - github release count (int/str): Number of GitHub releases
             - npmjs downloads last year (int/str): npm downloads in last year
             - open issues count (int/str): Number of open issues
             - open prs count (int/str): Number of open pull requests
             - github contributors (int/str): Number of contributors
-            - commit count (int/str): Total number of commits in repository
-            - is submodule of (str): Comma-separated list of repositories using this as a git submodule
+            - commit count (int/str): Total number of commits
+            - is submodule of (str): List of parent repositories using this as submodule
     
     Returns:
         tuple[str, str]: A tuple containing:
-            - classification (str): Category name from predefined set:
-                * "Nothing to do": Repository is archived
-                * "Dead - deprecated": npm package deprecated and stale (>24 months)
-                * "Protected private": No commit data available (restricted access)
-                * "Keep": Active development or significant usage/dependents
-                * "Manual review": Requires human judgment (edge cases, core projects, high activity)
-                * "Archive/Delete candidate": Likely abandoned, suitable for archival
-            - reason (str): Human-readable explanation for the classification decision,
-              including relevant metrics and thresholds that triggered the classification
+            - classification (str): Category name (e.g., "Keep", "Manual review",
+              "Archive/Delete candidate", "Nothing to do", "Protected private")
+            - reason (str): Human-readable explanation for the classification decision
     
-    Classification Priority (evaluated in order):
-        1. Nothing to do: Repository archived status
-        2. Protected private: Missing commit date (restricted access)
-        3. Keep: External dependents or high npm downloads (≥1000/year)
-        4. Manual review: Used as git submodule
-        5. Keep: Recent commits (≤12 months)
-        6. Keep: Local npm package usage
-        7. Manual review: Core project terms in name
-        8. Dead - deprecated: npm deprecated + stale (>24 months)
-        9. Manual review: High open issues (≥50)
-        10. Manual review: Significant history (≥10 releases, ≥100 downloads, or ≥100 commits)
-        11. Manual review: Multiple contributors (≥5)
-        12. Manual review: Recent edits but old commits (edited ≤12 months, committed >36 months)
-        13. No longer used: Very low activity (≤5 commits, >36 months, no usage)
-        14. No longer used: Long inactive (>60 months, no usage, <50 commits)
-        15. No longer used: Old fork with no usage (>36 months)
-        16. No longer used: Cleanup/test/demo terms + stale (>24 months, no usage)
-        17. No longer used: No language/releases/downloads/npm + old (>36 months)
-        18. Manual review: Stale but used (>18 months, has usage)
-        19. Manual review: Stale npm package (>18 months unpublished, not deprecated)
-        20. Manual review: Stale with open issues/PRs (>12 months, ≥5 PRs or ≥20 issues)
-        21. Manual review: Stale release process (commits ≤24 months, releases >24 months)
-        22. Manual review: Stale (>18 months, not archived)
-        23. No longer used: Name suggests replacement (old/legacy/deprecated/obsolete/archive/backup)
-        24. No longer used: Cleanup terms in name + stale (>18 months)
-        25. No longer used: Fork with no usage
-        26. No longer used: npm package with no usage/downloads
-        27. Manual review: Default fallback for unmatched cases
+    Classification Logic:
+        The function applies a hierarchical set of rules (documented in
+        ClassificationRules.md) to determine repository status:
+        
+        - Nothing to do (N1-N2): Already archived or deprecated
+        - Protected private (P1): Private/protected repositories
+        - Keep (K1-K3): Active usage, recent commits, or external dependencies
+        - Manual review (M1-M13): Edge cases, core projects, or unclear status
+        - Archive/Delete candidate (A1-A8): Low activity, no usage, or cleanup targets
     
-    Notes:
-        - Uses helper functions: is_true(), months_old(), is_empty(), as_int(), contains_any()
-        - Classification rules correspond to documented rules in ClassificationRules.md
-        - All date comparisons use months_old() which returns None for invalid/empty dates
-        - Empty/None values are handled gracefully through helper functions
-        - Classification is deterministic based on the priority order above
+    Implementation Details:
+        1. Extracts and processes repository metadata
+        2. Calculates time-based metrics (months since last activity)
+        3. Evaluates against keyword lists (cleanup terms, core terms, etc.)
+        4. Applies rules in priority order from high-priority keeps to archive candidates
+        5. Returns first matching classification with detailed reasoning
     
+    Example Classifications:
+        - Keep: Repository with 5000 npm downloads in last year
+        - Manual review: Core project with no commits in 20 months
+        - Archive/Delete candidate: Test repository with no commits in 30 months
     """
     repo_name = row.get("repo name", "")
     archived = is_true(row.get("archived"))
@@ -424,37 +403,55 @@ def determine_github_classification(row):
 
 def determine_npmjs_classification(row):
     """
-    Classify an npm package's lifecycle status for potential deprecation.
+    Classify an npm package's lifecycle status for deprecation consideration.
     
-    Evaluates published npm packages to determine if they should be kept active,
-    deprecated, or require manual review based on usage patterns, publication
-    history, and repository status.
+    Evaluates npm package activity, usage patterns, and metadata to determine if a
+    package should be kept active, deprecated, or requires manual review based on
+    publication history, download metrics, and organizational ownership.
     
     Args:
-        row (dict): Repository data containing npm and repository metadata:
+        row (dict): Repository data containing npm package metadata:
             - repo name (str): Name of the repository
             - npmjs package name (str): Name of the published npm package
-            - npm is deprecated (bool/str): Whether package is marked deprecated
-            - archived (bool/str): Whether backing repository is archived
-            - npmjs used by (str): List of local package consumers
+            - npm is deprecated (bool/str): Whether npm package is deprecated
+            - archived (bool/str): Whether repository is archived
+            - npmjs used by (str): List of npm package consumers
             - github dependents (str): List of GitHub dependents
-            - npmjs downloads last year (int/str): Download count in last year
-            - npmjs last published (str): Date of last publish to npm
+            - npmjs downloads last year (int/str): npm downloads in last year
+            - npmjs last published (str): Date npm package was last published
+            - npm organization (str): npm organization that owns the package
+            - npmjs broken (str): Description of package issues if broken
     
     Returns:
         tuple[str, str]: A tuple containing:
-            - classification (str): Category name (e.g., "Nothing to do",
-              "Keep - npm package in use", "Deprecate npm package candidate",
-              "Manual review - npm package")
+            - classification (str): Category name (e.g., "Keep - npm package in use",
+              "Deprecate npm package candidate", "Manual review - npm package",
+              "Nothing to do", "Repair npm package")
             - reason (str): Human-readable explanation for the classification decision
     
     Classification Logic:
-        - Skips repositories without published npm packages
-        - Identifies already-deprecated packages
-        - Flags security-sensitive or build-tool packages for manual review
-        - Recommends keeping packages with active usage or downloads
-        - Suggests deprecation for unused, stale, or archived packages
-        - Requires manual review for edge cases and low-usage packages
+        The function applies a hierarchical set of rules (documented in
+        ClassificationRules.md) to determine npm package status:
+        
+        - Manual review (NM1): No npm package published
+        - Nothing to do (NN1-NN4): Already deprecated, not published, or not our org
+        - Deprecate candidate (ND1-ND4): Archived repo, no usage, stale, or legacy naming
+        - Repair npm package (NR1): Package is broken on npmjs
+        - Manual review (NM2-NM3): Security-sensitive packages or low usage
+        - Keep (NK1): Active usage or significant downloads
+    
+    Implementation Details:
+        1. Extracts and processes npm package metadata
+        2. Calculates time-based metrics (months since last publish)
+        3. Evaluates against keyword lists (replacement terms, sensitive terms, etc.)
+        4. Applies rules in priority order from nothing to do to deprecate candidates
+        5. Returns first matching classification with detailed reasoning
+    
+    Example Classifications:
+        - Keep: Package with 5000 npm downloads in last year
+        - Deprecate candidate: Published package with no usage and 0 downloads
+        - Manual review: Security-sensitive package (contains "auth" in name)
+        - Nothing to do: Package already marked deprecated on npmjs
     """
     repo_name = row.get("repo name", "")
     npm_package_name = row.get("npmjs package name", "")
@@ -536,19 +533,19 @@ def determine_npmjs_classification(row):
     npm_name_contains_sensitive_terms = contains_any(npm_package_name, sensitive_or_build_terms)
     if repo_name_contains_sensitive_terms or npm_name_contains_sensitive_terms:
         return (
-            "Manual review - npm package",
+            "Manual review",
             "Package or repository name suggests a security-sensitive, CLI, deployment, configuration, or build-tool package.",
         )
 
-    # ClassificationRules.md Rule NK1
+    # ClassificationRules.md Rule NN4
     if (
         not npm_used_by_empty
         or not github_dependents_empty
         or npm_downloads_last_year >= 1000
     ):
         return (
-            "Keep - npm package in use",
-            f"Package has detected local usage, GitHub dependents, or significant npm downloads ({npm_downloads_last_year} downloads in the last year).",
+            "Nothing to do",
+            f"Package in use - detected local usage, GitHub dependents, or significant npm downloads ({npm_downloads_last_year} downloads in the last year).",
         )
 
     # ClassificationRules.md Rule ND2
@@ -593,13 +590,13 @@ def determine_npmjs_classification(row):
         and npm_used_by_empty
     ):
         return (
-            "Manual review - npm package",
+            "Manual review",
             f"Package has low but nonzero npm usage ({npm_downloads_last_year} downloads in the last year) and no detected local consumers.",
         )
 
     # ClassificationRules.md Rule NM4 - Default NPM Rule
     return (
-        "Manual review - npm package",
+        "Manual review",
         "Published npm package did not match any automatic npm lifecycle classification rule.",
     )
 

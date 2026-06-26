@@ -67,6 +67,81 @@ def fetch_npmjs_package_metadata(package_name):
         return None
 
 
+def npm_repo_check_if_broken(package_metadata, org_names, org_modules):
+    """
+    Check if an npm package has broken or missing repository metadata.
+
+    Validates the completeness of an npm package's metadata by checking for:
+    - Missing metadata entirely
+    - Missing homepage field
+    - Missing repository field
+    - Missing repository URL
+    - Repository belonging to deprecated organizations (translationCoreApps)
+
+    If both homepage and repository URL are missing, attempts to locate the
+    package in known organization modules as a fallback verification.
+
+    Args:
+        package_metadata (dict | None): npm package metadata from fetch_npmjs_package_metadata().
+        org_names (list[str]): List of organization names to check against, used for
+                              organization lookup via find_npm_org() when homepage and
+                              repository are missing.
+        org_modules (dict): Dictionary mapping organization names to their module data,
+                           used for fallback organization lookup when homepage/repository
+                           are unavailable.
+
+    Returns:
+        str | bool: If metadata issues are found, returns a string describing all problems
+                   concatenated with ". " separators (e.g., ". Missing homepage. Missing repository").
+                   If both homepage and repository URL are missing, returns a boolean indicating
+                   whether the package was found in organization modules (True if found, False otherwise).
+                   Returns "Missing metadata" if package_metadata is None.
+                   Returns an empty string if no issues are found.
+    """
+    broken_repo = ""
+    if package_metadata is None or len(package_metadata.keys()) == 0:
+        return ""
+
+    org_names_extended = org_names.copy()
+    translation_core_apps = "translationCoreApps"
+    org_names_extended.append(translation_core_apps)  # add old organizations
+
+    name = package_metadata.get("name")
+    if not name:
+        broken_repo = broken_repo + ". Missing name"
+
+    homepage = package_metadata.get("homepage")
+    if not homepage:
+        broken_repo = broken_repo + ". Missing homepage"
+
+    repository = package_metadata.get("repository")
+    if not repository:
+        broken_repo = broken_repo + ". Missing repository"
+
+    if isinstance(repository, dict):
+        repository_url = repository.get("url") or ""
+    else:
+        repository_url = str(repository) if repository else ""
+
+    if not repository_url:
+        broken_repo = broken_repo + ". Missing repository url"
+
+    elif translation_core_apps in repository_url:
+        broken_repo = broken_repo + f". Repository url {repository_url} is translationCoreApps"
+
+    found_org = None
+    if not homepage and not repository_url:
+        found_org = find_npm_org(package_metadata, org_modules)
+
+    if found_org and (translation_core_apps in found_org):
+        broken_repo = broken_repo + f". Found org {found_org} is {translation_core_apps}"
+
+    if broken_repo:
+        broken_repo = f"{name} - " + broken_repo
+
+    return broken_repo
+
+
 def npm_repo_is_from_uw(package_metadata, org_names, org_modules, maintainer_names):
     """
     Check if an npm package belongs to specified organizations.
@@ -163,7 +238,12 @@ def find_npm_org(package_metadata: dict, org_modules: dict) -> str | None:
     from lib.github_utils import fetch_repository_json_file
 
     found_org = ""
+    if not package_metadata:
+        return ''
+
     module_name = package_metadata.get("name", "")
+    if not module_name:
+        return ''
 
     for org_name, org_data in org_modules.items():
         found_in_org_modules = org_data.get(module_name, None)

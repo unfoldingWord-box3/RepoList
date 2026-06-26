@@ -35,7 +35,7 @@ from lib.npm_utils import (
     fetch_npmjs_is_deprecated,
     npm_repo_is_from_uw,
     find_npm_org,
-    fetch_npmjs_modules_for_all_orgs,
+    fetch_npmjs_modules_for_all_orgs, npm_repo_check_if_broken,
 )
 
 def recompute_used_by(data_rows):
@@ -138,6 +138,10 @@ def main():
 
         maintainers = extract_npmjs_maintainer_names(metadata)
         row["npmjs maintainers"] = maintainers
+
+        broken = npm_repo_check_if_broken(metadata, ORG_NAMES, org_modules)
+        row["npmjs broken"] = broken
+
         if not npm_repo_is_from_uw(metadata, ORG_NAMES, org_modules, maintainers):
             print(f"  Skipping — not from a uW org")
             skipped += 1

@@ -30,7 +30,7 @@ import zipfile
 from xml.sax.saxutils import escape
 
 from lib.constants import NODE_LANGUAGES, OFTEN_GITHUB_MISTAKEN_LANGUAGES
-from lib.npm_utils import find_npm_org
+from lib.npm_utils import find_npm_org, npm_repo_check_if_broken
 from lib.utilities import extract_npmjs_maintainer_names, urlopen_with_retry
 
 
@@ -966,15 +966,20 @@ def fetch_repositories_for_org(org_name, org_names, org_modules, start_count=0):
                         npm_package_metadata = fetch_npmjs_package_metadata(npm_package_name)
 
                         maintainers = extract_npmjs_maintainer_names(npm_package_metadata)
+                        repo["npmjs_maintainers"] = maintainers
+                        
+                        broken = npm_repo_check_if_broken(npm_package_metadata, org_names, org_modules)
+                        repo["npmjs_broken"] = broken
+
+                        repo["npm_organization"] = find_npm_org(npm_package_metadata, org_modules)
+                        
                         if npm_repo_is_from_uw(npm_package_metadata, org_names, org_modules, maintainers):
                             repo["npmjs_last_published"] = fetch_npmjs_last_published(npm_package_metadata)
                             repo["npmjs_downloads_last_year"] = fetch_npmjs_download_count(
                                 npm_package_name,
                                 "last-year",
                             )
-                            repo["npm_organization"] = find_npm_org(npm_package_metadata, org_modules)
                             repo["npm_is_deprecated"] = fetch_npmjs_is_deprecated(npm_package_metadata)
-                            repo["npmjs_maintainers"] = maintainers
 
                         else:
                             print(
@@ -1077,6 +1082,7 @@ def write_ods(repos, output_file):
         "npmjs maintainers",
         "npmjs used by",
         "npmjs uses",
+        "npmjs broken",
         "github dependents",
         "github contributors",
         "github release count",
@@ -1103,12 +1109,14 @@ def write_ods(repos, output_file):
                 repo.get("commit_count", ""),
                 ", ".join(repo.get("git_submodules", [])),
                 repo.get("npmjs_package_name", ""),
+                repo.get("npm_organization", ""),
                 repo.get("npm_is_deprecated", ""),
                 repo.get("npmjs_downloads_last_year", ""),
                 repo.get("npmjs_last_published", ""),
                 ", ".join(repo.get("npmjs_maintainers", [])),
                 ", ".join(repo.get("npmjs_used_by", [])),
                 ", ".join(repo.get("npmjs_uses", [])),
+                repo.get("npmjs_broken", ""),
                 ", ".join(repo.get("github_dependents", [])),
                 ", ".join(repo.get("github_contributors", [])),
                 repo.get("github_release_count", ""),

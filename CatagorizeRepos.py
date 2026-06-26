@@ -84,7 +84,7 @@ SORT_ORDER = [
 ]
 NPM_SORT_ORDER = [
     "Deprecate npm package candidate",
-    "Repair npm package"
+    "Repair npm package",
     "Manual review",
     "Nothing to do",
 ]
@@ -1112,7 +1112,9 @@ def main():
         if classification in SORT_ORDER:
             sort_rank = SORT_ORDER.index(classification)
             row["classification"] = str(sort_rank) + "-" + classification
-
+        elif classification:
+            print(f"Classification {classification} not found in SORT_ORDER")
+            
     classifications = sorted({row["classification"] for row in data_rows})
 
     print("Classifications found:")
@@ -1124,6 +1126,8 @@ def main():
         if classification in NPM_SORT_ORDER:
             sort_rank = NPM_SORT_ORDER.index(classification)
             row["npmjs classification"] = str(sort_rank) + "-" + classification
+        elif classification:
+            print(f"No NPM sort rank for {classification}")
 
     ordered_rows = [{col: row.get(col, "") for col in headers} for row in data_rows]
     write_list_to_csv(CATEGORIZED_OUTPUT + ".csv", headers, data_rows)
@@ -1140,7 +1144,8 @@ def main():
     
     npm_ordered_rows = [{col: row.get(col, "") for col in npm_headers} for row in npm_rows]
 
-    npm_ordered_rows.sort(key=lambda row: row["npmjs classification"])
+    npm_ordered_rows.sort(
+        key=lambda row: (row.get("npmjs classification", ""), row.get("npmjs classification reason", "")))
 
     update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", NPM_SHEET_NAME, npm_ordered_rows)
 

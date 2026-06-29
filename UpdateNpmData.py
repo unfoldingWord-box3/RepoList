@@ -5,8 +5,8 @@ npm Module Data Updater
 Re-fetches npm registry data (downloads, publish date, deprecation status) for every
 npm package recorded in unfoldingword_repos.ods, then rewrites both sheets in place.
 
-Run after GitHubRepositoryFetcher.py to refresh npm data without re-fetching all
-GitHub repository metadata.
+Run after GitHubRepositoryFetcher.py to just refresh npm data without the slow process
+of fetching all GitHub repository metadata.
 
 Usage: python UpdateNpmData.py
 """

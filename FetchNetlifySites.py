@@ -16,7 +16,7 @@ import sys
 import urllib.error
 import urllib.request
 
-from lib.constants import ENV_FILE
+from lib.constants import ENV_FILE, NETLIFY_PREFIX_COLUMNS
 from lib.utilities import load_env_file, urlopen_with_retry, write_list_to_csv
 
 NETLIFY_API_BASE = "https://api.netlify.com/api/v1"
@@ -128,7 +128,7 @@ def main():
     rows = [site_to_row(s) for s in sites]
     rows.sort(key=lambda r: r["name"].lower())
 
-    prefix_columns = ["Ask", "Keep Auto Builds", "Disable Auto Builds", "Remove Project", "Notes"]
+    prefix_columns = NETLIFY_PREFIX_COLUMNS
     # prefix rows with prefix_columns
     for row in rows:
         for col in prefix_columns:

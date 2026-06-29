@@ -50,56 +50,85 @@
 
 ## categorized_repos.csv / categorized_repos.ods — column descriptions
 
-Produced by `CatagorizeRepos.py`. Extends the **Repositories** sheet of `unfoldingword_repos.ods` with additional columns. Three tag columns are prepended from `tagged_repos.ods`, one derived column is inserted, and five classification columns are appended:
+Produced by `CatagorizeRepos.py`. Extends the **Repositories** sheet of `unfoldingword_repos.ods` with additional columns. Tag columns are prepended from `tagged_repos.ods`, one derived column is inserted, and four classification columns are appended. The ODS also contains an **NPM Modules** sheet and a **Netlify** sheet.
+
+### Repositories sheet additional columns
 
 | Column | Description |
 |---|---|
-| **Ask** | Manual review tag carried forward from `tagged_repos.ods`. Non-empty when the repository has been flagged for a question or discussion. |
-| **Archive** | Manual review tag carried forward from `tagged_repos.ods`. Non-empty when the repository has been marked for archival. |
-| **Keep** | Manual review tag carried forward from `tagged_repos.ods`. Non-empty when the repository has been explicitly marked to keep active. |
+| **Ask** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been flagged for a question or discussion. |
+| **Archive** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been marked for archival. |
+| **Keep** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been explicitly marked to keep active. |
+| **Notes** | Manual notes from `tagged_repos.ods` (`Repositories` sheet). |
+| **Ask-NPM** | npm-specific manual review tag from `tagged_repos.ods` (`NPM Modules` sheet). |
+| **Deprecate-NPM** | npm-specific deprecation tag from `tagged_repos.ods` (`NPM Modules` sheet). |
+| **Keep-NPM** | npm-specific keep tag from `tagged_repos.ods` (`NPM Modules` sheet). |
+| **Notes-NPM** | npm-specific notes from `tagged_repos.ods` (`NPM Modules` sheet). |
 | **is submodule of** | Comma-separated list of repositories (in `organization/repo-name` format) that reference this repository as a git submodule. Derived from the `git submodules` field by `add_submodule_relationships()`. Empty if not used as a submodule by any repository in the fetched set. |
 | **repo full name** | The fully-qualified repository name in `organization/repo-name` format. |
 | **repo url** | The GitHub HTML URL for the repository. |
 | **repo full name2** | Duplicate of `repo full name`, placed immediately left of the `classification` column for quick reference when reviewing classifications. |
 | **repo url2** | Duplicate of `repo url`, placed immediately left of the `classification` column for quick reference when reviewing classifications. |
-| **classification** | The GitHub repository lifecycle label assigned by `determine_github_classification()`. See possible values below. |
+| **classification** | The GitHub repository lifecycle label assigned by `determine_github_classification()`. Prefixed with a sort-rank digit (e.g. `0-Archive/Delete candidate`). See possible values below. |
 | **classification reason** | A human-readable explanation of why the repository received its classification label. |
-| **npmjs classification** | The npm package lifecycle label assigned by `determine_npmjs_classification()`. Empty for repositories with no published npm package. See possible values below. |
+| **npmjs classification** | The npm package lifecycle label assigned by `determine_npmjs_classification()`. Empty for repositories with no published npm package. Prefixed with a sort-rank digit. See possible values below. |
 | **npmjs classification reason** | A human-readable explanation of why the npm package received its classification label. |
 
 ### GitHub classification labels
 
-Rules are applied in priority order; the first matching rule wins.
+Rules are applied in priority order; the first matching rule wins. The output value is prefixed with a sort-rank digit (e.g. `0-Archive/Delete candidate`).
 
 | Label | Meaning |
 |---|---|
-| `Dead - archived` | Repository is archived on GitHub. |
-| `Manual review` | High-risk or ambiguous: used as a git submodule, core product name, high issue/release/contributor count, recent metadata edit with old code, or did not match any other rule. |
+| `Archive/Delete candidate` | Very old with no usage, downloads, or releases; old unmodified fork; obvious POC/demo with no dependents; or name suggests legacy/replaced content. |
+| `Manual review` | High-risk or ambiguous: used as a git submodule, core product name, high issue/release/contributor count, recent metadata edit with old code, stale-but-used, stale package, stale/neglected, stale release process, or did not match any other rule. |
+| `Keep` | Recently active (last commit within 12 months), locally used by another npm package, or externally used (GitHub dependents or ≥ 1,000 npm downloads in the last year). |
+| `Nothing to do` | Repository is already archived, or npm package is already deprecated with a commit older than 24 months. |
 | `Protected private` | No last commit date available — likely a private or protected repository with restricted access. |
-| `Active` | Last commit was within the last 12 months. |
-| `Keep - locally used` | Used as a dependency by another npm package in the fetched set. |
-| `Keep - externally used` | Has GitHub dependents or ≥ 1,000 npm downloads in the last year. |
-| `Dead - deprecated` | npm package is deprecated and last commit is over 24 months ago. |
-| `Dead candidate` | Very old with no usage, downloads, or releases; old unmodified fork; or obvious POC/demo with no dependents. |
-| `Stale but used` | No commits in over 18 months but still has detected npm or GitHub dependents. |
-| `Stale package` | npm package unpublished for over 18 months and not marked deprecated. |
-| `Stale / neglected` | No commits in over 12 months with many open PRs or issues. |
-| `Stale release process` | Recent commits but no release in over 24 months. |
-| `Stale` | No commits in over 18 months and not archived. |
-| `No longer used candidate` | Name suggests legacy/replaced content, old POC/demo, fork with no consumers, or npm package with no downloads. |
 
 ### npm classification labels
 
-Applied only to repositories that have a published npm package. Rules are applied in priority order; the first matching rule wins.
+Applied only to repositories that have a published npm package. Rules are applied in priority order; the first matching rule wins. The output value is prefixed with a sort-rank digit.
 
 | Label | Meaning |
 |---|---|
-| `Deprecated npm package` | Package is already explicitly marked as deprecated on the npm registry. |
 | `Deprecate npm package candidate` | Backed by an archived repository; or no detected local consumers, no GitHub dependents, and no npm downloads; or stale with low downloads; or name suggests obsolescence. |
-| `Manual review - npm package` | Security-sensitive or build-tool package (auth, cli, build, config, etc.) — but only if the backing repository is not archived. Or: low but nonzero usage with no detected local consumers. |
-| `Keep - npm package in use` | Has local consumers, GitHub dependents, or ≥ 1,000 npm downloads in the last year — checked after archived and sensitive-term rules. |
+| `Repair npm package` | Package metadata indicates a broken or misconfigured package on the npm registry. |
+| `Manual review` | No npm package published; security-sensitive or build-tool name (auth, build, config, eslint, etc.); or low but nonzero usage with no detected local consumers. |
+| `Nothing to do` | Package is already deprecated; not yet published; not owned by a configured uW npm org; or has local consumers, GitHub dependents, or ≥ 1,000 npm downloads. |
 
 See [ClassificationRules.md](ClassificationRules.md) for the full rule definitions and recommended actions per label.
+
+---
+
+## netlify_sites.csv — column descriptions
+
+Produced by `FetchNetlifySites.py`. Contains one row per Netlify site in the unfoldingWord account. Prefix columns (`Ask`, `Keep Auto Builds`, `Disable Auto Builds`, `Remove Project`, `Notes`) are prepended as empty strings for manual annotation.
+
+| Column | Description |
+|---|---|
+| **Ask** | Manual review flag (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **Keep Auto Builds** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **Disable Auto Builds** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **Remove Project** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **Notes** | Manual notes (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **name** | Netlify site name (subdomain slug). |
+| **id** | Netlify site UUID. |
+| **url** | The SSL/primary URL for the site. |
+| **custom_domain** | Custom domain configured for the site, if any. |
+| **account_name** | Display name of the Netlify account. |
+| **account_slug** | Slug of the Netlify account. |
+| **repo_url** | GitHub repository URL linked to the site's build settings. |
+| **repo_branch** | Branch used for continuous deployment. |
+| **framework** | Framework detected by Netlify (e.g. `gatsby`, `next`). |
+| **build_command** | Build command configured in Netlify. |
+| **auto_deploy** | `yes` if continuous deployment is enabled, `no` if stopped, empty if no repo is linked. |
+| **published_at** | Timestamp of the most recent published deploy. |
+| **created_at** | Timestamp when the site was created. |
+| **updated_at** | Timestamp of the most recent site metadata update. |
+| **state** | Netlify site state (e.g. `current`). |
+
+The **Netlify** sheet in `categorized_repos.ods` is sourced from `sheets/netlify_sites.csv` (or from the previous `Netlify` sheet in `tagged_repos.ods` if the CSV is absent). Manual prefix column values are carried forward from the `Netlify` sheet of `tagged_repos.ods` by matching on site `id` or `name`.
 
 ---
 
@@ -107,7 +136,11 @@ See [ClassificationRules.md](ClassificationRules.md) for the full rule definitio
 
 `tagged_repos.ods` is a hand-modified version of `categorized_repos.ods` used to carry manual decisions into the categorized output. It is read by `CatagorizeRepos.py` alongside `unfoldingword_repos.ods` and its tag columns are merged into `categorized_repos.ods` / `categorized_repos.csv`.
 
-It must contain a **Repositories** sheet with at minimum a column to identify each repository (`repo full name`, or both `repo name` and `organization name`), plus any subset of the tag columns below. Rows with all tag columns empty are ignored.
+**Note:** `tagged_repos.ods` is not generated by any script in this project. It modified copy of `categorized_repos.ods` with notes and suggestions added manually.
+
+### Repositories sheet
+
+Must contain a **Repositories** sheet with at minimum a column to identify each repository (`repo full name`, or both `repo name` and `organization name`), plus any subset of the tag columns below. Rows with all tag columns empty are ignored.
 
 | Column | Description |
 |---|---|
@@ -115,7 +148,30 @@ It must contain a **Repositories** sheet with at minimum a column to identify ea
 | **Ask** | Free-text note flagging the repository for a question or discussion before a decision is made. |
 | **Archive** | Free-text note or flag marking the repository as a candidate for archival. |
 | **Keep** | Free-text note or flag marking the repository to keep active, overriding automatic classification signals. |
+| **Notes** | General notes about the repository. |
 
-**How matching works:** each row in `tagged_repos.ods` is matched to a row in the fetched data by `repo full name` (preferred) or by combining `organization name` + `repo name`. Unmatched rows are silently skipped. When a match is found, the `Ask`, `Archive`, and `Keep` values are copied into the corresponding row in the output.
+**How matching works:** each row in the `Repositories` sheet is matched to a row in the fetched data by `repo full name` (preferred) or by combining `organization name` + `repo name`. Unmatched rows are silently skipped.
 
-**Note:** `tagged_repos.ods` is not generated by any script in this project. It must be created and maintained manually.
+### NPM Modules sheet
+
+The optional **NPM Modules** sheet carries npm-specific manual tags. Rows are matched using the same `repo full name` / `repo name` + `organization name` logic as the Repositories sheet.
+
+| Column | Description |
+|---|---|
+| **repo full name** | Used to match rows to the fetched repository data. |
+| **Ask-NPM** | Free-text note flagging the npm package for a question or discussion. |
+| **Deprecate-NPM** | Free-text note or flag marking the npm package as a deprecation candidate. |
+| **Keep-NPM** | Free-text note or flag marking the npm package to keep active. |
+| **Notes-NPM** | General notes about the npm package. |
+
+### Netlify sheet
+
+The optional **Netlify** sheet carries manual prefix column values for Netlify sites. Rows are matched to the generated `sheets/netlify_sites.csv` data using the first available stable identifier (`id`, `name`, `url`, etc.).
+
+| Column | Description |
+|---|---|
+| **Ask** | Free-text note flagging the site for a question or discussion. |
+| **Keep Auto Builds** | Flag to keep automatic builds enabled. |
+| **Disable Auto Builds** | Flag to disable automatic builds. |
+| **Remove Project** | Flag marking the site as a candidate for removal. |
+| **Notes** | General notes about the site. |

@@ -13,6 +13,7 @@ MIN_UW_MAINTAINERS = ['jakobaleksandrovich', 'klappy', 'photo-nomad', 'richmahn'
 REPOS_SHEET_NAME = "Repositories"
 JS_TS_SHEET_NAME = "JavaScript TypeScript"
 NPM_SHEET_NAME = "NPM Modules"
+NETLIFY_SHEET_NAME = "Netlify"
 
 NPM_ORG_NAMES = [ # npm organizations (lowercase, without @)
     "unfoldingword",
@@ -23,3 +24,5 @@ ORG_NAMES = [  # highest priority first
     "unfoldingWord-dev",
     "unfoldingWord-box3",
 ]
+
+NETLIFY_PREFIX_COLUMNS = ["Ask", "Keep Auto Builds", "Disable Auto Builds", "Remove Project", "Notes"]

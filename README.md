@@ -112,7 +112,7 @@ cp env.sample .env
 ## Running
 
 ### Generate the Repository Spreadsheet
-_Note: This will take a while to run, but only needs to be done once a quarter or so,._
+_Note: This will take a while to run, but only needs to be done once a quarter or so._
 
 Run:
 ```bash
@@ -123,27 +123,51 @@ This generates an OpenDocument spreadsheet at:
 sheets/unfoldingword_repos.ods
 ```
 
+### Fetch Netlify Site Data
+
+To pull current Netlify site data for the unfoldingWord account, run:
+```bash
+python FetchNetlifySites.py
+```
+Requires `NETLIFY_TOKEN` in your `.env` file (a Netlify personal access token with read access). This writes:
+```
+sheets/netlify_sites.csv
+```
+Run this before `CatagorizeRepos.py` so the Netlify sheet in `categorized_repos.ods` reflects current data.
+
+### Refresh npm Data
+
+To re-fetch npm registry data (downloads, publish date, deprecation status, broken status) without repeating the slow GitHub API calls, run:
+```bash
+python UpdateNpmData.py
+```
+This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Packages present in the npm org but missing from the ODS are saved to `sheets/missing_modules.json`. Run this after `GitHubRepositoryFetcher.py` when only npm data needs refreshing.
+
 ### Classify Repositories
 
-To classify every repository by activity and usage status and produce a categorized spreadsheet
-- first export `All our Github repos` as ods and save to `sheets/tagged_repos.ods`.  This makes sure we preserve the 'Ask', 'Archive', 'Keep', and 'Notes' fields when new `categorized_repos.ods` is generated.
-- then run:
+To classify every repository by activity and usage status and produce a categorized spreadsheet:
+- First export the uW Google sheet `All our Github repos` as ods file and save to `sheets/tagged_repos.ods`. This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
+- Then run:
 ```bash
 python CatagorizeRepos.py
 ```
-This 
+This:
 - reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`
 - applies classification rules
-- Copies the 'Ask', 'Archive', 'Keep', and 'Notes' fields from `sheets/tagged_repos.ods`.
-- writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods`. Two sets of classification columns are added:
-
-- `classification` / `classification reason` — GitHub repository lifecycle status
-- `npmjs classification` / `npmjs classification reason` — npm package lifecycle status (only for repositories with a published npm package)
+- copies repository tags (`Ask`, `Archive`, `Keep`, `Notes`) from the `Repositories` sheet of `sheets/tagged_repos.ods`
+- copies npm-specific tags (`Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`) from the `NPM Modules` sheet of `sheets/tagged_repos.ods`
+- carries forward Netlify prefix columns from the `Netlify` sheet of `sheets/tagged_repos.ods`
+- writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods` with three sheets:
+  - `Repositories` — all repos with two sets of classification columns added:
+    - `classification` / `classification reason` — GitHub repository lifecycle status
+    - `npmjs classification` / `npmjs classification reason` — npm package lifecycle status (only for repositories with a published npm package)
+  - `NPM Modules` — filtered to repos with an npm package, npm-focused column ordering
+  - `Netlify` — sourced from `sheets/netlify_sites.csv` (or previous sheet if CSV is absent), with manual prefix columns carried forward
 
 See [ClassificationRules.md](ClassificationRules.md) for the full rule set.
 
 ### Improving Classification Rules
-If you make changes to the rules, you will need to re-run this script to update the `determine_github_classification` or `determine_npmjs_classification` functions and rerun this script to update the output files.
+If you make changes to the rules, update the `determine_github_classification` or `determine_npmjs_classification` functions and rerun `CatagorizeRepos.py` to update the output files.
 
 
 ### Export Spreadsheet Sheets to CSV
@@ -159,8 +183,9 @@ python SheetToCSVConverter.py
 - [sheets/unfoldingword_repos.ods](sheets/unfoldingword_repos.ods) — generated spreadsheet containing repository data (sheets: `Repositories`, `JavaScript TypeScript`)
 - [sheets/Repositories.csv](sheets/Repositories.csv) — all repositories exported from the spreadsheet
 - [sheets/JavaScript TypeScript.csv](sheets/JavaScript%20TypeScript.csv) — JavaScript/TypeScript repositories exported from the spreadsheet
+- [sheets/netlify_sites.csv](sheets/netlify_sites.csv) — Netlify site data for the unfoldingWord account
 - [sheets/categorized_repos.csv](sheets/categorized_repos.csv) — categorized repositories exported as CSV
-- [sheets/categorized_repos.ods](sheets/categorized_repos.ods) — repositories with `classification`, `classification reason`, `npmjs classification`, and `npmjs classification reason` columns added
+- [sheets/categorized_repos.ods](sheets/categorized_repos.ods) — repositories with classification columns added (sheets: `Repositories`, `NPM Modules`, `Netlify`)
 
 
 ## Additional Information

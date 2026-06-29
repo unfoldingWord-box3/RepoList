@@ -61,8 +61,10 @@ Example:
     to each repository, and exports results to 'sheets/categorized_repos.csv' and
     'sheets/categorized_repos.ods' with added classification columns.
 """
+import csv
+
 from lib.constants import REPO_ODS_FILE, TAGGED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME, \
-    NPM_ORG_NAMES
+    NPM_ORG_NAMES, NETLIFY_SHEET_NAME, NETLIFY_PREFIX_COLUMNS
 
 from lib.utilities import ( update_ods_sheet_data,
                            is_true, months_old, is_empty, as_int, contains_any, load_repository_data,
@@ -758,6 +760,8 @@ def npm_update_nested_used_by_sub(repos, repos_by_npmjs_package_name):
                                 module["npmjs uses"] = using_module_npmjs_uses
 
     return changed
+
+
 def get_repos_by_npmjs_package_name(data_rows):
     """
     Create a dictionary mapping npm package names to their repository data.
@@ -966,6 +970,58 @@ def copy_tagged_data_to_rows(data_rows, tagged_data_rows, copy_columns):
             row[column] = tagged_row.get(column, "")
 
 
+def copy_netlify_prefix_columns_to_rows(netlify_ordered_rows, previous_netlify_data_rows):
+    """
+    Copy manually maintained Netlify prefix columns from the previous Netlify sheet
+    into the newly generated Netlify rows.
+
+    Rows are matched using stable Netlify identifiers when available.
+    """
+    if not previous_netlify_data_rows or not netlify_ordered_rows:
+        return
+
+    match_columns = [
+        "site_id",
+        "site id",
+        "id",
+        "name",
+        "site name",
+        "url",
+        "admin_url",
+        "admin url",
+    ]
+
+    matching_column = next(
+        (
+            column
+            for column in match_columns
+            if any(not is_empty(row.get(column)) for row in previous_netlify_data_rows)
+               and any(not is_empty(row.get(column)) for row in netlify_ordered_rows)
+        ),
+        None,
+    )
+
+    if matching_column is None:
+        print("Unable to copy previous Netlify prefix column data: no matching key column found.")
+        return
+
+    previous_rows_by_key = {
+        str(row.get(matching_column, "")).strip(): row
+        for row in previous_netlify_data_rows
+        if not is_empty(row.get(matching_column))
+    }
+
+    for row in netlify_ordered_rows:
+        row_key = str(row.get(matching_column, "")).strip()
+        previous_row = previous_rows_by_key.get(row_key)
+
+        if previous_row is None:
+            continue
+
+        for column in NETLIFY_PREFIX_COLUMNS:
+            row[column] = previous_row.get(column, "")
+
+
 def main():
     """
     Main entry point for repository categorization workflow.
@@ -1005,6 +1061,18 @@ def main():
         npm_tagged_data_rows = tagged_data_rows
 
     headers, data_rows = prepend_tagged_columns(headers, data_rows, ALL_TAGGED_COLUMNS)
+
+    #read previous data the sheet NETLIFY_SHEET_NAME on spreadsheet CATEGORIZED_OUTPUT + ".ods"
+    try:
+        previous_netlify_headers, previous_netlify_data_rows = load_repository_data(
+            TAGGED_ODS_FILE,
+            NETLIFY_SHEET_NAME,
+        )
+    except Exception as e:
+        print(f"Error loading previous Netlify data: {e}")
+        previous_netlify_headers = []
+        previous_netlify_data_rows = []
+
 
     if "is submodule of" not in headers:
         headers.insert(headers.index("git submodules"), "is submodule of")
@@ -1148,6 +1216,28 @@ def main():
         key=lambda row: (row.get("npmjs classification", ""), row.get("npmjs classification reason", "")))
 
     update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", NPM_SHEET_NAME, npm_ordered_rows)
+
+    try:
+        with open("sheets/netlify_sites.csv", newline="", encoding="utf-8") as netlify_csv_file:
+            netlify_ordered_rows = list(csv.DictReader(netlify_csv_file))
+    except FileNotFoundError:
+        print("Netlify CSV file not found; using previous Netlify sheet data.")
+        netlify_ordered_rows = previous_netlify_data_rows
+    
+    copy_netlify_prefix_columns_to_rows(netlify_ordered_rows, previous_netlify_data_rows)
+    
+    if netlify_ordered_rows:
+        netlify_headers = list(netlify_ordered_rows[0].keys())
+
+        if "auto_deploy" in netlify_headers and "account_name" in netlify_headers:
+            netlify_headers.remove("auto_deploy")
+            netlify_headers.insert(netlify_headers.index("account_name"), "auto_deploy")
+            netlify_ordered_rows = [
+                {column: row.get(column, "") for column in netlify_headers}
+                for row in netlify_ordered_rows
+            ]
+    
+    update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", NETLIFY_SHEET_NAME, netlify_ordered_rows)
 
 if __name__ == "__main__":
     main()

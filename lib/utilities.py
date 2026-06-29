@@ -313,7 +313,7 @@ def update_ods_sheet_data(output_file, sheet_name, rows):
                         out_zip.writestr(item, existing_zip.read(item.filename))
 
         os.replace(tmp_out, output_file)
-        print(f"Data updated in {output_file}")
+        print(f"Data sheet '{sheet_name}' updated in {output_file}")
     finally:
         for path in (tmp_new, tmp_out):
             if os.path.exists(path):
@@ -629,6 +629,7 @@ def load_repository_data(ODS_FILE, SHEET_NAME):
             if isinstance(value, str) and ',' in value:
                 row[key] = [item.strip() for item in value.split(',')]
 
+    print(f"Loaded {len(data)} rows from sheet '{SHEET_NAME}' in {ODS_FILE}")
     return headers, data
 
 

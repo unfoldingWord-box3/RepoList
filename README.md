@@ -146,7 +146,9 @@ This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recom
 ### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet:
-- First export the uW Google sheet `All our Github repos` as ods file and save to `sheets/tagged_repos.ods`. This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
+- First download the uW Google sheet `All our Github repos` as ods file.
+  - Then open it and `save as` to `sheets/tagged_repos.ods`. 
+  - This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
 - Then run:
 ```bash
 python CatagorizeRepos.py

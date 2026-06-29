@@ -1133,7 +1133,7 @@ def main():
     npm_update_nested_used_by(data_rows)
 
     for row in data_rows:
-        print(row)
+        # print(row)
         classification, classification_reason = determine_github_classification(row)
         repo_name = row.get("repo name")
         organization = row.get("organization name")
@@ -1236,6 +1236,39 @@ def main():
                 {column: row.get(column, "") for column in netlify_headers}
                 for row in netlify_ordered_rows
             ]
+
+        # Add column to left indicating if repo has been archived
+        # Build a lookup of archived status by repo full name
+        archived_by_repo = {}
+        for row in data_rows:
+            repo_full_name = row.get("repo full name", "")
+            if repo_full_name:
+                archived_by_repo[repo_full_name.lower()] = is_true(row.get("archived"))
+
+        # Add "repo archived" column to the beginning of headers
+        if "repo archived" not in netlify_headers:
+            netlify_headers.insert(0, "repo archived")
+
+        # For each Netlify row, try to match with repo data and set archived status
+        for netlify_row in netlify_ordered_rows:
+            # Try to extract repo info from build_settings or repo_url
+            repo_url = netlify_row.get("repo_url", "") or netlify_row.get("repository_url", "")
+            archived_value = ""
+
+            if repo_url and is_github_repo(repo_url):
+                org, repo_name = split_github_repo(repo_url)
+                if org and repo_name:
+                    repo_full_name = f"{org}/{repo_name}".lower()
+                    if repo_full_name in archived_by_repo:
+                        archived_value = archived_by_repo[repo_full_name]
+
+            netlify_row["repo archived"] = archived_value
+
+        # Reorder rows to match updated headers
+        netlify_ordered_rows = [
+            {column: row.get(column, "") for column in netlify_headers}
+            for row in netlify_ordered_rows
+        ]
     
     update_ods_sheet_data(CATEGORIZED_OUTPUT + ".ods", NETLIFY_SHEET_NAME, netlify_ordered_rows)
 

@@ -15,6 +15,7 @@ The goal is to codify the process of collecting and classifying GitHub repositor
 - Python 3.11+
 - A GitHub personal access token
 - A Python virtual environment
+- A Google Cloud OAuth credential (for `FetchTaggedRepos.py` — see setup below)
 
 ## Setup
 
@@ -91,8 +92,28 @@ GITHUB_TOKEN=github_pat_your_token_here
 The token is primarily needed to raise the GitHub API rate limit from 60 to 5,000 requests/hour. Since the target orgs are public, either option works.
 
 
+### Setting up Google OAuth (for FetchTaggedRepos.py)
+
+`FetchTaggedRepos.py` downloads the tagged-repos Google Sheet directly instead of requiring a manual export. It uses personal OAuth, so it accesses sheets you can already open in your browser.
+
+**One-time setup:**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project (or reuse one).
+2. Enable the **Google Drive API** for the project.
+3. Under **APIs & Services → Credentials**, click **Create Credentials → OAuth client ID**.
+4. Choose **Desktop app**, give it a name, and click **Create**.
+5. Click **Download JSON** and save the file as `credentials.json` in this directory.
+6. Add `GOOGLE_SHEET_ID` to your `.env` file — copy the ID from the sheet URL:
+   ```
+   https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit
+   ```
+7. Run `python FetchTaggedRepos.py`. A browser tab will open — sign in with your Google account and grant read access. The token is saved to `.google_token.json` for all future runs.
+
+`credentials.json` and `.google_token.json` are git-ignored and must not be committed.
+
 ## Caution
 - `.env` file contains your GitHub token and should not be committed to a public repository. It is ignored by git by adding it to `.gitignore` to help prevent accidental committing of the file.
+- `credentials.json` contains your Google OAuth client secret and must also not be committed. It is git-ignored by default.
 
 
 ## Configuration
@@ -143,12 +164,19 @@ python UpdateNpmData.py
 ```
 This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Packages present in the npm org but missing from the ODS are saved to `sheets/missing_modules.json`. Run this after `GitHubRepositoryFetcher.py` when only npm data needs refreshing.
 
+### Fetch Tagged Repos Sheet
+
+To pull the current tagged-repos Google Sheet into `sheets/tagged_repos.ods` (replaces the manual export step), run:
+```bash
+python FetchTaggedRepos.py
+```
+Requires `GOOGLE_SHEET_ID` in `.env` and `credentials.json` in this directory (see Google OAuth setup above). On first run a browser tab opens for authentication; subsequent runs are silent.
+
 ### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet:
-- First download the uW Google sheet `All our Github repos` as ods file.
-  - Then open it and `save as` to `sheets/tagged_repos.ods`. 
-  - This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
+- First update `sheets/tagged_repos.ods` — either run `python FetchTaggedRepos.py` (recommended) or manually export the uW Google sheet `All our Github repos` as ODS and save it to `sheets/tagged_repos.ods`.
+- This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
 - Then run:
 ```bash
 python CatagorizeRepos.py

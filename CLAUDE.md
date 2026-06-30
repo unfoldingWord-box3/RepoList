@@ -18,6 +18,10 @@ python UpdateNpmData.py
 # Split the spreadsheet into per-sheet CSV files
 python SheetToCSVConverter.py
 
+# Download the tagged-repos Google Sheet to sheets/tagged_repos.ods
+# (requires GOOGLE_SHEET_ID in .env and credentials.json; browser auth on first run)
+python FetchTaggedRepos.py
+
 # Fetch Netlify site data for the unfoldingWord account and write sheets/netlify_sites.csv
 python FetchNetlifySites.py
 
@@ -36,6 +40,8 @@ Four top-level scripts, three shared libraries:
 - **`UpdateNpmData.py`** — discovers all `@unfoldingword`-scoped packages via the npm search API, then re-fetches npm registry data (downloads, publish date, deprecation status, broken status, npm organization) for every package recorded in `sheets/unfoldingword_repos.ods`. Saves packages present in the npm org but missing from the ODS to `sheets/missing_modules.json`. Rewrites both sheets in place. Also recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Run after `GitHubRepositoryFetcher.py` to refresh npm data without repeating all GitHub API calls.
 
 - **`SheetToCSVConverter.py`** — reads `sheets/unfoldingword_repos.ods` via pandas/odf and writes one CSV per sheet (`sheets/Repositories.csv`, `sheets/JavaScript TypeScript.csv`).
+
+- **`FetchTaggedRepos.py`** — downloads the unfoldingWord tagged-repos Google Sheet as an ODS file and saves it to `sheets/tagged_repos.ods`. Uses personal OAuth via `google-auth-oauthlib`. On first run, opens a browser for authentication and saves the token to `.google_token.json`; subsequent runs refresh silently. Requires `GOOGLE_SHEET_ID` in `.env` and `credentials.json` (OAuth Desktop app credential) in the project root. Both files are git-ignored.
 
 - **`FetchNetlifySites.py`** — queries the Netlify API for all sites in the unfoldingWord account (`NETLIFY_ACCOUNT_SLUG = "unfoldingWord"`) and writes `sheets/netlify_sites.csv`. Requires `NETLIFY_TOKEN` in `.env`. Paginates via `page`/`per_page` query parameters; falls back to listing all accessible sites if the account slug returns 404. Each row includes site name, id, url, custom domain, repo url/branch, framework, build command, auto-deploy status, publish/create/update timestamps, and state. Prefix columns defined in `NETLIFY_PREFIX_COLUMNS` (for manual review tags) are prepended to every row as empty strings.
 

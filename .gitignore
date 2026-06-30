@@ -3,3 +3,5 @@
 RepoList.iml
 *.log
 /.idea/
+/credentials.json
+/.google_token.json

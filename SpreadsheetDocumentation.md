@@ -50,20 +50,20 @@
 
 ## categorized_repos.csv / categorized_repos.ods — column descriptions
 
-Produced by `CatagorizeRepos.py`. Extends the **Repositories** sheet of `unfoldingword_repos.ods` with additional columns. Tag columns are prepended from `tagged_repos.ods`, one derived column is inserted, and four classification columns are appended. The ODS also contains an **NPM Modules** sheet and a **Netlify** sheet.
+Produced by `CatagorizeRepos.py`. Extends the **Repositories** sheet of `unfoldingword_repos.ods` with additional columns. Tag columns are prepended from `marked_repos.ods`, one derived column is inserted, and four classification columns are appended. The ODS also contains an **NPM Modules** sheet and a **Netlify** sheet.
 
 ### Repositories sheet additional columns
 
 | Column | Description |
 |---|---|
-| **Ask** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been flagged for a question or discussion. |
-| **Archive** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been marked for archival. |
-| **Keep** | Manual review tag from `tagged_repos.ods` (`Repositories` sheet). Non-empty when the repository has been explicitly marked to keep active. |
-| **Notes** | Manual notes from `tagged_repos.ods` (`Repositories` sheet). |
-| **Ask-NPM** | npm-specific manual review tag from `tagged_repos.ods` (`NPM Modules` sheet). |
-| **Deprecate-NPM** | npm-specific deprecation tag from `tagged_repos.ods` (`NPM Modules` sheet). |
-| **Keep-NPM** | npm-specific keep tag from `tagged_repos.ods` (`NPM Modules` sheet). |
-| **Notes-NPM** | npm-specific notes from `tagged_repos.ods` (`NPM Modules` sheet). |
+| **Ask** | Manual review tag from `marked_repos.ods` (`Repositories` sheet). Non-empty when the repository has been flagged for a question or discussion. |
+| **Archive** | Manual review tag from `marked_repos.ods` (`Repositories` sheet). Non-empty when the repository has been marked for archival. |
+| **Keep** | Manual review tag from `marked_repos.ods` (`Repositories` sheet). Non-empty when the repository has been explicitly marked to keep active. |
+| **Notes** | Manual notes from `marked_repos.ods` (`Repositories` sheet). |
+| **Ask-NPM** | npm-specific manual review tag from `marked_repos.ods` (`NPM Modules` sheet). |
+| **Deprecate-NPM** | npm-specific deprecation tag from `marked_repos.ods` (`NPM Modules` sheet). |
+| **Keep-NPM** | npm-specific keep tag from `marked_repos.ods` (`NPM Modules` sheet). |
+| **Notes-NPM** | npm-specific notes from `marked_repos.ods` (`NPM Modules` sheet). |
 | **is submodule of** | Comma-separated list of repositories (in `organization/repo-name` format) that reference this repository as a git submodule. Derived from the `git submodules` field by `add_submodule_relationships()`. Empty if not used as a submodule by any repository in the fetched set. |
 | **repo full name** | The fully-qualified repository name in `organization/repo-name` format. |
 | **repo url** | The GitHub HTML URL for the repository. |
@@ -107,11 +107,11 @@ Produced by `FetchNetlifySites.py`. Contains one row per Netlify site in the unf
 
 | Column | Description |
 |---|---|
-| **Ask** | Manual review flag (empty in generated CSV; filled in `tagged_repos.ods`). |
-| **Keep Auto Builds** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
-| **Disable Auto Builds** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
-| **Remove Project** | Manual tag (empty in generated CSV; filled in `tagged_repos.ods`). |
-| **Notes** | Manual notes (empty in generated CSV; filled in `tagged_repos.ods`). |
+| **Ask** | Manual review flag (empty in generated CSV; filled in `marked_repos.ods`). |
+| **Keep Auto Builds** | Manual tag (empty in generated CSV; filled in `marked_repos.ods`). |
+| **Disable Auto Builds** | Manual tag (empty in generated CSV; filled in `marked_repos.ods`). |
+| **Remove Project** | Manual tag (empty in generated CSV; filled in `marked_repos.ods`). |
+| **Notes** | Manual notes (empty in generated CSV; filled in `marked_repos.ods`). |
 | **name** | Netlify site name (subdomain slug). |
 | **id** | Netlify site UUID. |
 | **url** | The SSL/primary URL for the site. |
@@ -128,15 +128,15 @@ Produced by `FetchNetlifySites.py`. Contains one row per Netlify site in the unf
 | **updated_at** | Timestamp of the most recent site metadata update. |
 | **state** | Netlify site state (e.g. `current`). |
 
-The **Netlify** sheet in `categorized_repos.ods` is sourced from `sheets/netlify_sites.csv` (or from the previous `Netlify` sheet in `tagged_repos.ods` if the CSV is absent). Manual prefix column values are carried forward from the `Netlify` sheet of `tagged_repos.ods` by matching on site `id` or `name`.
+The **Netlify** sheet in `categorized_repos.ods` is sourced from `sheets/netlify_sites.csv` (or from the previous `Netlify` sheet in `marked_repos.ods` if the CSV is absent). Manual prefix column values are carried forward from the `Netlify` sheet of `marked_repos.ods` by matching on site `id` or `name`.
 
 ---
 
-## tagged_repos.ods — manual review tags
+## marked_repos.ods — manual review tags
 
-`tagged_repos.ods` is a hand-modified version of `categorized_repos.ods` used to carry manual decisions into the categorized output. It is read by `CatagorizeRepos.py` alongside `unfoldingword_repos.ods` and its tag columns are merged into `categorized_repos.ods` / `categorized_repos.csv`.
+`marked_repos.ods` is a hand-modified version of `categorized_repos.ods` used to carry manual decisions into the categorized output. It is read by `CatagorizeRepos.py` alongside `unfoldingword_repos.ods` and its tag columns are merged into `categorized_repos.ods` / `categorized_repos.csv`.
 
-**Note:** `tagged_repos.ods` is not generated by any script in this project. It modified copy of `categorized_repos.ods` with notes and suggestions added manually.
+**Note:** `marked_repos.ods` is not generated by any script in this project. It modified copy of `categorized_repos.ods` with notes and suggestions added manually.
 
 ### Repositories sheet
 

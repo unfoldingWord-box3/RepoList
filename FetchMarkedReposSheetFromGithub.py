@@ -3,7 +3,7 @@
 Tagged Repos Fetcher
 
 Downloads the unfoldingWord tagged-repos Google Sheet as an ODS file and saves
-it to sheets/tagged_repos.ods, ready for use by CatagorizeRepos.py.
+it to sheets/marked_repos.ods, ready for use by CatagorizeRepos.py.
 
 Setup (one time):
     1. In Google Cloud Console, create a project, enable the Google Drive API,
@@ -14,7 +14,7 @@ Setup (one time):
        grant read access. The token is then saved to .google_token.json so
        subsequent runs are silent.
 
-Usage: python FetchTaggedRepos.py
+Usage: python FetchMarkedReposSheetFromGithub.py
 """
 
 import os
@@ -25,13 +25,13 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-from lib.constants import ENV_FILE
+from lib.constants import ENV_FILE, MARKED_ODS_FILE
 from lib.utilities import load_env_file
 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 TOKEN_FILE = ".google_token.json"
 CREDENTIALS_FILE = "credentials.json"
-OUTPUT_FILE = "sheets/tagged_repos.ods"
+OUTPUT_FILE = MARKED_ODS_FILE
 
 
 def get_credentials():

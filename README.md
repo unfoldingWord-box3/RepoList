@@ -15,7 +15,7 @@ The goal is to codify the process of collecting and classifying GitHub repositor
 - Python 3.11+
 - A GitHub personal access token
 - A Python virtual environment
-- A Google Cloud OAuth credential (for `FetchTaggedRepos.py` — see setup below)
+- A Google Cloud OAuth credential (for `FetchMarkedReposSheetFromGithub.py` — see setup below)
 
 ## Setup
 
@@ -92,9 +92,9 @@ GITHUB_TOKEN=github_pat_your_token_here
 The token is primarily needed to raise the GitHub API rate limit from 60 to 5,000 requests/hour. Since the target orgs are public, either option works.
 
 
-### Setting up Google OAuth (for FetchTaggedRepos.py)
+### Setting up Google OAuth (for FetchMarkedReposSheetFromGithub.py)
 
-`FetchTaggedRepos.py` downloads the tagged-repos Google Sheet directly instead of requiring a manual export. It uses personal OAuth, so it accesses sheets you can already open in your browser.
+`FetchMarkedReposSheetFromGithub.py` downloads the tagged-repos Google Sheet directly instead of requiring a manual export. It uses personal OAuth, so it accesses sheets you can already open in your browser.
 
 **One-time setup:**
 
@@ -107,7 +107,7 @@ The token is primarily needed to raise the GitHub API rate limit from 60 to 5,00
    ```
    https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit
    ```
-7. Run `python FetchTaggedRepos.py`. A browser tab will open — sign in with your Google account and grant read access. The token is saved to `.google_token.json` for all future runs.
+7. Run `python FetchMarkedReposSheetFromGithub.py`. A browser tab will open — sign in with your Google account and grant read access. The token is saved to `.google_token.json` for all future runs.
 
 `credentials.json` and `.google_token.json` are git-ignored and must not be committed.
 
@@ -166,16 +166,16 @@ This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recom
 
 ### Fetch Tagged Repos Sheet
 
-To pull the current tagged-repos Google Sheet into `sheets/tagged_repos.ods` (replaces the manual export step), run:
+To pull the current tagged-repos Google Sheet into `sheets/marked_repos.ods` (replaces the manual export step), run:
 ```bash
-python FetchTaggedRepos.py
+python FetchMarkedReposSheetFromGithub.py
 ```
 Requires `GOOGLE_SHEET_ID` in `.env` and `credentials.json` in this directory (see Google OAuth setup above). On first run a browser tab opens for authentication; subsequent runs are silent.
 
 ### Classify Repositories
 
 To classify every repository by activity and usage status and produce a categorized spreadsheet:
-- First update `sheets/tagged_repos.ods` — either run `python FetchTaggedRepos.py` (recommended) or manually export the uW Google sheet `All our Github repos` as ODS and save it to `sheets/tagged_repos.ods`.
+- First update `sheets/marked_repos.ods` — either run `python FetchMarkedReposSheetFromGithub.py` (recommended) or manually export the uW Google sheet `All our Github repos` as ODS and save it to `sheets/marked_repos.ods`.
 - This preserves the `Ask`, `Archive`, `Keep`, `Notes`, `Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, and Netlify prefix columns when a new `categorized_repos.ods` is generated.
 - Then run:
 ```bash
@@ -184,9 +184,9 @@ python CatagorizeRepos.py
 This:
 - reads the `Repositories` sheet from `sheets/unfoldingword_repos.ods`
 - applies classification rules
-- copies repository tags (`Ask`, `Archive`, `Keep`, `Notes`) from the `Repositories` sheet of `sheets/tagged_repos.ods`
-- copies npm-specific tags (`Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`) from the `NPM Modules` sheet of `sheets/tagged_repos.ods`
-- carries forward Netlify prefix columns from the `Netlify` sheet of `sheets/tagged_repos.ods`
+- copies repository tags (`Ask`, `Archive`, `Keep`, `Notes`) from the `Repositories` sheet of `sheets/marked_repos.ods`
+- copies npm-specific tags (`Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`) from the `NPM Modules` sheet of `sheets/marked_repos.ods`
+- carries forward Netlify prefix columns from the `Netlify` sheet of `sheets/marked_repos.ods`
 - writes `sheets/categorized_repos.csv` and `sheets/categorized_repos.ods` with three sheets:
   - `Repositories` — all repos with two sets of classification columns added:
     - `classification` / `classification reason` — GitHub repository lifecycle status

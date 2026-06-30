@@ -63,7 +63,7 @@ Example:
 """
 import csv
 
-from lib.constants import REPO_ODS_FILE, TAGGED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME, \
+from lib.constants import REPO_ODS_FILE, MARKED_ODS_FILE, CATEGORIZED_OUTPUT, REPOS_SHEET_NAME, NPM_SHEET_NAME, \
     NPM_ORG_NAMES, NETLIFY_SHEET_NAME, NETLIFY_PREFIX_COLUMNS
 
 from lib.utilities import ( update_ods_sheet_data,
@@ -1146,10 +1146,10 @@ def main():
         - SORT_ORDER: List defining classification priority order
     """
     headers, data_rows = load_repository_data(REPO_ODS_FILE, REPOS_SHEET_NAME)
-    tagged_headers, tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, REPOS_SHEET_NAME)
+    tagged_headers, tagged_data_rows = load_repository_data(MARKED_ODS_FILE, REPOS_SHEET_NAME)
 
     try:
-        npm_tagged_headers, npm_tagged_data_rows = load_repository_data(TAGGED_ODS_FILE, NPM_SHEET_NAME)
+        npm_tagged_headers, npm_tagged_data_rows = load_repository_data(MARKED_ODS_FILE, NPM_SHEET_NAME)
     except Exception as e:
         print(f"Error loading NPM tagged data: {e}")
         # fall back to using data from REPOS_SHEET_NAME
@@ -1161,7 +1161,7 @@ def main():
     #read previous data the sheet NETLIFY_SHEET_NAME on spreadsheet CATEGORIZED_OUTPUT + ".ods"
     try:
         previous_netlify_headers, previous_netlify_data_rows = load_repository_data(
-            TAGGED_ODS_FILE,
+            MARKED_ODS_FILE,
             NETLIFY_SHEET_NAME,
         )
     except Exception as e:

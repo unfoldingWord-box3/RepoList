@@ -1,12 +1,12 @@
 [
   {
     "downloads": {
-      "monthly": 180,
-      "weekly": 49
+      "monthly": 140,
+      "weekly": 25
     },
     "dependents": 0,
-    "updated": "2026-06-24T12:41:09.053Z",
-    "searchScore": 96.56115,
+    "updated": "2026-07-08T12:51:08.776Z",
+    "searchScore": 93.267105,
     "package": {
       "name": "@gabrielaillet/word-aligner-rcl",
       "keywords": [],
@@ -33,7 +33,7 @@
       }
     },
     "score": {
-      "final": 96.56115,
+      "final": 93.267105,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -46,12 +46,12 @@
   },
   {
     "downloads": {
-      "monthly": 55,
-      "weekly": 1
+      "monthly": 83,
+      "weekly": 16
     },
     "dependents": "1",
-    "updated": "2026-06-24T14:16:34.320Z",
-    "searchScore": 65.58323,
+    "updated": "2026-07-08T14:31:33.004Z",
+    "searchScore": 74.651764,
     "package": {
       "name": "suggesting-word-aligner-rcl",
       "keywords": [],
@@ -78,7 +78,7 @@
       }
     },
     "score": {
-      "final": 65.58323,
+      "final": 74.651764,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -91,12 +91,12 @@
   },
   {
     "downloads": {
-      "monthly": 1679,
-      "weekly": 306
+      "monthly": 1968,
+      "weekly": 248
     },
     "dependents": 0,
-    "updated": "2026-06-22T09:11:08.152Z",
-    "searchScore": 57.537365,
+    "updated": "2026-07-06T09:21:10.646Z",
+    "searchScore": 59.216286,
     "package": {
       "name": "tc-checking-tool-rcl",
       "keywords": [],
@@ -127,7 +127,7 @@
       }
     },
     "score": {
-      "final": 57.537365,
+      "final": 59.216286,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -140,12 +140,12 @@
   },
   {
     "downloads": {
-      "monthly": 146,
-      "weekly": 21
+      "monthly": 197,
+      "weekly": 51
     },
     "dependents": "2",
-    "updated": "2026-06-25T04:41:21.684Z",
-    "searchScore": 38.798126,
+    "updated": "2026-07-02T04:46:18.141Z",
+    "searchScore": 40.4066,
     "package": {
       "name": "@oce-editor-tools/core",
       "keywords": [],
@@ -184,7 +184,7 @@
       }
     },
     "score": {
-      "final": 38.798126,
+      "final": 40.4066,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -197,12 +197,12 @@
   },
   {
     "downloads": {
-      "monthly": 95,
-      "weekly": 23
+      "monthly": 76,
+      "weekly": 9
     },
     "dependents": 0,
-    "updated": "2026-06-23T13:46:25.260Z",
-    "searchScore": 35.804535,
+    "updated": "2026-07-07T13:56:34.303Z",
+    "searchScore": 34.407127,
     "package": {
       "name": "@oce-editor-tools/pk",
       "keywords": [],
@@ -240,7 +240,7 @@
       }
     },
     "score": {
-      "final": 35.804535,
+      "final": 34.407127,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -253,12 +253,12 @@
   },
   {
     "downloads": {
-      "monthly": 50,
-      "weekly": 1
+      "monthly": 64,
+      "weekly": 16
     },
     "dependents": 0,
-    "updated": "2026-06-25T05:26:21.812Z",
-    "searchScore": 31.373705,
+    "updated": "2026-07-02T05:31:33.531Z",
+    "searchScore": 32.769596,
     "package": {
       "name": "html-usfm-pk",
       "keywords": [],
@@ -284,7 +284,7 @@
       }
     },
     "score": {
-      "final": 31.373705,
+      "final": 32.769596,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -297,12 +297,12 @@
   },
   {
     "downloads": {
-      "monthly": 54,
-      "weekly": 21
+      "monthly": 56,
+      "weekly": 7
     },
     "dependents": 0,
-    "updated": "2026-06-23T16:16:34.819Z",
-    "searchScore": 30.759539,
+    "updated": "2026-07-07T16:26:36.069Z",
+    "searchScore": 31.631493,
     "package": {
       "name": "translation-helps-patch",
       "keywords": [
@@ -333,7 +333,7 @@
       }
     },
     "score": {
-      "final": 30.759539,
+      "final": 31.631493,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -346,12 +346,12 @@
   },
   {
     "downloads": {
-      "monthly": 60,
-      "weekly": 23
+      "monthly": 65,
+      "weekly": 9
     },
     "dependents": 0,
-    "updated": "2026-06-23T10:11:23.338Z",
-    "searchScore": 29.21322,
+    "updated": "2026-07-07T10:21:23.561Z",
+    "searchScore": 30.560995,
     "package": {
       "name": "@oce-editor-tools/simple",
       "keywords": [],
@@ -389,7 +389,7 @@
       }
     },
     "score": {
-      "final": 29.21322,
+      "final": 30.560995,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -402,12 +402,12 @@
   },
   {
     "downloads": {
-      "monthly": 58,
-      "weekly": 10
+      "monthly": 68,
+      "weekly": 18
     },
     "dependents": 0,
-    "updated": "2026-06-23T19:06:14.493Z",
-    "searchScore": 26.637918,
+    "updated": "2026-07-07T19:16:30.668Z",
+    "searchScore": 28.448309,
     "package": {
       "name": "@texttree/scripture-resources-rcl",
       "keywords": [],
@@ -441,7 +441,7 @@
       }
     },
     "score": {
-      "final": 26.637918,
+      "final": 28.448309,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -454,12 +454,57 @@
   },
   {
     "downloads": {
-      "monthly": 52,
-      "weekly": 23
+      "monthly": 57,
+      "weekly": 40
     },
     "dependents": 0,
-    "updated": "2026-06-24T04:46:17.879Z",
-    "searchScore": 25.280018,
+    "updated": "2026-07-08T15:16:26.832Z",
+    "searchScore": 28.161423,
+    "package": {
+      "name": "wordmapbooster",
+      "keywords": [],
+      "version": "1.0.3",
+      "description": "Adds an AI boost to wordmap.  Wordmap is a tool for helping word alignments between a source and target language.",
+      "sanitized_name": "wordmapbooster",
+      "publisher": {
+        "email": "Joshua@lansfords.com",
+        "username": "jedward7777"
+      },
+      "maintainers": [
+        {
+          "email": "Joshua@lansfords.com",
+          "username": "jedward7777"
+        }
+      ],
+      "license": "ISC",
+      "date": "2025-09-09T14:22:03.128Z",
+      "links": {
+        "homepage": "https://github.com/JEdward7777/wordmapbooster#readme",
+        "repository": "git+https://github.com/JEdward7777/wordmapbooster.git",
+        "bugs": "https://github.com/JEdward7777/wordmapbooster/issues",
+        "npm": "https://www.npmjs.com/package/wordmapbooster"
+      }
+    },
+    "score": {
+      "final": 28.161423,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 62,
+      "weekly": 34
+    },
+    "dependents": 0,
+    "updated": "2026-07-08T04:56:29.340Z",
+    "searchScore": 26.730398,
     "package": {
       "name": "usfm2json",
       "keywords": [
@@ -490,7 +535,7 @@
       }
     },
     "score": {
-      "final": 25.280018,
+      "final": 26.730398,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -503,12 +548,88 @@
   },
   {
     "downloads": {
-      "monthly": 99,
-      "weekly": 53
+      "monthly": 374,
+      "weekly": 243
+    },
+    "dependents": "0",
+    "updated": "2026-07-03T18:26:09.286Z",
+    "searchScore": 26.636967,
+    "package": {
+      "name": "tc-electron-env",
+      "keywords": [
+        "tc-electron-env",
+        "translationCore"
+      ],
+      "version": "0.10.0",
+      "description": "A library for accessing electron environment",
+      "sanitized_name": "tc-electron-env",
+      "publisher": {
+        "email": "bruce.mclean@unfoldingword.org",
+        "username": "photo-nomad"
+      },
+      "maintainers": [
+        {
+          "email": "jakobaleksandrovich@gmail.com",
+          "username": "jakobaleksandrovich"
+        },
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "jag3773@gmail.com",
+          "username": "jag3773"
+        },
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "eliasrpt14@gmail.com",
+          "username": "eliaspinero"
+        }
+      ],
+      "license": "ISC",
+      "date": "2022-03-15T16:52:54.855Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord/tc-electron-env#readme",
+        "repository": "git+https://github.com/unfoldingWord/tc-electron-env.git",
+        "bugs": "https://github.com/unfoldingWord/tc-electron-env/issues",
+        "npm": "https://www.npmjs.com/package/tc-electron-env"
+      }
+    },
+    "score": {
+      "final": 26.636967,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 154,
+      "weekly": 38
     },
     "dependents": 0,
-    "updated": "2026-06-19T17:31:12.097Z",
-    "searchScore": 24.436382,
+    "updated": "2026-07-03T17:41:11.121Z",
+    "searchScore": 26.622332,
     "package": {
       "name": "door43-client-fork",
       "keywords": [],
@@ -535,7 +656,7 @@
       }
     },
     "score": {
-      "final": 24.436382,
+      "final": 26.622332,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -548,56 +669,12 @@
   },
   {
     "downloads": {
-      "monthly": 23,
-      "weekly": 3
+      "monthly": 101,
+      "weekly": 28
     },
     "dependents": 0,
-    "updated": "2026-06-24T00:46:20.161Z",
-    "searchScore": 23.410559,
-    "package": {
-      "name": "html-usfm-simple",
-      "keywords": [],
-      "version": "0.1.2",
-      "description": "A React Component Library for editing and viewing usfm.",
-      "sanitized_name": "html-usfm-simple",
-      "publisher": {
-        "email": "lars.gunnarsson@unfoldingword.org",
-        "username": "larsgson"
-      },
-      "maintainers": [
-        {
-          "email": "lars.gunnarsson@unfoldingword.org",
-          "username": "larsgson"
-        }
-      ],
-      "license": "MIT",
-      "date": "2023-04-06T06:46:38.897Z",
-      "links": {
-        "homepage": "https://uw-editor.netlify.app/",
-        "repository": "https://github.com/unfoldingword/html-usfm",
-        "npm": "https://www.npmjs.com/package/html-usfm-simple"
-      }
-    },
-    "score": {
-      "final": 23.410559,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 73,
-      "weekly": 3
-    },
-    "dependents": 0,
-    "updated": "2026-06-24T22:06:18.960Z",
-    "searchScore": 23.009596,
+    "updated": "2026-07-01T22:11:19.146Z",
+    "searchScore": 24.769588,
     "package": {
       "name": "book-package",
       "keywords": [],
@@ -623,7 +700,7 @@
       }
     },
     "score": {
-      "final": 23.009596,
+      "final": 24.769588,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -636,235 +713,12 @@
   },
   {
     "downloads": {
-      "monthly": 195,
-      "weekly": 8
-    },
-    "dependents": "0",
-    "updated": "2026-06-25T17:06:13.127Z",
-    "searchScore": 22.953714,
-    "package": {
-      "name": "tc-electron-env",
-      "keywords": [
-        "tc-electron-env",
-        "translationCore"
-      ],
-      "version": "0.10.0",
-      "description": "A library for accessing electron environment",
-      "sanitized_name": "tc-electron-env",
-      "publisher": {
-        "email": "bruce.mclean@unfoldingword.org",
-        "username": "photo-nomad"
-      },
-      "maintainers": [
-        {
-          "email": "info@neutrinographics.com",
-          "username": "neutrinog"
-        },
-        {
-          "email": "jakobaleksandrovich@gmail.com",
-          "username": "jakobaleksandrovich"
-        },
-        {
-          "email": "christopher@klapp.name",
-          "username": "klappy"
-        },
-        {
-          "email": "bruce.mclean@unfoldingword.org",
-          "username": "photo-nomad"
-        },
-        {
-          "email": "rich.mahn@unfoldingword.org",
-          "username": "richmahn"
-        },
-        {
-          "email": "cecil.new@gmail.com",
-          "username": "mandolyte"
-        },
-        {
-          "email": "jag3773@gmail.com",
-          "username": "jag3773"
-        },
-        {
-          "email": "mvahowe@gmail.com",
-          "username": "mvahowe"
-        },
-        {
-          "email": "lars.gunnarsson@unfoldingword.org",
-          "username": "larsgson"
-        },
-        {
-          "email": "abelper54@gmail.com",
-          "username": "abelpz"
-        },
-        {
-          "email": "eliasrpt14@gmail.com",
-          "username": "eliaspinero"
-        }
-      ],
-      "license": "ISC",
-      "date": "2022-03-15T16:52:54.855Z",
-      "links": {
-        "homepage": "https://github.com/unfoldingWord/tc-electron-env#readme",
-        "repository": "git+https://github.com/unfoldingWord/tc-electron-env.git",
-        "bugs": "https://github.com/unfoldingWord/tc-electron-env/issues",
-        "npm": "https://www.npmjs.com/package/tc-electron-env"
-      }
-    },
-    "score": {
-      "final": 22.953714,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 281,
-      "weekly": 8
+      "monthly": 227,
+      "weekly": 176
     },
     "dependents": 0,
-    "updated": "2026-06-25T17:06:11.773Z",
-    "searchScore": 19.950027,
-    "package": {
-      "name": "electronite-packager",
-      "keywords": [
-        "electron",
-        "packager",
-        "bundler",
-        "app"
-      ],
-      "version": "17.1.1-graphite",
-      "description": "Customize and package your Electronite app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
-      "sanitized_name": "electronite-packager",
-      "publisher": {
-        "email": "bruce.mclean@unfoldingword.org",
-        "username": "photo-nomad"
-      },
-      "maintainers": [
-        {
-          "email": "info@neutrinographics.com",
-          "username": "neutrinog"
-        },
-        {
-          "email": "jakobaleksandrovich@gmail.com",
-          "username": "jakobaleksandrovich"
-        },
-        {
-          "email": "christopher@klapp.name",
-          "username": "klappy"
-        },
-        {
-          "email": "bruce.mclean@unfoldingword.org",
-          "username": "photo-nomad"
-        },
-        {
-          "email": "rich.mahn@unfoldingword.org",
-          "username": "richmahn"
-        },
-        {
-          "email": "cecil.new@gmail.com",
-          "username": "mandolyte"
-        },
-        {
-          "email": "jag3773@gmail.com",
-          "username": "jag3773"
-        },
-        {
-          "email": "mvahowe@gmail.com",
-          "username": "mvahowe"
-        },
-        {
-          "email": "lars.gunnarsson@unfoldingword.org",
-          "username": "larsgson"
-        },
-        {
-          "email": "abelper54@gmail.com",
-          "username": "abelpz"
-        },
-        {
-          "email": "eliasrpt14@gmail.com",
-          "username": "eliaspinero"
-        }
-      ],
-      "license": "BSD-2-Clause",
-      "date": "2023-02-22T15:12:42.929Z",
-      "links": {
-        "homepage": "https://github.com/unfoldingWord-box3/electronite-packager",
-        "repository": "git+https://github.com/unfoldingWord-box3/electronite-packager.git",
-        "bugs": "https://github.com/unfoldingWord-box3/electronite-packager/issues",
-        "npm": "https://www.npmjs.com/package/electronite-packager"
-      }
-    },
-    "score": {
-      "final": 19.950027,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 19,
-      "weekly": 9
-    },
-    "dependents": 0,
-    "updated": "2026-06-24T14:51:18.970Z",
-    "searchScore": 19.706554,
-    "package": {
-      "name": "wordmapbooster",
-      "keywords": [],
-      "version": "1.0.3",
-      "description": "Adds an AI boost to wordmap.  Wordmap is a tool for helping word alignments between a source and target language.",
-      "sanitized_name": "wordmapbooster",
-      "publisher": {
-        "email": "Joshua@lansfords.com",
-        "username": "jedward7777"
-      },
-      "maintainers": [
-        {
-          "email": "Joshua@lansfords.com",
-          "username": "jedward7777"
-        }
-      ],
-      "license": "ISC",
-      "date": "2025-09-09T14:22:03.128Z",
-      "links": {
-        "homepage": "https://github.com/JEdward7777/wordmapbooster#readme",
-        "repository": "git+https://github.com/JEdward7777/wordmapbooster.git",
-        "bugs": "https://github.com/JEdward7777/wordmapbooster/issues",
-        "npm": "https://www.npmjs.com/package/wordmapbooster"
-      }
-    },
-    "score": {
-      "final": 19.706554,
-      "detail": {
-        "popularity": 1,
-        "quality": 1,
-        "maintenance": 1
-      }
-    },
-    "flags": {
-      "insecure": 0
-    }
-  },
-  {
-    "downloads": {
-      "monthly": 80,
-      "weekly": 12
-    },
-    "dependents": 0,
-    "updated": "2026-06-19T00:11:09.209Z",
-    "searchScore": 19.45213,
+    "updated": "2026-07-03T18:26:10.753Z",
+    "searchScore": 24.578968,
     "package": {
       "name": "usfm2html",
       "keywords": [
@@ -883,10 +737,6 @@
       },
       "maintainers": [
         {
-          "email": "info@neutrinographics.com",
-          "username": "neutrinog"
-        },
-        {
           "email": "jakobaleksandrovich@gmail.com",
           "username": "jakobaleksandrovich"
         },
@@ -903,20 +753,12 @@
           "username": "richmahn"
         },
         {
-          "email": "cecil.new@gmail.com",
-          "username": "mandolyte"
-        },
-        {
           "email": "jag3773@gmail.com",
           "username": "jag3773"
         },
         {
           "email": "mvahowe@gmail.com",
           "username": "mvahowe"
-        },
-        {
-          "email": "lars.gunnarsson@unfoldingword.org",
-          "username": "larsgson"
         },
         {
           "email": "abelper54@gmail.com",
@@ -937,7 +779,7 @@
       }
     },
     "score": {
-      "final": 19.45213,
+      "final": 24.578968,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -950,12 +792,138 @@
   },
   {
     "downloads": {
-      "monthly": 39,
+      "monthly": 24,
+      "weekly": 6
+    },
+    "dependents": 0,
+    "updated": "2026-07-08T00:56:31.257Z",
+    "searchScore": 24.346363,
+    "package": {
+      "name": "html-usfm-simple",
+      "keywords": [],
+      "version": "0.1.2",
+      "description": "A React Component Library for editing and viewing usfm.",
+      "sanitized_name": "html-usfm-simple",
+      "publisher": {
+        "email": "lars.gunnarsson@unfoldingword.org",
+        "username": "larsgson"
+      },
+      "maintainers": [
+        {
+          "email": "lars.gunnarsson@unfoldingword.org",
+          "username": "larsgson"
+        }
+      ],
+      "license": "MIT",
+      "date": "2023-04-06T06:46:38.897Z",
+      "links": {
+        "homepage": "https://uw-editor.netlify.app/",
+        "repository": "https://github.com/unfoldingword/html-usfm",
+        "npm": "https://www.npmjs.com/package/html-usfm-simple"
+      }
+    },
+    "score": {
+      "final": 24.346363,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 327,
+      "weekly": 162
+    },
+    "dependents": 0,
+    "updated": "2026-07-03T18:26:10.996Z",
+    "searchScore": 20.765545,
+    "package": {
+      "name": "electronite-packager",
+      "keywords": [
+        "electron",
+        "packager",
+        "bundler",
+        "app"
+      ],
+      "version": "17.1.1-graphite",
+      "description": "Customize and package your Electronite app with OS-specific bundles (.app, .exe, etc.) via JS or CLI",
+      "sanitized_name": "electronite-packager",
+      "publisher": {
+        "email": "bruce.mclean@unfoldingword.org",
+        "username": "photo-nomad"
+      },
+      "maintainers": [
+        {
+          "email": "jakobaleksandrovich@gmail.com",
+          "username": "jakobaleksandrovich"
+        },
+        {
+          "email": "christopher@klapp.name",
+          "username": "klappy"
+        },
+        {
+          "email": "bruce.mclean@unfoldingword.org",
+          "username": "photo-nomad"
+        },
+        {
+          "email": "rich.mahn@unfoldingword.org",
+          "username": "richmahn"
+        },
+        {
+          "email": "jag3773@gmail.com",
+          "username": "jag3773"
+        },
+        {
+          "email": "mvahowe@gmail.com",
+          "username": "mvahowe"
+        },
+        {
+          "email": "abelper54@gmail.com",
+          "username": "abelpz"
+        },
+        {
+          "email": "eliasrpt14@gmail.com",
+          "username": "eliaspinero"
+        },
+        {
+          "email": "info@neutrinographics.com",
+          "username": "neutrinog"
+        }
+      ],
+      "license": "BSD-2-Clause",
+      "date": "2023-02-22T15:12:42.929Z",
+      "links": {
+        "homepage": "https://github.com/unfoldingWord-box3/electronite-packager",
+        "repository": "git+https://github.com/unfoldingWord-box3/electronite-packager.git",
+        "bugs": "https://github.com/unfoldingWord-box3/electronite-packager/issues",
+        "npm": "https://www.npmjs.com/package/electronite-packager"
+      }
+    },
+    "score": {
+      "final": 20.765545,
+      "detail": {
+        "popularity": 1,
+        "quality": 1,
+        "maintenance": 1
+      }
+    },
+    "flags": {
+      "insecure": 0
+    }
+  },
+  {
+    "downloads": {
+      "monthly": 57,
       "weekly": 18
     },
     "dependents": 0,
-    "updated": "2026-06-22T22:26:12.101Z",
-    "searchScore": 17.170506,
+    "updated": "2026-07-06T22:36:26.959Z",
+    "searchScore": 18.967129,
     "package": {
       "name": "ptxaligner",
       "keywords": [
@@ -987,7 +955,7 @@
       }
     },
     "score": {
-      "final": 17.170506,
+      "final": 18.967129,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1000,12 +968,12 @@
   },
   {
     "downloads": {
-      "monthly": 39,
-      "weekly": 8
+      "monthly": 46,
+      "weekly": 11
     },
     "dependents": "2",
-    "updated": "2026-06-24T23:26:10.299Z",
-    "searchScore": 16.374153,
+    "updated": "2026-07-01T23:31:13.387Z",
+    "searchScore": 17.580414,
     "package": {
       "name": "@usfm-tools/usj-core",
       "keywords": [
@@ -1037,7 +1005,7 @@
       }
     },
     "score": {
-      "final": 16.374153,
+      "final": 17.580414,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1050,12 +1018,12 @@
   },
   {
     "downloads": {
-      "monthly": 19,
-      "weekly": 2
+      "monthly": 16,
+      "weekly": 4
     },
     "dependents": 0,
-    "updated": "2026-06-24T09:11:19.889Z",
-    "searchScore": 16.273212,
+    "updated": "2026-07-08T09:21:26.912Z",
+    "searchScore": 15.679693,
     "package": {
       "name": "gateway-language-translation-suite-prototype",
       "keywords": [],
@@ -1081,7 +1049,7 @@
       }
     },
     "score": {
-      "final": 16.273212,
+      "final": 15.679693,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1094,12 +1062,12 @@
   },
   {
     "downloads": {
-      "monthly": 146,
-      "weekly": 21
+      "monthly": 197,
+      "weekly": 51
     },
     "dependents": "2",
-    "updated": "2026-06-25T04:41:21.684Z",
-    "searchScore": 139.64977,
+    "updated": "2026-07-02T04:46:18.141Z",
+    "searchScore": 150.73569,
     "package": {
       "name": "@oce-editor-tools/core",
       "keywords": [],
@@ -1138,7 +1106,7 @@
       }
     },
     "score": {
-      "final": 139.64977,
+      "final": 150.73569,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1151,12 +1119,12 @@
   },
   {
     "downloads": {
-      "monthly": 95,
-      "weekly": 23
+      "monthly": 76,
+      "weekly": 9
     },
     "dependents": 0,
-    "updated": "2026-06-23T13:46:25.260Z",
-    "searchScore": 126.4634,
+    "updated": "2026-07-07T13:56:34.303Z",
+    "searchScore": 118.687454,
     "package": {
       "name": "@oce-editor-tools/pk",
       "keywords": [],
@@ -1194,7 +1162,7 @@
       }
     },
     "score": {
-      "final": 126.4634,
+      "final": 118.687454,
       "detail": {
         "popularity": 1,
         "quality": 1,
@@ -1207,12 +1175,12 @@
   },
   {
     "downloads": {
-      "monthly": 60,
-      "weekly": 23
+      "monthly": 65,
+      "weekly": 9
     },
     "dependents": 0,
-    "updated": "2026-06-23T10:11:23.338Z",
-    "searchScore": 111.838806,
+    "updated": "2026-07-07T10:21:23.561Z",
+    "searchScore": 113.060524,
     "package": {
       "name": "@oce-editor-tools/simple",
       "keywords": [],
@@ -1250,7 +1218,7 @@
       }
     },
     "score": {
-      "final": 111.838806,
+      "final": 113.060524,
       "detail": {
         "popularity": 1,
         "quality": 1,

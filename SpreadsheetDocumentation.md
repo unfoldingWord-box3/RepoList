@@ -18,12 +18,16 @@
 | **open issues count** | The number of open issues reported by GitHub. Note that GitHub’s `open_issues_count` includes both issues and pull requests. |
 | **open prs count** | The number of currently open pull requests in the repository. |
 | **commit count** | The total number of commits on the repository's default branch. |
+| **git submodules** | A comma-separated list of submodule URLs found in the repository's `.gitmodules` file on its default branch. |
 | **npmjs package name** | The npm package name found in the repository’s `package.json`, when available. |
+| **npm organization** | The npm organization (from the configured `NPM_ORG_NAMES`) that owns the published package. Empty if the package could not be matched to a known org. |
 | **npm is deprecated** | Whether the latest npm package version is marked as deprecated in the npm registry. Empty when no matching npm metadata was fetched. |
 | **npmjs downloads last year** | The npm download count for the package over the `last-year` period. |
 | **npmjs last published** | The publish timestamp of the latest npm package version. If no latest version is found, the most recent published version timestamp is used. |
+| **npmjs maintainers** | A comma-separated list of maintainer names/emails from the npm package's registry metadata. |
 | **npmjs used by** | A comma-separated list of local npm packages in the fetched repository set that depend on this package. |
 | **npmjs uses** | A comma-separated list of local npm packages from the fetched repository set that this package depends on. |
+| **npmjs broken** | A description of the problem if the npm package's registry metadata looks broken or misconfigured (e.g. missing homepage/repository field, points to a deprecated org). Empty if no issue was detected. |
 | **github dependents** | A comma-separated list of GitHub repositories detected from the repository’s GitHub dependents page. |
 | **github contributors** | A comma-separated list of contributor names, logins, or emails fetched from the GitHub contributors API. |
 | **github release count** | The total number of GitHub releases found for the repository. |
@@ -43,6 +47,7 @@
 - `github release count` is fetched from GitHub releases and counts releases returned by the repository releases API.
 - `github downloads` is fetched from GitHub releases and only counts release asset downloads. It does not include repository clones, source archive downloads, npm downloads, or other GitHub traffic metrics.
 - `npmjs used by` and `npmjs uses` only describe relationships between packages found in the generated repository set. They do not include every package on npmjs.
+- The configured npm orgs (`NPM_ORG_NAMES` in `lib/constants.py`) currently include both `unfoldingword` and `oce-editor-tools` — `npm organization`, `npmjs maintainers`, `npmjs broken`, and npm classification all consider packages from either org, not just `unfoldingword`.
 - Date/time values are written in the format returned by GitHub or npmjs, usually ISO 8601 UTC timestamps.
 - The **JavaScript TypeScript** sheet is a filtered view of the **Repositories** sheet, limited to repositories whose primary GitHub language is JavaScript or TypeScript.
 
@@ -97,7 +102,40 @@ Applied only to repositories that have a published npm package. Rules are applie
 | `Manual review` | No npm package published; security-sensitive or build-tool name (auth, build, config, eslint, etc.); or low but nonzero usage with no detected local consumers. |
 | `Nothing to do` | Package is already deprecated; not yet published; not owned by a configured uW npm org; or has local consumers, GitHub dependents, or ≥ 1,000 npm downloads. |
 
-See [ClassificationRules.md](ClassificationRules.md) for the full rule definitions and recommended actions per label.
+The full rule definitions (rule IDs like `A3`, `NM2`) exist only as inline comments and docstrings in `determine_github_classification()` / `determine_npmjs_classification()` in `CatagorizeRepos.py` — there is no standalone rules document; a prior `ClassificationRules.md` was removed from the repo and the comments citing it were left in place.
+
+### NPM Modules sheet (in categorized_repos.ods)
+
+A filtered view of npm-published repositories, columns reordered per `NPM_COLUMN_ORDER` in `CatagorizeRepos.py`:
+
+`Ask-NPM`, `Deprecate-NPM`, `Keep-NPM`, `Notes-NPM`, `npmjs package name`, `npmjs url`, `npm organization`, `npmjs maintainers`, `npm is deprecated`, `npmjs downloads last year`, `npmjs last published`, `npmjs used by`, `npmjs uses`, `npmjs classification`, `npmjs classification reason`, `last edit date`, `archived`.
+
+All columns are carried over from the **Repositories** sheet (see above) except:
+
+| Column | Description |
+|---|---|
+| **npmjs url** | Derived column, not present in `unfoldingword_repos.ods`. Built as `https://www.npmjs.com/package/<npmjs package name>`; empty when there is no npm package name. |
+
+### Netlify sheet (in categorized_repos.ods)
+
+Extends the columns from `sheets/netlify_sites.csv` (see below) with three prepended columns:
+
+| Column | Description |
+|---|---|
+| **repo archived** | Whether the GitHub repository linked by `repo_url` is archived, looked up from the fetched repository data. |
+| **Netlify Recommendation** | The Netlify lifecycle label assigned by `determine_netlify_classification()` in `CatagorizeRepos.py`. Sort order: `Remove Project`, `Disable Auto Builds`, `Manual Review`, `Keep Auto Builds`. |
+| **Netlify Recommendation Reason** | A human-readable explanation of why the site received its recommendation label. |
+
+`determine_netlify_classification()` applies rules NL1–NL11 in priority order (first match wins):
+
+| Label | Meaning |
+|---|---|
+| `Keep Auto Builds` | Site has a custom domain (serving production traffic); or was published within the last 12 months. |
+| `Remove Project` | No linked repo, and the site name is Netlify-autogenerated or a throwaway placeholder (`trash`, `delete`). |
+| `Manual Review` | No linked repo (not caught by the throwaway rule); backing GitHub repo is archived; site is in a non-organization Netlify account; site has never been published; last published 12–18 months ago (borderline); or did not match any other rule. |
+| `Disable Auto Builds` | Site name suggests a POC/demo/test/lab/playground/experiment/template; or not published in over 18 months. |
+
+As with the GitHub/npm rules, the NL1–NL11 rule definitions exist only as inline comments in `determine_netlify_classification()` — a prior `Netlify.md` was removed from the repo and the comments citing it were left in place.
 
 ---
 
@@ -123,6 +161,7 @@ Produced by `FetchNetlifySites.py`. Contains one row per Netlify site in the unf
 | **framework** | Framework detected by Netlify (e.g. `gatsby`, `next`). |
 | **build_command** | Build command configured in Netlify. |
 | **auto_deploy** | `yes` if continuous deployment is enabled, `no` if stopped, empty if no repo is linked. |
+| **paused** | `yes` if the site is manually paused/disabled in Netlify (site stops serving traffic entirely, regardless of `auto_deploy`), `no` otherwise. Derived from the Netlify API's `disabled` field. |
 | **published_at** | Timestamp of the most recent published deploy. |
 | **created_at** | Timestamp when the site was created. |
 | **updated_at** | Timestamp of the most recent site metadata update. |

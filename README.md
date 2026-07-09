@@ -118,9 +118,10 @@ The token is primarily needed to raise the GitHub API rate limit from 60 to 5,00
 
 ## Configuration
 
-- In [GitHubRepositoryFetcher.py](GitHubRepositoryFetcher.py):
-  - `ORG_NAMES` contains the names of the GitHub organizations to fetch data from.
-  - `OUTPUT_FILE` is the path of the output ODS file (default: `sheets/unfoldingword_repos.ods`).
+- In [lib/constants.py](lib/constants.py):
+  - `ORG_NAMES` contains the GitHub organizations to fetch repository data from.
+  - `NPM_ORG_NAMES` contains the npm organizations (currently `unfoldingword` and `oce-editor-tools`) used for npm package discovery and ownership checks.
+  - `REPO_ODS_FILE` is the path of the output ODS file (default: `sheets/unfoldingword_repos.ods`), aliased as `OUTPUT_FILE` in [GitHubRepositoryFetcher.py](GitHubRepositoryFetcher.py).
 
 - If file `.env` is not present, Copy the sample environment file:
 
@@ -158,11 +159,11 @@ Run this before `CatagorizeRepos.py` so the Netlify sheet in `categorized_repos.
 
 ### Refresh npm Data
 
-To re-fetch npm registry data (downloads, publish date, deprecation status, broken status) without repeating the slow GitHub API calls, run:
+To re-fetch npm registry data (maintainers, broken status, npm organization, deprecation status, downloads, publish date) without repeating the slow GitHub API calls, run:
 ```bash
 python UpdateNpmData.py
 ```
-This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Packages present in the npm org but missing from the ODS are saved to `sheets/missing_modules.json`. Run this after `GitHubRepositoryFetcher.py` when only npm data needs refreshing.
+This rewrites both sheets of `sheets/unfoldingword_repos.ods` in place and recomputes `npmjs used by` by inverting the `npmjs uses` graph already stored in the ODS. Packages present in an npm org (`unfoldingword` or `oce-editor-tools`) but missing from the ODS are saved to `sheets/missing_modules.json`. Run this after `GitHubRepositoryFetcher.py` when only npm data needs refreshing.
 
 ### Fetch Tagged Repos Sheet
 
@@ -194,10 +195,10 @@ This:
   - `NPM Modules` — filtered to repos with an npm package, npm-focused column ordering
   - `Netlify` — sourced from `sheets/netlify_sites.csv` (or previous sheet if CSV is absent), with manual prefix columns carried forward
 
-See [ClassificationRules.md](ClassificationRules.md) for the full rule set.
+The full rule set lives only as inline comments and docstrings in `determine_github_classification()` / `determine_npmjs_classification()` / `determine_netlify_classification()` in [CatagorizeRepos.py](CatagorizeRepos.py) — a prior `ClassificationRules.md`/`Netlify.md` were removed from the repo, and the rule-ID comments citing them (e.g. `# ClassificationRules.md Rule A3`) were left in place. See [SpreadsheetDocumentation.md](SpreadsheetDocumentation.md) for a summary of the classification labels.
 
 ### Improving Classification Rules
-If you make changes to the rules, update the `determine_github_classification` or `determine_npmjs_classification` functions and rerun `CatagorizeRepos.py` to update the output files.
+If you make changes to the rules, update the `determine_github_classification`, `determine_npmjs_classification`, or `determine_netlify_classification` functions and rerun `CatagorizeRepos.py` to update the output files.
 
 
 ### Export Spreadsheet Sheets to CSV
@@ -221,5 +222,4 @@ python SheetToCSVConverter.py
 ## Additional Information
 
 [SpreadsheetDocumentation.md](SpreadsheetDocumentation.md) – Documentation for the spreadsheet contents
-[ClassificationRules.md](ClassificationRules.md) – Classification rules used by `CatagorizeRepos.py`
 [CLAUDE.md](CLAUDE.md) – AI Documentation for RepoList

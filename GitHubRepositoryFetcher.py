@@ -5,7 +5,7 @@ GitHub Repository Fetcher
 This script fetches repository data from specified GitHub organizations and generates
 an OpenDocument Spreadsheet (ODS) file containing detailed information about each repository.
 
-To run do `python GitHubRepositoryFetcher.py`.  This needs to be run before `python CatagorizeRepos.py`
+To run do `python GitHubRepositoryFetcher.py`.  This needs to be run before `python CategorizeRepos.py`
 
 For JavaScript/TypeScript repositories, it also collects npm package metadata including:
 - Package names and publication dates

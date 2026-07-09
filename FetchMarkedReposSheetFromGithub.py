@@ -3,7 +3,7 @@
 Tagged Repos Fetcher
 
 Downloads the unfoldingWord tagged-repos Google Sheet as an ODS file and saves
-it to sheets/marked_repos.ods, ready for use by CatagorizeRepos.py.
+it to sheets/marked_repos.ods, ready for use by CategorizeRepos.py.
 
 Setup (one time):
     1. In Google Cloud Console, create a project, enable the Google Drive API,
